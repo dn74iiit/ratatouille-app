@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+requests
+pandas
+numpy
+scipy
+nltk
+pydantic
+gradio_client
