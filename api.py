@@ -271,6 +271,19 @@ def optimize_recipe_v2(raw_user_ingredients, total_budget, servings, user_state)
         b_ub_fallback = [total_budget / servings]
         result = linprog(c, A_ub=A_ub_fallback, b_ub=b_ub_fallback, bounds=bounds, method='highs')
 
+    # Super Fallback: If it STILL fails, the minimum gram bounds are too high for the user's budget.
+    # Force lower bounds to 5g to guarantee a mathematical solution.
+    if not result.success:
+        print(f"[*] Budget mathematically too low for default bounds! Forcing lower bounds to 5g...")
+        emergency_bounds = [(5.0, max(b[1], 5.0)) for b in bounds]
+        result = linprog(c, A_ub=A_ub_fallback, b_ub=b_ub_fallback, bounds=emergency_bounds, method='highs')
+
+    # Nuclear Fallback: If it fails due to some impossible matrix constraint, remove ALL limits.
+    if not result.success:
+        print(f"[*] Nuclear Fallback activated: Overriding all bounds to (1g, 1000g)...")
+        nuclear_bounds = [(1.0, 1000.0) for _ in bounds]
+        result = linprog(c, A_ub=A_ub_fallback, b_ub=b_ub_fallback, bounds=nuclear_bounds, method='highs')
+
     if result.success:
         estimated_grams_per_serving = np.round(result.x, 1)
         final_quantities = estimated_grams_per_serving * servings
