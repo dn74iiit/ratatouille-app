@@ -8,3 +8,4 @@ scipy
 nltk
 pydantic
 gradio_client
+motor
