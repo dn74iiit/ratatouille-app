@@ -240,4 +240,116 @@ h3 {
     align-items: flex-start;
     gap: 1rem;
   }
+  .top-nav {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+/* Navigation and Database UI */
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2.5rem;
+  margin-bottom: -1rem;
+}
+
+.nav-left {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.nav-tab:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-tab.active {
+  color: var(--primary);
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.username-input {
+  padding: 0.7rem 1.2rem;
+  font-size: 0.9rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  width: 250px;
+}
+
+.save-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px dashed var(--glass-border);
+  display: flex;
+  justify-content: center;
+}
+
+.save-btn {
+  background: transparent;
+  color: #fff;
+  border: 2px solid var(--primary);
+  padding: 0.8rem 2rem;
+  border-radius: 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.save-btn:hover {
+  background: var(--primary);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+.save-success {
+  color: #4ade80;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.history-card {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+  transition: transform 0.3s ease;
+}
+
+.history-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.history-card h4 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.4rem;
+  margin-bottom: 0.8rem;
+  color: #fff;
+}
+
+.date-text {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
