@@ -14,6 +14,7 @@ from nltk.stem import WordNetLemmatizer
 from scipy.optimize import linprog
 from dotenv import load_dotenv
 from gradio_client import Client
+from motor.motor_asyncio import AsyncIOMotorClient
 
 nltk.download('wordnet', quiet=True)
 nltk.download('omw-1.4', quiet=True)
@@ -38,9 +39,23 @@ app.add_middleware(
 load_dotenv()
 HF_TOKEN    = os.getenv("HF_TOKEN")
 GITHUB_PAT  = os.getenv("GITHUB_PAT")
+MONGO_URI   = os.getenv("MONGO_URI")
 
 if not HF_TOKEN:
     raise RuntimeError("[!] HF_TOKEN not found in .env — cannot reach Hugging Face Inference API.")
+
+# ============================================================
+# DATABASE INIT
+# ============================================================
+if MONGO_URI:
+    print("[*] Connecting to MongoDB Atlas...")
+    db_client = AsyncIOMotorClient(MONGO_URI)
+    db = db_client.ratatouille
+    recipes_collection = db.recipes
+    print("[OK] Connected to MongoDB Atlas.")
+else:
+    recipes_collection = None
+    print("[!] MONGO_URI not found. Database features will be disabled.")
 
 # ============================================================
 # HUGGING FACE SPACE — GRADIO CLIENT
@@ -303,12 +318,43 @@ class RecipeRequest(BaseModel):
     servings: int = 1
     state: str = "Delhi"
 
+class SaveRecipeRequest(BaseModel):
+    username: str
+    recipe_data: dict
+
 # ============================================================
 # ENDPOINTS
 # ============================================================
 @app.get("/health")
 def health_check():
-    return {"status": "ok", "model": HF_SPACE_URL, "inference": "gradio_space"}
+    return {"status": "ok", "model": HF_SPACE_URL, "db_connected": recipes_collection is not None}
+
+@app.post("/save-recipe")
+async def save_recipe_db(request: SaveRecipeRequest):
+    if recipes_collection is None:
+        return {"status": "error", "message": "Database not connected on the server."}
+    
+    document = {
+        "username": request.username.lower(),
+        "recipe": request.recipe_data,
+        "created_at": time.time()
+    }
+    await recipes_collection.insert_one(document)
+    return {"status": "success", "message": "Recipe saved to your profile!"}
+
+@app.get("/my-recipes/{username}")
+async def get_my_recipes(username: str):
+    if recipes_collection is None:
+        return {"status": "error", "message": "Database not connected on the server."}
+    
+    cursor = recipes_collection.find({"username": username.lower()}).sort("created_at", -1)
+    recipes = await cursor.to_list(length=50)
+    
+    # Convert MongoDB ObjectId to string for JSON serialization
+    for r in recipes:
+        r["_id"] = str(r["_id"])
+        
+    return {"status": "success", "recipes": recipes}
 
 @app.post("/generate-recipe")
 def generate_recipe(request: RecipeRequest):
