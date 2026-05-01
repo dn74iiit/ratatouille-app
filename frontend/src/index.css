@@ -353,3 +353,31 @@ h3 {
   font-size: 0.85rem;
   color: var(--text-muted);
 }
+
+/* Expandable History CSS */
+.history-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  list-style: none; /* remove default arrow */
+}
+.history-summary::-webkit-details-marker {
+  display: none;
+}
+.expand-hint {
+  font-size: 0.9rem;
+  color: var(--primary);
+  font-weight: 600;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+.history-card[open] .expand-hint {
+  opacity: 0;
+}
+.history-expanded-content {
+  border-top: 1px dashed var(--glass-border);
+  margin-top: 1.5rem;
+  padding-top: 0.5rem;
+  animation: fadeIn 0.4s ease-out;
+}

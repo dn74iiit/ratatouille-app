@@ -249,11 +249,38 @@ function App() {
               {history.map((doc, idx) => {
                  const rec = doc.recipe;
                  return (
-                   <div key={idx} className="history-card">
-                     <h4>{rec.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h4>
-                     <span className="badge">{rec.archetype}</span>
-                     <p className="date-text">Saved: {new Date(doc.created_at * 1000).toLocaleString()}</p>
-                   </div>
+                   <details key={idx} className="history-card">
+                     <summary className="history-summary">
+                       <div>
+                         <h4>{rec.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h4>
+                         <span className="badge">{rec.archetype}</span>
+                         <p className="date-text">Saved: {new Date(doc.created_at * 1000).toLocaleString()}</p>
+                       </div>
+                       <div className="expand-hint">Click to view ▾</div>
+                     </summary>
+                     
+                     <div className="history-expanded-content">
+                        <div className="ingredients-box" style={{marginTop: '1rem'}}>
+                          <h4>Ingredients</h4>
+                          <ul>
+                            {rec.calculated_ingredients.map((ing, i) => (
+                              <li key={i}>✓ {ing}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        
+                        <div className="directions-box" style={{marginTop: '1rem'}}>
+                          <h4>Directions</h4>
+                          <div className="recipe-text" style={{fontSize: '0.95rem'}}>
+                            {rec.recipe.includes('### DIRECTIONS:') 
+                              ? rec.recipe.split('### DIRECTIONS:')[1].trim().split('\n').map((step, i) => (
+                                  <p key={i} className="step-text" style={{padding: '0.8rem', marginBottom: '0.5rem'}}>{step}</p>
+                                ))
+                              : <p className="step-text">{rec.recipe}</p>}
+                          </div>
+                        </div>
+                     </div>
+                   </details>
                  )
               })}
             </div>
