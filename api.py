@@ -58,29 +58,39 @@ else:
     print("[!] MONGO_URI not found. Database features will be disabled.")
 
 # ============================================================
-# HUGGING FACE SPACE — GRADIO CLIENT
+# HUGGING FACE SPACES — DUAL GRADIO CLIENTS (V8 + V9)
 # ============================================================
-# After you create the HF Space, set this in .env or replace below.
-# Example: HF_SPACE_URL=nd1490/ratatouille-inference
-HF_SPACE_URL = os.getenv("HF_SPACE_URL", "nd1490/ratatouille-inference")
+HF_SPACE_V8 = os.getenv("HF_SPACE_URL",    "nd1490/ratatouille-inference")
+HF_SPACE_V9 = os.getenv("HF_SPACE_URL_V9", "nd1490/ratatouille-inference-v9")
 
-print(f">> Connecting to HF Space: {HF_SPACE_URL} ...")
-gradio_client = Client(HF_SPACE_URL, token=HF_TOKEN)
-print("[OK] Connected to inference Space.")
+print(f">> Connecting to V8 Space: {HF_SPACE_V8} ...")
+gradio_client_v8 = Client(HF_SPACE_V8, token=HF_TOKEN)
+print("[OK] Connected to V8 Space.")
+
+print(f">> Connecting to V9 Space: {HF_SPACE_V9} ...")
+gradio_client_v9 = Client(HF_SPACE_V9, token=HF_TOKEN)
+print("[OK] Connected to V9 Space.")
+
+# Lookup table — used in endpoints
+_clients = {"v8": gradio_client_v8, "v9": gradio_client_v9}
 
 def query_hf_model(prompt: str, max_new_tokens: int = 350,
                    temperature: float = 0.7, top_p: float = 0.9,
                    repetition_penalty: float = 1.1,
                    do_sample: bool = True,
-                   retries: int = 3) -> str:
+                   retries: int = 3,
+                   client=None) -> str:
     """
     Central gateway — calls the Gradio Space's /api/predict endpoint.
-    The Space loads the full model on a free T4/ZeroGPU and generates text.
+    Pass `client=gradio_client_v9` to use the new V9 model.
+    Defaults to V8 if no client is specified.
     Retries automatically on transient failures (cold starts, timeouts).
     """
+    if client is None:
+        client = gradio_client_v8
     for attempt in range(1, retries + 1):
         try:
-            result = gradio_client.predict(
+            result = client.predict(
                 prompt,               # Textbox: prompt
                 max_new_tokens,       # Slider: max_new_tokens
                 temperature,          # Slider: temperature
@@ -317,6 +327,7 @@ class RecipeRequest(BaseModel):
     budget: float
     servings: int = 1
     state: str = "Delhi"
+    model_version: str = "v8"   # "v8" = old Space | "v9" = new retrained Space
 
 class SaveRecipeRequest(BaseModel):
     username: str
@@ -327,7 +338,11 @@ class SaveRecipeRequest(BaseModel):
 # ============================================================
 @app.get("/health")
 def health_check():
-    return {"status": "ok", "model": HF_SPACE_URL, "db_connected": recipes_collection is not None}
+    return {
+        "status": "ok",
+        "spaces": {"v8": HF_SPACE_V8, "v9": HF_SPACE_V9},
+        "db_connected": recipes_collection is not None,
+    }
 
 @app.post("/save-recipe")
 async def save_recipe_db(request: SaveRecipeRequest):
@@ -382,14 +397,16 @@ def generate_recipe(request: RecipeRequest):
     )
     prompt = f"<|begin_of_text|>{system_instruction}\n\n### INGREDIENTS:\n{ingr_text}\n### TITLE:\n"
 
-    print(f"[AI] Generating final recipe for archetype: {archetype}")
+    print(f"[AI] Generating final recipe for archetype: {archetype} using model_version={request.model_version}")
 
+    chosen_client = _clients.get(request.model_version, gradio_client_v8)
     ai_text = query_hf_model(
         prompt,
         max_new_tokens=400,
-        temperature=0.6,  # Lowered temperature slightly to make it less chatty/random
+        temperature=0.6,
         top_p=0.9,
-        repetition_penalty=1.15, # Increased slightly to prevent looping
+        repetition_penalty=1.15,
+        client=chosen_client,
     )
 
     print(f"DEBUG RAW AI_TEXT: {repr(ai_text)}")
