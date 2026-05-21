@@ -381,3 +381,65 @@ h3 {
   padding-top: 0.5rem;
   animation: fadeIn 0.4s ease-out;
 }
+
+/* ── Model Version Toggle ─────────────────────────────────────── */
+.model-toggle {
+  display: flex;
+  gap: 0.75rem;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.4rem;
+  border-radius: 14px;
+  border: 1px solid var(--glass-border);
+}
+
+.model-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.model-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+}
+
+.model-btn.active {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.15);
+}
+
+.model-btn.active .model-tag {
+  color: rgba(74, 222, 128, 0.8);
+}
+
+/* V8 active uses the primary red instead */
+.model-btn:first-child.active {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff9a9e;
+  box-shadow: 0 0 12px rgba(255, 107, 107, 0.15);
+}
+
+.model-btn:first-child.active .model-tag {
+  color: rgba(255, 154, 158, 0.8);
+}
+
+.model-tag {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.3px;
+}
+

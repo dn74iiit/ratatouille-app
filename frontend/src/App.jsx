@@ -10,6 +10,7 @@ function App() {
   const [budget, setBudget] = useState(150);
   const [servings, setServings] = useState(1);
   const [stateName, setStateName] = useState('Delhi');
+  const [modelVersion, setModelVersion] = useState('v9');  // 'v8' | 'v9'
   
   // Response State
   const [loading, setLoading] = useState(false);
@@ -37,7 +38,8 @@ function App() {
           ingredients: ingList,
           budget: parseFloat(budget),
           servings: parseInt(servings),
-          state: stateName
+          state: stateName,
+          model_version: modelVersion
         })
       });
 
@@ -182,6 +184,27 @@ function App() {
                   required 
                   placeholder="e.g. Delhi, Maharashtra"
                 />
+              </div>
+
+              {/* Model Version Toggle */}
+              <div className="input-group">
+                <label>AI Model</label>
+                <div className="model-toggle">
+                  <button
+                    type="button"
+                    className={`model-btn ${modelVersion === 'v8' ? 'active' : ''}`}
+                    onClick={() => setModelVersion('v8')}
+                  >
+                    V8 <span className="model-tag">Original</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`model-btn ${modelVersion === 'v9' ? 'active' : ''}`}
+                    onClick={() => setModelVersion('v9')}
+                  >
+                    V9 <span className="model-tag">RecipeDB Retrained ✨</span>
+                  </button>
+                </div>
               </div>
 
               <button type="submit" disabled={loading} className="generate-btn">
