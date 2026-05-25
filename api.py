@@ -63,16 +63,40 @@ else:
 HF_SPACE_V8 = os.getenv("HF_SPACE_URL",    "nd1490/ratatouille-inference")
 HF_SPACE_V9 = os.getenv("HF_SPACE_URL_V9", "nd1490/ratatouille-inference-v9")
 
-print(f">> Connecting to V8 Space: {HF_SPACE_V8} ...")
-gradio_client_v8 = Client(HF_SPACE_V8, token=HF_TOKEN)
-print("[OK] Connected to V8 Space.")
+# Connect at startup — wrapped in try/except so a cold/sleeping Space
+# does NOT crash the server. If a client fails, it is retried on first use.
+try:
+    print(f">> Connecting to V8 Space: {HF_SPACE_V8} ...")
+    gradio_client_v8 = Client(HF_SPACE_V8, token=HF_TOKEN)
+    print("[OK] Connected to V8 Space.")
+except Exception as e:
+    print(f"[WARN] Could not connect to V8 Space at startup: {e}")
+    gradio_client_v8 = None
 
-print(f">> Connecting to V9 Space: {HF_SPACE_V9} ...")
-gradio_client_v9 = Client(HF_SPACE_V9, token=HF_TOKEN)
-print("[OK] Connected to V9 Space.")
+try:
+    print(f">> Connecting to V9 Space: {HF_SPACE_V9} ...")
+    gradio_client_v9 = Client(HF_SPACE_V9, token=HF_TOKEN)
+    print("[OK] Connected to V9 Space.")
+except Exception as e:
+    print(f"[WARN] Could not connect to V9 Space at startup: {e}")
+    gradio_client_v9 = None
 
-# Lookup table — used in endpoints
-_clients = {"v8": gradio_client_v8, "v9": gradio_client_v9}
+def _get_client(version: str):
+    """Return the Gradio client for the requested version, reconnecting if needed."""
+    global gradio_client_v8, gradio_client_v9
+    if version == "v9":
+        if gradio_client_v9 is None:
+            print(">> Lazy-connecting to V9 Space...")
+            gradio_client_v9 = Client(HF_SPACE_V9, token=HF_TOKEN)
+        return gradio_client_v9
+    else:
+        if gradio_client_v8 is None:
+            print(">> Lazy-connecting to V8 Space...")
+            gradio_client_v8 = Client(HF_SPACE_V8, token=HF_TOKEN)
+        return gradio_client_v8
+
+# Lookup helper — used in endpoints
+_clients = {"v8": lambda: _get_client("v8"), "v9": lambda: _get_client("v9")}
 
 def query_hf_model(prompt: str, max_new_tokens: int = 350,
                    temperature: float = 0.7, top_p: float = 0.9,
@@ -87,7 +111,7 @@ def query_hf_model(prompt: str, max_new_tokens: int = 350,
     Retries automatically on transient failures (cold starts, timeouts).
     """
     if client is None:
-        client = gradio_client_v8
+        client = _get_client("v8")
     for attempt in range(1, retries + 1):
         try:
             result = client.predict(
@@ -399,7 +423,7 @@ def generate_recipe(request: RecipeRequest):
 
     print(f"[AI] Generating final recipe for archetype: {archetype} using model_version={request.model_version}")
 
-    chosen_client = _clients.get(request.model_version, gradio_client_v8)
+    chosen_client = _clients.get(request.model_version, _clients["v8"])()
     ai_text = query_hf_model(
         prompt,
         max_new_tokens=400,
