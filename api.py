@@ -278,10 +278,31 @@ def tag_ingredient(ing_name):
     return 'veggie'
 
 # ============================================================
+# FAST KEYWORD-BASED ARCHETYPE CLASSIFIER (no LLM)
+# ============================================================
+def _classify_archetype_fast(ingredients: list) -> str:
+    """Classify dish archetype using keyword matching — instant, no LLM needed."""
+    s = " ".join(ingredients).lower()
+    if any(w in s for w in ["rice", "biryani", "pulao", "fried rice"]):
+        return "Rice_Dish"
+    if any(w in s for w in ["pasta", "noodle", "macaroni", "spaghetti", "basil"]):
+        return "Rice_Dish"  # similar ratio constraints
+    if any(w in s for w in ["oat", "banana", "sugar", "flour", "chocolate", "cake", "honey", "cream", "milk", "vanilla"]):
+        return "Dessert"
+    if any(w in s for w in ["mushroom", "soup", "broth", "carrot", "ginger", "coconut milk"]):
+        return "Soup"
+    if any(w in s for w in ["lettuce", "salad", "cucumber", "olive"]):
+        return "Salad"
+    if any(w in s for w in ["bread", "dough", "yeast"]):
+        return "Bread"
+    return "Curry"  # default for most Indian dishes
+
+# ============================================================
 # SCIPY LINEAR PROGRAMMING OPTIMIZER  (unchanged from V9)
 # ============================================================
-def optimize_recipe_v2(raw_user_ingredients, total_budget, servings, user_state):
-    archetype = get_recipe_archetype(raw_user_ingredients)
+def optimize_recipe_v2(raw_user_ingredients, total_budget, servings, user_state, archetype=None):
+    if archetype is None:
+        archetype = get_recipe_archetype(raw_user_ingredients)  # LLM call (used by /generate-recipe)
     n = len(raw_user_ingredients)
     c = [-1] * n
     prices, bounds, tags = [], [], []
@@ -400,8 +421,10 @@ def optimize_only(request: RecipeRequest):
     for item in request.ingredients:
         clean_ingredients.extend([i.strip() for i in item.split(',') if i.strip()])
 
+    archetype_fast = _classify_archetype_fast(clean_ingredients)
     calculated_ingredients, archetype = optimize_recipe_v2(
-        clean_ingredients, request.budget, request.servings, request.state
+        clean_ingredients, request.budget, request.servings, request.state,
+        archetype=archetype_fast   # skip LLM — use keyword classifier
     )
 
     if not calculated_ingredients:
