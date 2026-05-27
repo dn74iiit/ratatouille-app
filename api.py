@@ -241,13 +241,15 @@ def parse_ingredient_input(raw_string):
         return qty, name
     return None, raw_string.lower().strip()
 
-def get_dynamic_price(clean_ingredient, user_state):
+def get_dynamic_price(clean_ingredient, user_state, skip_llm=False):
     lemmatized_ing = " ".join([lemmatizer.lemmatize(w) for w in clean_ingredient.split()])
     state_data = current_mandi[(current_mandi['Processed_Ingredient'] == lemmatized_ing) & (current_mandi['State'].str.lower() == user_state.lower())]
     if not state_data.empty: return state_data['Price_per_Gram'].median()
     nat_data = current_mandi[current_mandi['Processed_Ingredient'] == lemmatized_ing]
     if not nat_data.empty: return nat_data['Price_per_Gram'].median()
     if clean_ingredient in pantry_prices: return pantry_prices[clean_ingredient]
+    if skip_llm:
+        return 0.5  # default fallback price — avoids LLM call in /optimize-only
     deconstructed = deconstruct_ingredient(clean_ingredient)
     if deconstructed and isinstance(deconstructed, dict):
         # Prevent crash if the AI hallucinates nested dictionaries
@@ -300,7 +302,7 @@ def _classify_archetype_fast(ingredients: list) -> str:
 # ============================================================
 # SCIPY LINEAR PROGRAMMING OPTIMIZER  (unchanged from V9)
 # ============================================================
-def optimize_recipe_v2(raw_user_ingredients, total_budget, servings, user_state, archetype=None):
+def optimize_recipe_v2(raw_user_ingredients, total_budget, servings, user_state, archetype=None, skip_llm=False):
     if archetype is None:
         archetype = get_recipe_archetype(raw_user_ingredients)  # LLM call (used by /generate-recipe)
     n = len(raw_user_ingredients)
@@ -309,7 +311,7 @@ def optimize_recipe_v2(raw_user_ingredients, total_budget, servings, user_state,
 
     for raw_ing in raw_user_ingredients:
         user_qty, clean_name = parse_ingredient_input(raw_ing)
-        prices.append(get_dynamic_price(clean_name, user_state))
+        prices.append(get_dynamic_price(clean_name, user_state, skip_llm=skip_llm))
         tags.append(tag_ingredient(clean_name))
 
         if user_qty is not None:
@@ -424,7 +426,8 @@ def optimize_only(request: RecipeRequest):
     archetype_fast = _classify_archetype_fast(clean_ingredients)
     calculated_ingredients, archetype = optimize_recipe_v2(
         clean_ingredients, request.budget, request.servings, request.state,
-        archetype=archetype_fast   # skip LLM — use keyword classifier
+        archetype=archetype_fast,  # skip LLM for archetype
+        skip_llm=True             # skip LLM for unknown ingredient prices
     )
 
     if not calculated_ingredients:
