@@ -390,6 +390,34 @@ def health_check():
         "db_connected": recipes_collection is not None,
     }
 
+@app.post("/optimize-only")
+def optimize_only(request: RecipeRequest):
+    """Lightweight endpoint: runs SciPy budget optimization only — no LLM call.
+    Returns the optimized ingredient weights and archetype.
+    Used by the eval script to get ingredients before calling HF Spaces directly.
+    """
+    clean_ingredients = []
+    for item in request.ingredients:
+        clean_ingredients.extend([i.strip() for i in item.split(',') if i.strip()])
+
+    calculated_ingredients, archetype = optimize_recipe_v2(
+        clean_ingredients, request.budget, request.servings, request.state
+    )
+
+    if not calculated_ingredients:
+        return {
+            "status": "error",
+            "message": "Budget is mathematically infeasible for these ingredients at current market prices.",
+            "archetype": archetype,
+            "calculated_ingredients": []
+        }
+
+    return {
+        "status": "success",
+        "archetype": archetype,
+        "calculated_ingredients": calculated_ingredients,
+    }
+
 @app.post("/save-recipe")
 async def save_recipe_db(request: SaveRecipeRequest):
     if recipes_collection is None:
