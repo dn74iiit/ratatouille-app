@@ -82,18 +82,40 @@ except Exception as e:
     gradio_client_v9 = None
 
 def _get_client(version: str):
-    """Return the Gradio client for the requested version, reconnecting if needed."""
+    """Return the Gradio client for the requested version.
+    Retries up to 3 times with 30s delay to handle sleeping HF Spaces.
+    Raises HTTPException 503 if connection fails after all retries.
+    """
+    from fastapi import HTTPException
     global gradio_client_v8, gradio_client_v9
-    if version == "v9":
-        if gradio_client_v9 is None:
-            print(">> Lazy-connecting to V9 Space...")
-            gradio_client_v9 = Client(HF_SPACE_V9, token=HF_TOKEN)
-        return gradio_client_v9
-    else:
-        if gradio_client_v8 is None:
-            print(">> Lazy-connecting to V8 Space...")
-            gradio_client_v8 = Client(HF_SPACE_V8, token=HF_TOKEN)
-        return gradio_client_v8
+
+    space_id  = HF_SPACE_V9 if version == "v9" else HF_SPACE_V8
+    current   = gradio_client_v9 if version == "v9" else gradio_client_v8
+
+    if current is not None:
+        return current
+
+    # Space is not connected — try up to 3 times
+    for attempt in range(1, 4):
+        try:
+            print(f">> Connecting to {version} Space (attempt {attempt}/3): {space_id}")
+            client = Client(space_id, token=HF_TOKEN)
+            if version == "v9":
+                gradio_client_v9 = client
+            else:
+                gradio_client_v8 = client
+            print(f"[OK] Connected to {version} Space.")
+            return client
+        except Exception as e:
+            print(f"[WARN] Attempt {attempt}/3 failed for {version}: {e}")
+            if attempt < 3:
+                time.sleep(30)
+
+    # All retries failed — return a clean 503 instead of crashing
+    raise HTTPException(
+        status_code=503,
+        detail=f"HF Space ({version}) is still waking up. Please retry in 1-2 minutes."
+    )
 
 # Lookup helper — used in endpoints
 _clients = {"v8": lambda: _get_client("v8"), "v9": lambda: _get_client("v9")}
