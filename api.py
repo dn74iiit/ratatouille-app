@@ -496,7 +496,15 @@ def generate_recipe(request: RecipeRequest):
         f"2. Do not change the ingredient quantities provided.\n"
         f"3. DO NOT include any 'Notes', 'Tips', or conversational rambling at the end. Stop immediately after the final serving step."
     )
-    prompt = f"<|begin_of_text|>{system_instruction}\n\n### INGREDIENTS:\n{ingr_text}\n### TITLE:\n"
+    # Format using strict Llama 3 Instruct Template for maximum instruction adherence
+    prompt = (
+        f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n"
+        f"{system_instruction}<|eot_id|>"
+        f"<|start_header_id|>user<|end_header_id|>\n\n"
+        f"Here are the exact ingredients:\n{ingr_text}\n\nPlease generate the recipe now.<|eot_id|>"
+        f"<|start_header_id|>assistant<|end_header_id|>\n\n"
+        f"### TITLE:\n"
+    )
 
     print(f"[AI] Generating final recipe for archetype: {archetype} using model_version={request.model_version}")
 
@@ -506,7 +514,7 @@ def generate_recipe(request: RecipeRequest):
         max_new_tokens=1000,
         temperature=0.6,
         top_p=0.9,
-        repetition_penalty=1.15,
+        repetition_penalty=1.05,
         client=chosen_client,
     )
 
