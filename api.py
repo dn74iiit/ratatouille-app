@@ -61,7 +61,7 @@ else:
 # HUGGING FACE SPACES — DUAL GRADIO CLIENTS (V8 + V9)
 # ============================================================
 HF_SPACE_V8 = os.getenv("HF_SPACE_URL",    "nd1490/ratatouille-inference")
-HF_SPACE_V9 = os.getenv("HF_SPACE_URL_V9", "nd1490/ratatouille-inference-v9")
+HF_SPACE_V9 = os.getenv("HF_SPACE_URL_V9", "nd1490/ratatouille-inference-v10-q8")
 
 # Connect at startup — wrapped in try/except so a cold/sleeping Space
 # does NOT crash the server. If a client fails, it is retried on first use.
@@ -488,8 +488,9 @@ def generate_recipe(request: RecipeRequest):
 
     # EXACT V9 PROMPT STRUCTURE with Llama 3 BOS Token
     system_instruction = (
-        f"You are a master chef. Write a highly detailed, appetizing recipe for a {archetype}.\n"
-        f"First, provide a creative title. Then, provide step-by-step cooking directions using proper culinary techniques.\n"
+        f"You are a Michelin-star master chef. Write a highly detailed, appetizing recipe for a {archetype}.\n"
+        f"First, provide an extremely specific, gourmet, restaurant-style title (e.g., 'Lemon Curd and Strawberry Torte' or 'Authentic Hyderabadi Dum Biryani'). Do NOT use mediocre or generic titles.\n"
+        f"Then, provide step-by-step cooking directions using proper culinary techniques.\n"
         f"CRITICAL RULES:\n"
         f"1. Ensure all raw ingredients (especially rice, grains, and meats) are explicitly cooked in the instructions.\n"
         f"2. Do not change the ingredient quantities provided.\n"
@@ -502,7 +503,7 @@ def generate_recipe(request: RecipeRequest):
     chosen_client = _clients.get(request.model_version, _clients["v8"])()
     ai_text = query_hf_model(
         prompt,
-        max_new_tokens=400,
+        max_new_tokens=1000,
         temperature=0.6,
         top_p=0.9,
         repetition_penalty=1.15,
