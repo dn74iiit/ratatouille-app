@@ -486,7 +486,7 @@ def generate_recipe(request: RecipeRequest):
         f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n"
         f"{system_instruction}<|eot_id|>"
         f"<|start_header_id|>user<|end_header_id|>\n\n"
-        f"Here are the exact ingredients:\n{ingr_text}\n\nPlease generate the recipe now.<|eot_id|>"
+        f"### INGREDIENTS:\n{ingr_text}<|eot_id|>"
         f"<|start_header_id|>assistant<|end_header_id|>\n\n"
         f"### TITLE:\n"
     )
