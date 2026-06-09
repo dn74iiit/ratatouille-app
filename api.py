@@ -474,12 +474,13 @@ def generate_recipe(request: RecipeRequest):
     # EXACT V10 PROMPT STRUCTURE with Llama 3 BOS Token
     system_instruction = (
         f"You are a Michelin-star master chef. Write a highly detailed, appetizing recipe for a {archetype}.\n"
-        f"First, provide an extremely specific, gourmet, restaurant-style title (e.g., 'Lemon Curd and Strawberry Torte' or 'Authentic Hyderabadi Dum Biryani'). Do NOT use mediocre or generic titles.\n"
+        f"First, provide an appetizing, restaurant-style title that STRICTLY uses only the provided ingredients. Do NOT invent or add any ingredients to the title that are not in the list.\n"
         f"Then, provide step-by-step cooking directions using proper culinary techniques.\n"
         f"CRITICAL RULES:\n"
         f"1. Ensure all raw ingredients (especially rice, grains, and meats) are explicitly cooked in the instructions.\n"
         f"2. Do not change the ingredient quantities provided.\n"
-        f"3. DO NOT include any 'Notes', 'Tips', or conversational rambling at the end. Stop immediately after the final serving step."
+        f"3. Do NOT include or hallucinate ANY extra ingredients in the recipe that are not provided in the list.\n"
+        f"4. DO NOT include any 'Notes', 'Tips', or conversational rambling at the end. Stop immediately after the final serving step."
     )
     # Format using strict Llama 3 Instruct Template for maximum instruction adherence
     prompt = (
