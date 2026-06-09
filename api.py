@@ -22,7 +22,7 @@ nltk.download('omw-1.4', quiet=True)
 # ============================================================
 # APP INIT
 # ============================================================
-app = FastAPI(title="Ratatouille V9 API — Cloud Inference")
+app = FastAPI(title="Ratatouille V10 API — Cloud Inference")
 
 # Allow the React frontend (dev + production) to call this API
 app.add_middleware(
@@ -58,13 +58,13 @@ else:
     print("[!] MONGO_URI not found. Database features will be disabled.")
 
 # ============================================================
-# HUGGING FACE SPACES — DUAL GRADIO CLIENTS (V8 + V9)
+# HUGGING FACE SPACES — DUAL GRADIO CLIENTS (V8 + V10)
 # ============================================================
 HF_SPACE_V8 = os.getenv("HF_SPACE_URL",    "nd1490/ratatouille-inference")
-HF_SPACE_V9 = os.getenv("HF_SPACE_URL_V9", "nd1490/ratatouille-inference-v10-q8")
+HF_SPACE_V10 = os.getenv("HF_SPACE_URL_V10", "nd1490/ratatouille-inference-v10-q8")
 
 gradio_client_v8 = None
-gradio_client_v9 = None
+gradio_client_v10 = None
 
 def _get_client(version: str):
     """Return the Gradio client for the requested version.
@@ -72,10 +72,10 @@ def _get_client(version: str):
     Raises HTTPException 503 if connection fails after all retries.
     """
     from fastapi import HTTPException
-    global gradio_client_v8, gradio_client_v9
+    global gradio_client_v8, gradio_client_v10
 
-    space_id  = HF_SPACE_V9 if version == "v9" else HF_SPACE_V8
-    current   = gradio_client_v9 if version == "v9" else gradio_client_v8
+    space_id  = HF_SPACE_V10 if version == "v10" else HF_SPACE_V8
+    current   = gradio_client_v10 if version == "v10" else gradio_client_v8
 
     if current is not None:
         return current
@@ -85,8 +85,8 @@ def _get_client(version: str):
         try:
             print(f">> Connecting to {version} Space (attempt {attempt}/3): {space_id}")
             client = Client(space_id, token=HF_TOKEN)
-            if version == "v9":
-                gradio_client_v9 = client
+            if version == "v10":
+                gradio_client_v10 = client
             else:
                 gradio_client_v8 = client
             print(f"[OK] Connected to {version} Space.")
@@ -103,7 +103,7 @@ def _get_client(version: str):
     )
 
 # Lookup helper — used in endpoints
-_clients = {"v8": lambda: _get_client("v8"), "v9": lambda: _get_client("v9")}
+_clients = {"v8": lambda: _get_client("v8"), "v10": lambda: _get_client("v10")}
 
 def query_hf_model(prompt: str, max_new_tokens: int = 350,
                    temperature: float = 0.7, top_p: float = 0.9,
@@ -113,7 +113,7 @@ def query_hf_model(prompt: str, max_new_tokens: int = 350,
                    client=None) -> str:
     """
     Central gateway — calls the Gradio Space's /api/predict endpoint.
-    Pass `client=gradio_client_v9` to use the new V9 model.
+    Pass `client=gradio_client_v10` to use the new V9 model.
     Defaults to V8 if no client is specified.
     Retries automatically on transient failures (cold starts, timeouts).
     """
@@ -181,7 +181,7 @@ pantry_prices = pantry_response.json() if pantry_response.status_code == 200 els
 print("[OK] Market Data Loaded.")
 
 # ============================================================
-# INGREDIENT / PRICE LOGIC  (unchanged from V9)
+# INGREDIENT / PRICE LOGIC  (unchanged from V10)
 # ============================================================
 def extract_json_from_llm(text):
     try:
@@ -285,7 +285,7 @@ def _classify_archetype_fast(ingredients: list) -> str:
     return "Curry"  # default for most Indian dishes
 
 # ============================================================
-# SCIPY LINEAR PROGRAMMING OPTIMIZER  (unchanged from V9)
+# SCIPY LINEAR PROGRAMMING OPTIMIZER  (unchanged from V10)
 # ============================================================
 def optimize_recipe_v2(raw_user_ingredients, total_budget, servings, user_state, archetype=None, skip_llm=False):
     if archetype is None:
@@ -381,7 +381,7 @@ class RecipeRequest(BaseModel):
     budget: float
     servings: int = 1
     state: str = "Delhi"
-    model_version: str = "v8"   # "v8" = old Space | "v9" = new retrained Space
+    model_version: str = "v10"   # "v8" = old Space | "v10" = new retrained Space
 
 class SaveRecipeRequest(BaseModel):
     username: str
@@ -394,7 +394,7 @@ class SaveRecipeRequest(BaseModel):
 def health_check():
     return {
         "status": "ok",
-        "spaces": {"v8": HF_SPACE_V8, "v9": HF_SPACE_V9},
+        "spaces": {"v8": HF_SPACE_V8, "v9": HF_SPACE_V10},
         "db_connected": recipes_collection is not None,
     }
 
@@ -471,7 +471,7 @@ def generate_recipe(request: RecipeRequest):
 
     ingr_text = "\n".join(f"- {i}" for i in calculated_ingredients)
 
-    # EXACT V9 PROMPT STRUCTURE with Llama 3 BOS Token
+    # EXACT V10 PROMPT STRUCTURE with Llama 3 BOS Token
     system_instruction = (
         f"You are a Michelin-star master chef. Write a highly detailed, appetizing recipe for a {archetype}.\n"
         f"First, provide an extremely specific, gourmet, restaurant-style title (e.g., 'Lemon Curd and Strawberry Torte' or 'Authentic Hyderabadi Dum Biryani'). Do NOT use mediocre or generic titles.\n"
