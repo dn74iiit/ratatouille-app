@@ -10,7 +10,7 @@ function App() {
   const [budget, setBudget] = useState(150);
   const [servings, setServings] = useState(1);
   const [stateName, setStateName] = useState('Delhi');
-  const [modelVersion, setModelVersion] = useState('v9');  // 'v8' | 'v9'
+  const [modelVersion, setModelVersion] = useState('v10');  // 'v8' | 'v10'
   
   // Response State
   const [loading, setLoading] = useState(false);
@@ -199,10 +199,10 @@ function App() {
                   </button>
                   <button
                     type="button"
-                    className={`model-btn ${modelVersion === 'v9' ? 'active' : ''}`}
-                    onClick={() => setModelVersion('v9')}
+                    className={`model-btn ${modelVersion === 'v10' ? 'active' : ''}`}
+                    onClick={() => setModelVersion('v10')}
                   >
-                    V9 <span className="model-tag">RecipeDB Retrained ✨</span>
+                    V10 <span className="model-tag">RecipeDB Retrained ✨</span>
                   </button>
                 </div>
               </div>
