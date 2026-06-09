@@ -63,23 +63,8 @@ else:
 HF_SPACE_V8 = os.getenv("HF_SPACE_URL",    "nd1490/ratatouille-inference")
 HF_SPACE_V9 = os.getenv("HF_SPACE_URL_V9", "nd1490/ratatouille-inference-v10-q8")
 
-# Connect at startup — wrapped in try/except so a cold/sleeping Space
-# does NOT crash the server. If a client fails, it is retried on first use.
-try:
-    print(f">> Connecting to V8 Space: {HF_SPACE_V8} ...")
-    gradio_client_v8 = Client(HF_SPACE_V8, token=HF_TOKEN)
-    print("[OK] Connected to V8 Space.")
-except Exception as e:
-    print(f"[WARN] Could not connect to V8 Space at startup: {e}")
-    gradio_client_v8 = None
-
-try:
-    print(f">> Connecting to V9 Space: {HF_SPACE_V9} ...")
-    gradio_client_v9 = Client(HF_SPACE_V9, token=HF_TOKEN)
-    print("[OK] Connected to V9 Space.")
-except Exception as e:
-    print(f"[WARN] Could not connect to V9 Space at startup: {e}")
-    gradio_client_v9 = None
+gradio_client_v8 = None
+gradio_client_v9 = None
 
 def _get_client(version: str):
     """Return the Gradio client for the requested version.
