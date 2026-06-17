@@ -148,7 +148,11 @@ def calculate_delta_recommendations(orig_name, sub_name, orig_data, sub_data, ar
             )
         
     # 3. Textural Adjustment (Chewiness or fibrousness deficit)
-    if delta_fibrous > 2 or delta_chewiness > 1:
+    if sub_name == "king oyster mushroom":
+        techniques.append(
+            "Slice the king oyster mushroom stalks into round coins and score them in a cross-hatch pattern, then sauté in oil to mimic the firm, bouncy bite of shrimp."
+        )
+    elif delta_fibrous > 2 or delta_chewiness > 1:
         if sub_name == "soya chunks":
             techniques.append(
                 "Soak the soya chunks in boiling water for 15 minutes, squeeze the water out completely, and pan-fry before adding to the sauce to mimic poultry fibers."

@@ -9,7 +9,7 @@
   "tofu": {
     "is_vegan": true,
     "macros": { "fat": 0.04, "protein": 0.08, "carb": 0.02, "water": 0.85 },
-    "texture": [2, 2, 0, 4, 2, 1],
+    "texture": [3, 3, 0, 2, 3, 1],
     "flavor_molecules": ["hexanal", "soy_volatiles", "1-octen-3-ol"],
     "role": "bulk_protein"
   },
@@ -145,6 +145,20 @@
     "texture": [2, 1, 0, 3, 2, 1],
     "flavor_molecules": ["sotolon", "vanillin", "maple_furanone"],
     "role": "sweetener"
+  },
+  "shrimp": {
+    "is_vegan": false,
+    "macros": { "fat": 0.01, "protein": 0.24, "carb": 0.0, "water": 0.75 },
+    "texture": [3, 4, 1, 4, 3, 2],
+    "flavor_molecules": ["dimethyl_sulfide", "trimethylamine", "pyrrole", "hexanal", "sweet_esters"],
+    "role": "bulk_protein"
+  },
+  "king oyster mushroom": {
+    "is_vegan": true,
+    "macros": { "fat": 0.01, "protein": 0.03, "carb": 0.07, "water": 0.89 },
+    "texture": [2, 3, 2, 4, 2, 2],
+    "flavor_molecules": ["octen-3-ol", "hexanal", "pyrrole", "umami_peptides"],
+    "role": "bulk_protein"
   },
   "cumin": {
     "is_vegan": true,

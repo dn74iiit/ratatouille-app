@@ -70,5 +70,15 @@ class TestVeganEngine(unittest.TestCase):
         self.assertGreater(len(comp["spice_bridge"]), 0)
         self.assertEqual(comp["spice_bridge"][0]["spice"], "smoked paprika")
 
+    def test_shrimp_to_king_oyster_blueprint(self):
+        blueprint = vegan_engine.generate_vegan_blueprint("shrimp", "Curry")
+        self.assertEqual(blueprint["status"], "success")
+        self.assertEqual(blueprint["original_ingredient"], "shrimp")
+        self.assertEqual(blueprint["best_vegan_substitute"], "king oyster mushroom")
+        
+        comp = blueprint["compensation_blueprint"]
+        has_cross_hatch = any("cross-hatch" in tech.lower() for tech in comp["techniques"])
+        self.assertTrue(has_cross_hatch)
+
 if __name__ == "__main__":
     unittest.main()
