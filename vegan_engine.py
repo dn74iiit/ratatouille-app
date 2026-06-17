@@ -178,7 +178,8 @@ def generate_vegan_blueprint(ingredient_name, archetype="Curry"):
     if clean_name not in features:
         return {
             "status": "error",
-            "message": f"Ingredient '{ingredient_name}' not found in the database."
+            "message": f"Ingredient '{ingredient_name}' not found in the database.",
+            "original_ingredient": clean_name
         }
         
     orig_data = features[clean_name]
@@ -198,7 +199,8 @@ def generate_vegan_blueprint(ingredient_name, archetype="Curry"):
     if not candidates:
         return {
             "status": "error",
-            "message": "No vegan substitution candidates found in the database."
+            "message": "No vegan substitution candidates found in the database.",
+            "original_ingredient": clean_name
         }
         
     scored_candidates = []

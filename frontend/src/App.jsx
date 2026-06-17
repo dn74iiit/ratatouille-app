@@ -360,12 +360,12 @@ function App() {
                     <div key={idx} style={{ background: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '12px', marginBottom: '1.5rem', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
                       {res.status === 'already_vegan' ? (
                         <div style={{ textAlign: 'center', color: '#10B981' }}>
-                          <h3 style={{ margin: '0 0 0.5rem 0' }}>✓ {res.original_ingredient.toUpperCase()}</h3>
+                          <h3 style={{ margin: '0 0 0.5rem 0' }}>✓ {(res.original_ingredient || '').toUpperCase()}</h3>
                           <p style={{ margin: 0, opacity: 0.8 }}>This ingredient is already vegan!</p>
                         </div>
                       ) : res.status === 'error' ? (
                         <div style={{ color: '#EF4444' }}>
-                          <h3 style={{ margin: '0 0 0.5rem 0' }}>⚠️ {res.original_ingredient.toUpperCase()}</h3>
+                          <h3 style={{ margin: '0 0 0.5rem 0' }}>⚠️ {(res.original_ingredient || '').toUpperCase()}</h3>
                           <p style={{ margin: 0, opacity: 0.8 }}>{res.message}</p>
                         </div>
                       ) : (
