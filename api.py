@@ -387,7 +387,13 @@ class SaveRecipeRequest(BaseModel):
     username: str
     recipe_data: dict
 
+class VeganRequest(BaseModel):
+    ingredients: list[str] = []
+    ingredient: str = ""
+    archetype: str = "Curry"
+
 # ============================================================
+
 # ENDPOINTS
 # ============================================================
 @app.get("/health")
@@ -455,6 +461,34 @@ async def get_my_recipes(username: str):
         r["_id"] = str(r["_id"])
         
     return {"status": "success", "recipes": recipes}
+
+@app.post("/get-vegan-blueprint")
+def get_vegan_blueprint(request: VeganRequest):
+    import vegan_engine
+    target_ingredients = []
+    if request.ingredient:
+        target_ingredients.append(request.ingredient)
+    if request.ingredients:
+        target_ingredients.extend(request.ingredients)
+        
+    # Remove duplicates while preserving order
+    seen = set()
+    ingredients_to_process = []
+    for x in target_ingredients:
+        cleaned = x.strip().lower()
+        if cleaned and cleaned not in seen:
+            seen.add(cleaned)
+            ingredients_to_process.append(cleaned)
+            
+    results = []
+    for ing in ingredients_to_process:
+        blueprint = vegan_engine.generate_vegan_blueprint(ing, archetype=request.archetype)
+        results.append(blueprint)
+        
+    return {
+        "status": "success",
+        "results": results
+    }
 
 @app.post("/generate-recipe")
 def generate_recipe(request: RecipeRequest):
