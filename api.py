@@ -462,6 +462,38 @@ async def get_my_recipes(username: str):
         
     return {"status": "success", "recipes": recipes}
 
+def bootstrap_ingredient_profile(ingredient_name):
+    """Query Llama 3 Space to generate a physical-chemical JSON profile for an unseen ingredient."""
+    prompt = (
+        f"<|begin_of_text|>You are a food chemistry and culinary database. Generate a chemical and physical profile for the ingredient '{ingredient_name}' matching the specified JSON format.\n"
+        f"Determine if it is vegan (true/false).\n"
+        f"Specify macros (fat, protein, carb, water as ratios summing to 1.0).\n"
+        f"Rate its texture on a 1-5 scale: [hardness, chewiness, fibrousness(0-5), moisture, elasticity, granularity].\n"
+        f"List 3-5 primary flavor volatile compounds (e.g. aldehydes, pyrazines, esters, terpenes, or specific molecules like hexanal, diacetyl, cinnamaldehyde).\n"
+        f"Assign a culinary role: [bulk_protein, fat_source, binder, creamy_liquid, sweetener, seasoning, veggie].\n\n"
+        f"Return ONLY valid JSON matching this example:\n"
+        f"{{\n"
+        f"  \"is_vegan\": false,\n"
+        f"  \"macros\": {{\"fat\": 0.20, \"protein\": 0.22, \"carb\": 0.0, \"water\": 0.58}},\n"
+        f"  \"texture\": [4, 4, 4, 2, 2, 2],\n"
+        f"  \"flavor_molecules\": [\"methanethiol\", \"dimethyl_sulfide\", \"pyrazines\"],\n"
+        f"  \"role\": \"bulk_protein\"\n"
+        f"}}\n\n"
+        f"### INGREDIENT: {ingredient_name}\n"
+        f"### JSON:\n"
+    )
+    try:
+        # Query using the v10 Gradio Space client
+        client = _get_client("v10")
+        raw_text = query_hf_model(prompt, max_new_tokens=250, temperature=0.0, do_sample=False, client=client)
+        profile = extract_json_from_llm(raw_text)
+        if profile and isinstance(profile, dict) and "is_vegan" in profile and "macros" in profile and "texture" in profile:
+            if len(profile["texture"]) == 6 and all(isinstance(v, (int, float)) for v in profile["texture"]):
+                return profile
+    except Exception as e:
+        print(f"[WARN] LLM Bootstrapping failed for '{ingredient_name}': {e}")
+    return None
+
 @app.post("/get-vegan-blueprint")
 def get_vegan_blueprint(request: VeganRequest):
     import vegan_engine
@@ -482,6 +514,20 @@ def get_vegan_blueprint(request: VeganRequest):
             
     results = []
     for ing in ingredients_to_process:
+        # 1. Check if it's already in the database
+        try:
+            features = vegan_engine.load_features()
+        except Exception:
+            features = {}
+            
+        if ing not in features:
+            # 2. Try to bootstrap using LLM
+            profile = bootstrap_ingredient_profile(ing)
+            if profile:
+                # 3. Save it to cache JSON database
+                vegan_engine.save_new_feature(ing, profile)
+                print(f"[OK] Dynamically bootstrapped and cached ingredient: {ing}")
+                
         blueprint = vegan_engine.generate_vegan_blueprint(ing, archetype=request.archetype)
         results.append(blueprint)
         

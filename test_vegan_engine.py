@@ -80,5 +80,23 @@ class TestVeganEngine(unittest.TestCase):
         has_cross_hatch = any("cross-hatch" in tech.lower() for tech in comp["techniques"])
         self.assertTrue(has_cross_hatch)
 
+    def test_mutton_fallback_blueprint(self):
+        blueprint = vegan_engine.generate_vegan_blueprint("mutton", "Curry")
+        self.assertEqual(blueprint["status"], "success")
+        self.assertEqual(blueprint["original_ingredient"], "mutton")
+        self.assertEqual(blueprint["best_vegan_substitute"], "soya chunks")
+        self.assertGreater(blueprint["chemical_delta"]["lipid_deficit"], 0.1)
+
+    def test_duck_fallback_blueprint(self):
+        blueprint = vegan_engine.generate_vegan_blueprint("duck", "Curry")
+        self.assertEqual(blueprint["status"], "success")
+        self.assertEqual(blueprint["original_ingredient"], "duck")
+        self.assertEqual(blueprint["best_vegan_substitute"], "soya chunks")
+
+    def test_unmatched_fallback_blueprint(self):
+        blueprint = vegan_engine.generate_vegan_blueprint("xyz_unknown", "Curry")
+        self.assertEqual(blueprint["status"], "error")
+        self.assertIn("not found in the database", blueprint["message"])
+
 if __name__ == "__main__":
     unittest.main()

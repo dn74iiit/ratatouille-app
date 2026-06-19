@@ -180,13 +180,17 @@ def generate_vegan_blueprint(ingredient_name, archetype="Curry"):
     clean_name = ingredient_name.lower().strip()
     
     if clean_name not in features:
-        return {
-            "status": "error",
-            "message": f"Ingredient '{ingredient_name}' not found in the database.",
-            "original_ingredient": clean_name
-        }
-        
-    orig_data = features[clean_name]
+        fallback_data = classify_by_keyword(clean_name)
+        if fallback_data:
+            orig_data = fallback_data
+        else:
+            return {
+                "status": "error",
+                "message": f"Ingredient '{ingredient_name}' not found in the database.",
+                "original_ingredient": clean_name
+            }
+    else:
+        orig_data = features[clean_name]
     if orig_data.get("is_vegan"):
         return {
             "status": "already_vegan",
@@ -250,3 +254,90 @@ def generate_vegan_blueprint(ingredient_name, archetype="Curry"):
             "spice_bridge": spice_bridge
         }
     }
+
+# ============================================================
+# DYNAMICGeneralization & Caching Logic
+# ============================================================
+
+STATIC_FALLBACKS = {
+    "red_meat": {
+        "is_vegan": False,
+        "macros": { "fat": 0.20, "protein": 0.22, "carb": 0.0, "water": 0.57 },
+        "texture": [4, 4, 4, 2, 2, 2],
+        "flavor_molecules": ["methanethiol", "dimethyl_sulfide", "2-methyl-3-furanthiol", "pyrazines"],
+        "role": "bulk_protein"
+    },
+    "poultry": {
+        "is_vegan": False,
+        "macros": { "fat": 0.14, "protein": 0.25, "carb": 0.0, "water": 0.60 },
+        "texture": [3, 4, 4, 3, 2, 1],
+        "flavor_molecules": ["hydrogen_sulfide", "methyl_furan", "dimethyl_disulfide", "hexanal", "nonanal", "pyrazines"],
+        "role": "bulk_protein"
+    },
+    "seafood": {
+        "is_vegan": False,
+        "macros": { "fat": 0.01, "protein": 0.24, "carb": 0.0, "water": 0.75 },
+        "texture": [3, 4, 1, 4, 3, 2],
+        "flavor_molecules": ["dimethyl_sulfide", "trimethylamine", "pyrrole", "hexanal", "sweet_esters"],
+        "role": "bulk_protein"
+    },
+    "dairy_fat": {
+        "is_vegan": False,
+        "macros": { "fat": 0.81, "protein": 0.01, "carb": 0.01, "water": 0.16 },
+        "texture": [2, 1, 0, 2, 1, 1],
+        "flavor_molecules": ["diacetyl", "butyric_acid", "delta-decalactone", "lactones"],
+        "role": "fat_source"
+    },
+    "dairy_liquid": {
+        "is_vegan": False,
+        "macros": { "fat": 0.03, "protein": 0.03, "carb": 0.05, "water": 0.88 },
+        "texture": [1, 1, 0, 5, 1, 1],
+        "flavor_molecules": ["dimethyl_sulfide", "diacetyl", "lactone"],
+        "role": "creamy_liquid"
+    },
+    "sweetener": {
+        "is_vegan": False,
+        "macros": { "fat": 0.0, "protein": 0.0, "carb": 0.82, "water": 0.18 },
+        "texture": [2, 1, 0, 2, 2, 1],
+        "flavor_molecules": ["phenylacetaldehyde", "floral_esters"],
+        "role": "sweetener"
+    }
+}
+
+def classify_by_keyword(name):
+    clean_name = name.lower().strip()
+    
+    red_meat_kws = ["mutton", "lamb", "pork", "beef", "goat", "meat", "steak", "veal", "ham", "bacon", "venison"]
+    poultry_kws = ["chicken", "duck", "poultry", "turkey", "quail", "goose", "fowl", "pheasant"]
+    seafood_kws = ["shrimp", "prawn", "fish", "salmon", "tuna", "crab", "lobster", "seafood", "cod", "sardine", "mackerel", "clam", "scallop", "halibut", "shrimps", "prawns"]
+    dairy_fat_kws = ["butter", "ghee", "lard"]
+    dairy_liquid_kws = ["milk", "cream", "yogurt", "curd", "cheese", "paneer", "whey"]
+    sweetener_kws = ["honey"]
+    
+    if any(kw in clean_name for kw in red_meat_kws):
+        return STATIC_FALLBACKS["red_meat"]
+    if any(kw in clean_name for kw in poultry_kws):
+        return STATIC_FALLBACKS["poultry"]
+    if any(kw in clean_name for kw in seafood_kws):
+        return STATIC_FALLBACKS["seafood"]
+    if any(kw in clean_name for kw in dairy_fat_kws):
+        return STATIC_FALLBACKS["dairy_fat"]
+    if any(kw in clean_name for kw in dairy_liquid_kws):
+        return STATIC_FALLBACKS["dairy_liquid"]
+    if any(kw in clean_name for kw in sweetener_kws):
+        return STATIC_FALLBACKS["sweetener"]
+        
+    return None
+
+def save_new_feature(name, data):
+    try:
+        features = load_features()
+        clean_name = name.lower().strip()
+        features[clean_name] = data
+        with open(DB_PATH, "w") as f:
+            json.dump(features, f, indent=2)
+        return True
+    except Exception as e:
+        print(f"[ERROR] Failed to save new feature to DB: {e}")
+        return False
+
