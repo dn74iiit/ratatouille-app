@@ -382,6 +382,7 @@ class RecipeRequest(BaseModel):
     servings: int = 1
     state: str = "Delhi"
     model_version: str = "v10"   # "v8" = old Space | "v10" = new retrained Space
+    is_vegan: bool = False
 
 class SaveRecipeRequest(BaseModel):
     username: str
@@ -543,7 +544,56 @@ def generate_recipe(request: RecipeRequest):
     for item in request.ingredients:
         clean_ingredients.extend([i.strip() for i in item.split(',') if i.strip()])
 
-    print(f"[] Running Cost Constraint Optimization for Budget: ₹{request.budget}...")
+    if request.is_vegan:
+        import vegan_engine
+        # Fast archetype classification just to give context to vegan engine
+        archetype_fast = _classify_archetype_fast([parse_ingredient_input(i)[1] for i in clean_ingredients])
+        veganized_ingredients = []
+        
+        # Load features cache once
+        try:
+            features = vegan_engine.load_features()
+        except Exception:
+            features = {}
+            
+        for raw_ing in clean_ingredients:
+            qty, name = parse_ingredient_input(raw_ing)
+            
+            # 1. Bootstrap if missing
+            if name not in features:
+                profile = bootstrap_ingredient_profile(name)
+                if profile:
+                    vegan_engine.save_new_feature(name, profile)
+                    features[name] = profile # update local memory
+                    print(f"[OK] Dynamically bootstrapped and cached ingredient: {name}")
+                    
+            # 2. Get Vegan Blueprint
+            blueprint = vegan_engine.generate_vegan_blueprint(name, archetype=archetype_fast)
+            
+            # 3. Apply substitutions and compensation
+            if blueprint["status"] == "success" and blueprint["original_ingredient"] != blueprint["best_vegan_substitute"]:
+                substitute = blueprint["best_vegan_substitute"]
+                
+                # Reconstruct original format with quantity
+                if qty is not None:
+                    veganized_ingredients.append(f"{qty}g {substitute}")
+                else:
+                    veganized_ingredients.append(substitute)
+                    
+                # Add compensations
+                for add in blueprint["compensation_blueprint"]["auxiliary_additions"]:
+                    veganized_ingredients.append(f"{add['amount']} {add['name']}")
+                for spice in blueprint["compensation_blueprint"]["spice_bridge"]:
+                    veganized_ingredients.append(spice["spice"])
+                    
+                print(f"[VEGAN ENGINE] Replaced '{name}' with '{substitute}' + compensations.")
+            else:
+                veganized_ingredients.append(raw_ing)
+                
+        # Override the ingredients list with the newly veganized list
+        clean_ingredients = veganized_ingredients
+
+    print(f"[] Running Cost Constraint Optimization for Budget: INR {request.budget}...")
     calculated_ingredients, archetype = optimize_recipe_v2(clean_ingredients, request.budget, request.servings, request.state)
 
     if not calculated_ingredients:

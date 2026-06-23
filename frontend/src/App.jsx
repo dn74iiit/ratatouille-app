@@ -13,6 +13,7 @@ function App() {
   const [servings, setServings] = useState(1);
   const [stateName, setStateName] = useState('Delhi');
   const [modelVersion, setModelVersion] = useState('v10');  // 'v8' | 'v10'
+  const [isVegan, setIsVegan] = useState(false);
   
   // Response State
   const [loading, setLoading] = useState(false);
@@ -49,7 +50,8 @@ function App() {
           budget: parseFloat(budget),
           servings: parseInt(servings),
           state: stateName,
-          model_version: modelVersion
+          model_version: modelVersion,
+          is_vegan: isVegan
         })
       });
 
@@ -229,6 +231,19 @@ function App() {
                   required 
                   placeholder="e.g. Delhi, Maharashtra"
                 />
+              </div>
+
+              {/* Vegan Toggle */}
+              <div className="input-group" style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '1.2rem', color: '#10b981', fontWeight: 'bold' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={isVegan} 
+                    onChange={(e) => setIsVegan(e.target.checked)} 
+                    style={{ width: '24px', height: '24px', cursor: 'pointer', accentColor: '#10b981' }}
+                  />
+                  🌿 Make it Vegan
+                </label>
               </div>
 
               {/* Model Version Toggle */}

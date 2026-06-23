@@ -616,5 +616,74 @@
       "pyrazines"
     ],
     "role": "bulk_protein"
+  },
+  "onion": {
+    "is_vegan": true,
+    "macros": {
+      "fat": 0.0,
+      "protein": 1.0,
+      "carb": 4.33,
+      "water": 87.23
+    },
+    "texture": [
+      3,
+      2,
+      5,
+      2,
+      2,
+      2
+    ],
+    "flavor_molecules": [
+      "aldehydes",
+      "sulfur containing compounds",
+      "esters"
+    ],
+    "role": "seasoning"
+  },
+  "garlic": {
+    "is_vegan": true,
+    "macros": {
+      "fat": 0.0,
+      "protein": 0.01,
+      "carb": 0.0,
+      "water": 0.88
+    },
+    "texture": [
+      4,
+      5,
+      2,
+      1,
+      1,
+      1
+    ],
+    "flavor_molecules": [
+      "allicin",
+      "S-allylcysteine",
+      "N-allylcysteine"
+    ],
+    "role": "seasoning"
+  },
+  "tomato puree": {
+    "is_vegan": true,
+    "macros": {
+      "fat": 0.0,
+      "protein": 0.01,
+      "carb": 0.88,
+      "water": 0.99
+    },
+    "texture": [
+      3,
+      2,
+      1,
+      5,
+      4,
+      4
+    ],
+    "flavor_molecules": [
+      "hexanal",
+      "cinnamaldehyde",
+      "geraniol"
+    ],
+    "role": "creamy_liquid"
   }
 }
