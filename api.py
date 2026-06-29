@@ -51,10 +51,14 @@ if MONGO_URI:
     print("[*] Connecting to MongoDB Atlas...")
     db_client = AsyncIOMotorClient(MONGO_URI)
     db = db_client.ratatouille
-    recipes_collection = db.recipes
+    recipes_collection             = db.recipes
+    vegan_alternatives_collection  = db.vegan_alternatives
+    indian_recipes_collection      = db.indian_recipes
     print("[OK] Connected to MongoDB Atlas.")
 else:
-    recipes_collection = None
+    recipes_collection             = None
+    vegan_alternatives_collection  = None
+    indian_recipes_collection      = None
     print("[!] MONGO_URI not found. Database features will be disabled.")
 
 # ============================================================
@@ -463,6 +467,88 @@ async def get_my_recipes(username: str):
         
     return {"status": "success", "recipes": recipes}
 
+
+# ============================================================
+# VEGAN DATABASE ENDPOINTS  (serve GPU-generated MongoDB data)
+# ============================================================
+
+@app.get("/vegan-alternatives/{ingredient}")
+async def get_vegan_alternatives(ingredient: str):
+    """
+    Return top-5 vegan alternatives for an ingredient.
+    Checks MongoDB first (GPU-generated cached data).
+    Falls back to live vegan engine if not found in DB.
+    """
+    clean = ingredient.strip().lower()
+
+    # 1. Try MongoDB cache
+    if vegan_alternatives_collection is not None:
+        doc = await vegan_alternatives_collection.find_one({"_id": clean})
+        if doc:
+            doc.pop("_id", None)  # remove MongoDB _id before returning
+            return {
+                "status": "success",
+                "ingredient": clean,
+                "source": "db",
+                "original_role": doc.get("original_role", "unknown"),
+                "alternatives": doc.get("alternatives", [])
+            }
+
+    # 2. Live engine fallback (existing behaviour)
+    import vegan_engine
+    blueprint = vegan_engine.generate_vegan_blueprint(clean, archetype="Curry")
+    if blueprint.get("status") == "success":
+        return {
+            "status": "success",
+            "ingredient": clean,
+            "source": "live_engine",
+            "original_role": "unknown",
+            "alternatives": [{
+                "rank": 1,
+                "substitute": blueprint["best_vegan_substitute"],
+                "composite_score": blueprint["match_score"],
+                "score_breakdown": blueprint.get("score_breakdown", {}),
+                "chemical_delta": blueprint.get("chemical_delta", {}),
+                "spice_bridge": blueprint.get("compensation_blueprint", {}).get("spice_bridge", []),
+                "culinary_notes": "; ".join(blueprint.get("compensation_blueprint", {}).get("techniques", []))
+            }]
+        }
+    elif blueprint.get("status") == "already_vegan":
+        return {"status": "already_vegan", "ingredient": clean, "message": blueprint["message"]}
+    else:
+        return {"status": "not_found", "ingredient": clean,
+                "message": f"'{ingredient}' not found in database or vegan engine."}
+
+
+@app.get("/indian-recipes/styles")
+async def get_indian_recipe_styles():
+    """Return distinct recipe styles and their counts from the indian_recipes collection."""
+    if indian_recipes_collection is None:
+        return {"status": "error", "message": "Database not connected on the server."}
+    pipeline = [{"$group": {"_id": "$style", "count": {"$sum": 1}}},
+                {"$sort": {"count": -1}}]
+    cursor = indian_recipes_collection.aggregate(pipeline)
+    styles = [{"name": doc["_id"], "count": doc["count"]} async for doc in cursor]
+    return {"status": "success", "styles": styles}
+
+
+@app.get("/indian-recipes")
+async def get_indian_recipes(style: str = "", limit: int = 12, skip: int = 0):
+    """
+    Return paginated Indian budget vegan recipes from MongoDB.
+    Optional ?style=Curry filter. Default page size 12.
+    """
+    if indian_recipes_collection is None:
+        return {"status": "error", "message": "Database not connected on the server."}
+    query = {"style": style} if style else {}
+    total = await indian_recipes_collection.count_documents(query)
+    cursor = indian_recipes_collection.find(query).skip(skip).limit(limit).sort("created_at", -1)
+    recipes = []
+    async for doc in cursor:
+        doc["_id"] = str(doc["_id"])
+        recipes.append(doc)
+    return {"status": "success", "total": total, "skip": skip, "limit": limit, "recipes": recipes}
+
 def bootstrap_ingredient_profile(ingredient_name):
     """Query Llama 3 Space to generate a physical-chemical JSON profile for an unseen ingredient."""
     prompt = (
@@ -637,8 +723,11 @@ def generate_recipe(request: RecipeRequest):
     print(f"DEBUG RAW AI_TEXT: {repr(ai_text)}")
 
     # Post-process to remove Llama 3 hallucinations/rambling
-    ai_text = ai_text.split("<|eot_id|>")[0].strip()
-    
+    stop_tokens = ['<|eot_id|>', '<|end_of_text|>', '<|begin_of_text|>', '\n### INGREDIENTS:']
+    for t in stop_tokens:
+        if t in ai_text:
+            ai_text = ai_text.split(t)[0].strip()
+
     # Sometimes it doesn't emit eot_id and just loops back to Step 1 or adds another Title block
     if "### TITLE:\n" in ai_text:
         ai_text = ai_text.split("### TITLE:\n")[1].strip()

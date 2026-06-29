@@ -685,5 +685,265 @@
       "geraniol"
     ],
     "role": "creamy_liquid"
+  },
+  "fish": {
+    "is_vegan": false,
+    "macros": {
+      "fat": 0.05,
+      "protein": 0.2,
+      "carb": 0.0,
+      "water": 0.75
+    },
+    "texture": [
+      3,
+      4,
+      1,
+      4,
+      3,
+      2
+    ],
+    "flavor_molecules": [
+      "trimethylamine",
+      "dimethyl_sulfide",
+      "hexanal",
+      "nonanal"
+    ],
+    "role": "bulk_protein"
+  },
+  "pork": {
+    "is_vegan": false,
+    "macros": {
+      "fat": 0.2,
+      "protein": 0.27,
+      "carb": 0.0,
+      "water": 0.53
+    },
+    "texture": [
+      4,
+      4,
+      4,
+      3,
+      3,
+      1
+    ],
+    "flavor_molecules": [
+      "hexanal",
+      "octanal",
+      "1-octen-3-ol",
+      "pyrazines"
+    ],
+    "role": "bulk_protein"
+  },
+  "crab": {
+    "is_vegan": false,
+    "macros": {
+      "fat": 0.02,
+      "protein": 0.19,
+      "carb": 0.0,
+      "water": 0.79
+    },
+    "texture": [
+      2,
+      4,
+      1,
+      5,
+      3,
+      2
+    ],
+    "flavor_molecules": [
+      "trimethylamine",
+      "dimethyl_trisulfide",
+      "sweet_esters"
+    ],
+    "role": "bulk_protein"
+  },
+  "duck": {
+    "is_vegan": false,
+    "macros": {
+      "fat": 0.28,
+      "protein": 0.19,
+      "carb": 0.0,
+      "water": 0.53
+    },
+    "texture": [
+      4,
+      4,
+      4,
+      2,
+      2,
+      1
+    ],
+    "flavor_molecules": [
+      "hexanal",
+      "nonanal",
+      "decadienal",
+      "hydrogen_sulfide"
+    ],
+    "role": "bulk_protein"
+  },
+  "squid": {
+    "is_vegan": false,
+    "macros": {
+      "fat": 0.01,
+      "protein": 0.16,
+      "carb": 0.03,
+      "water": 0.8
+    },
+    "texture": [
+      5,
+      4,
+      1,
+      4,
+      3,
+      1
+    ],
+    "flavor_molecules": [
+      "trimethylamine",
+      "dimethyl_sulfide",
+      "amino_acids"
+    ],
+    "role": "bulk_protein"
+  },
+  "turkey": {
+    "is_vegan": false,
+    "macros": {
+      "fat": 0.07,
+      "protein": 0.29,
+      "carb": 0.0,
+      "water": 0.64
+    },
+    "texture": [
+      3,
+      4,
+      3,
+      3,
+      2,
+      1
+    ],
+    "flavor_molecules": [
+      "hexanal",
+      "nonanal",
+      "dimethyl_disulfide",
+      "pyrazines"
+    ],
+    "role": "bulk_protein"
+  },
+  "bacon": {
+    "is_vegan": false,
+    "macros": {
+      "fat": 0.42,
+      "protein": 0.37,
+      "carb": 0.01,
+      "water": 0.2
+    },
+    "texture": [
+      5,
+      5,
+      2,
+      1,
+      2,
+      1
+    ],
+    "flavor_molecules": [
+      "guaiacol",
+      "syringol",
+      "furans",
+      "pyrazines",
+      "hexanal"
+    ],
+    "role": "bulk_protein"
+  },
+  "sausage": {
+    "is_vegan": false,
+    "macros": {
+      "fat": 0.3,
+      "protein": 0.14,
+      "carb": 0.02,
+      "water": 0.54
+    },
+    "texture": [
+      3,
+      3,
+      4,
+      3,
+      2,
+      1
+    ],
+    "flavor_molecules": [
+      "hexanal",
+      "octanal",
+      "terpenes",
+      "phenols"
+    ],
+    "role": "bulk_protein"
+  },
+  "banana blossom": {
+    "is_vegan": true,
+    "macros": {
+      "fat": 0.01,
+      "protein": 0.02,
+      "carb": 0.08,
+      "water": 0.89
+    },
+    "texture": [
+      3,
+      4,
+      1,
+      4,
+      3,
+      2
+    ],
+    "flavor_molecules": [
+      "hexanal",
+      "nonanal",
+      "green_notes"
+    ],
+    "role": "bulk_protein"
+  },
+  "jackfruit": {
+    "is_vegan": true,
+    "macros": {
+      "fat": 0.01,
+      "protein": 0.02,
+      "carb": 0.23,
+      "water": 0.74
+    },
+    "texture": [
+      4,
+      4,
+      3,
+      3,
+      3,
+      1
+    ],
+    "flavor_molecules": [
+      "ethyl_isovalerate",
+      "isoamyl_acetate",
+      "hexanal"
+    ],
+    "role": "bulk_protein"
+  },
+  "soya granules": {
+    "is_vegan": true,
+    "macros": {
+      "fat": 0.01,
+      "protein": 0.52,
+      "carb": 0.33,
+      "water": 0.08
+    },
+    "texture": [
+      3,
+      3,
+      4,
+      2,
+      3,
+      1
+    ],
+    "flavor_molecules": [
+      "hexanal",
+      "soy_volatiles",
+      "maltol"
+    ],
+    "role": "bulk_protein"
   }
 }
