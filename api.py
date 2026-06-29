@@ -687,27 +687,12 @@ def generate_recipe(request: RecipeRequest):
 
     ingr_text = "\n".join(f"- {i}" for i in calculated_ingredients)
 
-    # EXACT V10 PROMPT STRUCTURE with Llama 3 BOS Token
-    system_instruction = (
-        f"You are a Michelin-star master chef. Write a highly detailed, appetizing recipe for a {archetype}.\n"
-        f"First, provide an appetizing, restaurant-style title that STRICTLY uses only the provided ingredients. Do NOT invent or add any ingredients to the title that are not in the list.\n"
-        f"Then, provide step-by-step cooking directions using proper culinary techniques.\n"
-        f"CRITICAL RULES:\n"
-        f"1. Ensure all raw ingredients (especially rice, grains, and meats) are explicitly cooked in the instructions.\n"
-        f"2. Do not change the ingredient quantities provided.\n"
-        f"3. Do NOT include or hallucinate ANY extra ingredients in the recipe that are not provided in the list.\n"
-        f"4. DO NOT include any 'Notes', 'Tips', or conversational rambling at the end. Stop immediately after the final serving step."
-    )
-    # Format using strict Llama 3 Instruct Template for maximum instruction adherence
+    # EXACT V10 PROMPT STRUCTURE
     prompt = (
-        f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n"
-        f"{system_instruction}<|eot_id|>"
-        f"<|start_header_id|>user<|end_header_id|>\n\n"
-        f"### INGREDIENTS:\n{ingr_text}<|eot_id|>"
-        f"<|start_header_id|>assistant<|end_header_id|>\n\n"
+        f"### INGREDIENTS:\n"
+        f"{ingr_text}\n"
         f"### TITLE:\n"
     )
-
     print(f"[AI] Generating final recipe for archetype: {archetype} using model_version={request.model_version}")
 
     chosen_client = _clients.get(request.model_version, _clients["v8"])()
