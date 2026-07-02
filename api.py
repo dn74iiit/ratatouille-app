@@ -14,6 +14,7 @@ from nltk.stem import WordNetLemmatizer
 from scipy.optimize import linprog
 from dotenv import load_dotenv
 from gradio_client import Client
+from huggingface_hub import InferenceClient
 from motor.motor_asyncio import AsyncIOMotorClient
 
 nltk.download('wordnet', quiet=True)
@@ -54,11 +55,22 @@ if MONGO_URI:
     recipes_collection             = db.recipes
     vegan_alternatives_collection  = db.vegan_alternatives
     indian_recipes_collection      = db.indian_recipes
-    print("[OK] Connected to MongoDB Atlas.")
+    print("[OK] Connected to MongoDB Atlas (async Motor client).")
+    # Separate sync client for vegan lookup inside sync endpoints
+    try:
+        import pymongo as _pymongo
+        _sync_mongo = _pymongo.MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
+        _sync_mongo.server_info()  # validate connection
+        vegan_alternatives_sync = _sync_mongo.ratatouille.vegan_alternatives
+        print("[OK] Sync MongoDB client ready for vegan lookups.")
+    except Exception as _e:
+        vegan_alternatives_sync = None
+        print(f"[WARN] Sync MongoDB client failed: {_e}")
 else:
     recipes_collection             = None
     vegan_alternatives_collection  = None
     indian_recipes_collection      = None
+    vegan_alternatives_sync        = None
     print("[!] MONGO_URI not found. Database features will be disabled.")
 
 # ============================================================
@@ -108,6 +120,31 @@ def _get_client(version: str):
 
 # Lookup helper — used in endpoints
 _clients = {"v8": lambda: _get_client("v8"), "v10": lambda: _get_client("v10")}
+
+# ============================================================
+# HUGGING FACE SERVERLESS INFERENCE CLIENT (for metadata tasks)
+# ============================================================
+inference_client = None
+
+def get_inference_client():
+    global inference_client
+    if inference_client is None:
+        inference_client = InferenceClient(model="meta-llama/Llama-3.3-70B-Instruct", token=HF_TOKEN)
+    return inference_client
+
+def query_serverless_llm(messages: list, max_tokens: int = 250, temperature: float = 0.1) -> str:
+    """Queries Hugging Face's Free Serverless Inference API (Llama 3.3 70B) using chat_completion."""
+    try:
+        client = get_inference_client()
+        res = client.chat_completion(
+            messages=messages,
+            max_tokens=max_tokens,
+            temperature=temperature
+        )
+        return res.choices[0].message.content.strip()
+    except Exception as e:
+        print(f"[WARN] Serverless Inference API query failed: {e}")
+        return ""
 
 def query_hf_model(prompt: str, max_new_tokens: int = 350,
                    temperature: float = 0.7, top_p: float = 0.9,
@@ -195,29 +232,48 @@ def extract_json_from_llm(text):
     return None
 
 def deconstruct_ingredient(ingredient):
-    """Use HF cloud model to break a processed ingredient into raw crops."""
-    prompt = (
-        f"<|begin_of_text|>Deconstruct the processed culinary ingredient '{ingredient}' into its primary raw agricultural crops.\n"
-        f"Assign approximate weight percentages. Return ONLY valid JSON.\n"
-        f"Example for 'tomato ketchup': {{\"tomato\": 0.8, \"sugar\": 0.1, \"onion\": 0.1}}\n\n"
-        f"### INGREDIENT:\n{ingredient}\n### JSON:\n"
-    )
-    text = query_hf_model(prompt, max_new_tokens=50, temperature=0.0, do_sample=False)
+    """Use Serverless Llama 3.3 70B to break a processed ingredient into raw crops."""
+    messages = [
+        {"role": "system", "content": "You are a food chemistry and agricultural database. Output only valid JSON. Do not write any explanations or conversational text outside the JSON."},
+        {"role": "user", "content": f"Deconstruct the processed culinary ingredient '{ingredient}' into its primary raw agricultural crops with approximate weight percentages (total summing to 1.0).\nExample: for 'tomato ketchup', return exactly: {{\"tomato\": 0.8, \"sugar\": 0.1, \"onion\": 0.1}}"}
+    ]
+    text = query_serverless_llm(messages, max_tokens=100, temperature=0.1)
+    # If serverless query fails, fall back to deconstruction using Gradio Llama 3B space
+    if not text:
+        print(f"[WARN] Serverless deconstruct failed for '{ingredient}'. Falling back to Gradio Llama 3B...")
+        prompt = (
+            f"<|begin_of_text|>Deconstruct the processed culinary ingredient '{ingredient}' into its primary raw agricultural crops.\n"
+            f"Assign approximate weight percentages. Return ONLY valid JSON.\n"
+            f"Example for 'tomato ketchup': {{\"tomato\": 0.8, \"sugar\": 0.1, \"onion\": 0.1}}\n\n"
+            f"### INGREDIENT:\n{ingredient}\n### JSON:\n"
+        )
+        text = query_hf_model(prompt, max_new_tokens=50, temperature=0.0, do_sample=False)
     return extract_json_from_llm(text)
 
 def get_recipe_archetype(ingredients_list):
-    """Classify the dish archetype via HF cloud model."""
+    """Classify the dish archetype using Serverless Llama 3.3 70B."""
     ingr_str = ", ".join(ingredients_list)
-    prompt = (
-        f"<|begin_of_text|>Classify the dish structure based on these ingredients: [{ingr_str}].\n"
-        f"Choose exactly ONE from this list: [Curry, Dry_Sabzi, Salad, Dessert, Bread, Soup, Rice_Dish].\n"
-        f"Return ONLY the word.\n\n"
-        f"### INGREDIENTS:\n{ingr_str}\n### ARCHETYPE:\n"
-    )
-    text = query_hf_model(prompt, max_new_tokens=10, temperature=0.0, do_sample=False)
+    messages = [
+        {"role": "system", "content": "You are a recipe classification assistant. Output ONLY a single word classification from the permitted list. No explanation."},
+        {"role": "user", "content": f"Classify the dish structure based on these ingredients: [{ingr_str}].\nChoose exactly ONE from this list: [Curry, Dry_Sabzi, Salad, Dessert, Bread, Soup, Rice_Dish]."}
+    ]
+    text = query_serverless_llm(messages, max_tokens=15, temperature=0.1)
+    
+    # Fallback to Gradio Llama 3B
+    if not text:
+        print("[WARN] Serverless archetype classification failed. Falling back to Gradio Llama 3B...")
+        prompt = (
+            f"<|begin_of_text|>Classify the dish structure based on these ingredients: [{ingr_str}].\n"
+            f"Choose exactly ONE from this list: [Curry, Dry_Sabzi, Salad, Dessert, Bread, Soup, Rice_Dish].\n"
+            f"Return ONLY the word.\n\n"
+            f"### INGREDIENTS:\n{ingr_str}\n### ARCHETYPE:\n"
+        )
+        text = query_hf_model(prompt, max_new_tokens=10, temperature=0.0, do_sample=False)
+
     valid_archetypes = ["Curry", "Dry_Sabzi", "Salad", "Dessert", "Bread", "Soup", "Rice_Dish"]
     for v in valid_archetypes:
-        if v.lower() in text.lower(): return v
+        if v.lower() in text.lower():
+            return v
     return "Curry"
 
 def parse_ingredient_input(raw_string):
@@ -550,35 +606,63 @@ async def get_indian_recipes(style: str = "", limit: int = 12, skip: int = 0):
     return {"status": "success", "total": total, "skip": skip, "limit": limit, "recipes": recipes}
 
 def bootstrap_ingredient_profile(ingredient_name):
-    """Query Llama 3 Space to generate a physical-chemical JSON profile for an unseen ingredient."""
-    prompt = (
-        f"<|begin_of_text|>You are a food chemistry and culinary database. Generate a chemical and physical profile for the ingredient '{ingredient_name}' matching the specified JSON format.\n"
-        f"Determine if it is vegan (true/false).\n"
-        f"Specify macros (fat, protein, carb, water as ratios summing to 1.0).\n"
-        f"Rate its texture on a 1-5 scale: [hardness, chewiness, fibrousness(0-5), moisture, elasticity, granularity].\n"
-        f"List 3-5 primary flavor volatile compounds (e.g. aldehydes, pyrazines, esters, terpenes, or specific molecules like hexanal, diacetyl, cinnamaldehyde).\n"
-        f"Assign a culinary role: [bulk_protein, fat_source, binder, creamy_liquid, sweetener, seasoning, veggie].\n\n"
-        f"Return ONLY valid JSON matching this example:\n"
-        f"{{\n"
-        f"  \"is_vegan\": false,\n"
-        f"  \"macros\": {{\"fat\": 0.20, \"protein\": 0.22, \"carb\": 0.0, \"water\": 0.58}},\n"
-        f"  \"texture\": [4, 4, 4, 2, 2, 2],\n"
-        f"  \"flavor_molecules\": [\"methanethiol\", \"dimethyl_sulfide\", \"pyrazines\"],\n"
-        f"  \"role\": \"bulk_protein\"\n"
-        f"}}\n\n"
-        f"### INGREDIENT: {ingredient_name}\n"
-        f"### JSON:\n"
-    )
+    """Query Serverless Llama 3.3 70B to generate a physical-chemical JSON profile for an unseen ingredient."""
+    messages = [
+        {"role": "system", "content": "You are a food chemistry and culinary database. Output only valid JSON. No explanations."},
+        {"role": "user", "content": (
+            f"Generate a chemical and physical profile for the ingredient '{ingredient_name}' matching the specified JSON format.\n"
+            f"Determine if it is vegan (true/false).\n"
+            f"Specify macros (fat, protein, carb, water as ratios summing to 1.0).\n"
+            f"Rate its texture on a 1-5 scale: [hardness, chewiness, fibrousness(0-5), moisture, elasticity, granularity].\n"
+            f"List 3-5 primary flavor volatile compounds (e.g. aldehydes, pyrazines, esters, terpenes, or specific molecules like hexanal, diacetyl, cinnamaldehyde).\n"
+            f"Assign a culinary role: [bulk_protein, fat_source, binder, creamy_liquid, sweetener, seasoning, veggie].\n\n"
+            f"Return ONLY valid JSON matching this exact structure:\n"
+            f"{{\n"
+            f"  \"is_vegan\": false,\n"
+            f"  \"macros\": {{\"fat\": 0.20, \"protein\": 0.22, \"carb\": 0.0, \"water\": 0.58}},\n"
+            f"  \"texture\": [4, 4, 4, 2, 2, 2],\n"
+            f"  \"flavor_molecules\": [\"methanethiol\", \"dimethyl_sulfide\", \"pyrazines\"],\n"
+            f"  \"role\": \"bulk_protein\"\n"
+            f"}}\n"
+        )}
+    ]
+    raw_text = query_serverless_llm(messages, max_tokens=250, temperature=0.1)
+    
+    # Fallback to Gradio Llama 3B V10
+    if not raw_text:
+        print(f"[WARN] Serverless bootstrapping failed for '{ingredient_name}'. Falling back to Gradio V10 Space...")
+        prompt = (
+            f"<|begin_of_text|>You are a food chemistry and culinary database. Generate a chemical and physical profile for the ingredient '{ingredient_name}' matching the specified JSON format.\n"
+            f"Determine if it is vegan (true/false).\n"
+            f"Specify macros (fat, protein, carb, water as ratios summing to 1.0).\n"
+            f"Rate its texture on a 1-5 scale: [hardness, chewiness, fibrousness(0-5), moisture, elasticity, granularity].\n"
+            f"List 3-5 primary flavor volatile compounds (e.g. aldehydes, pyrazines, esters, terpenes, or specific molecules like hexanal, diacetyl, cinnamaldehyde).\n"
+            f"Assign a culinary role: [bulk_protein, fat_source, binder, creamy_liquid, sweetener, seasoning, veggie].\n\n"
+            f"Return ONLY valid JSON matching this example:\n"
+            f"{{\n"
+            f"  \"is_vegan\": false,\n"
+            f"  \"macros\": {{\"fat\": 0.20, \"protein\": 0.22, \"carb\": 0.0, \"water\": 0.58}},\n"
+            f"  \"texture\": [4, 4, 4, 2, 2, 2],\n"
+            f"  \"flavor_molecules\": [\"methanethiol\", \"dimethyl_sulfide\", \"pyrazines\"],\n"
+            f"  \"role\": \"bulk_protein\"\n"
+            f"}}\n\n"
+            f"### INGREDIENT: {ingredient_name}\n"
+            f"### JSON:\n"
+        )
+        try:
+            client = _get_client("v10")
+            raw_text = query_hf_model(prompt, max_new_tokens=250, temperature=0.0, do_sample=False, client=client)
+        except Exception as e:
+            print(f"[WARN] Gradio V10 Space backup bootstrapping failed: {e}")
+            return None
+
     try:
-        # Query using the v10 Gradio Space client
-        client = _get_client("v10")
-        raw_text = query_hf_model(prompt, max_new_tokens=250, temperature=0.0, do_sample=False, client=client)
         profile = extract_json_from_llm(raw_text)
         if profile and isinstance(profile, dict) and "is_vegan" in profile and "macros" in profile and "texture" in profile:
             if len(profile["texture"]) == 6 and all(isinstance(v, (int, float)) for v in profile["texture"]):
                 return profile
     except Exception as e:
-        print(f"[WARN] LLM Bootstrapping failed for '{ingredient_name}': {e}")
+        print(f"[WARN] Error parsing bootstrapped profile JSON: {e}")
     return None
 
 @app.post("/get-vegan-blueprint")
@@ -632,53 +716,69 @@ def generate_recipe(request: RecipeRequest):
 
     if request.is_vegan:
         import vegan_engine
-        # Fast archetype classification just to give context to vegan engine
         archetype_fast = _classify_archetype_fast([parse_ingredient_input(i)[1] for i in clean_ingredients])
         veganized_ingredients = []
-        
-        # Load features cache once
-        try:
-            features = vegan_engine.load_features()
-        except Exception:
-            features = {}
-            
+
         for raw_ing in clean_ingredients:
             qty, name = parse_ingredient_input(raw_ing)
-            
-            # 1. Bootstrap if missing
-            if name not in features:
-                profile = bootstrap_ingredient_profile(name)
-                if profile:
-                    vegan_engine.save_new_feature(name, profile)
-                    features[name] = profile # update local memory
-                    print(f"[OK] Dynamically bootstrapped and cached ingredient: {name}")
-                    
-            # 2. Get Vegan Blueprint
-            blueprint = vegan_engine.generate_vegan_blueprint(name, archetype=archetype_fast)
-            
-            # 3. Apply substitutions and compensation
-            if blueprint["status"] == "success" and blueprint["original_ingredient"] != blueprint["best_vegan_substitute"]:
+            name_lower = name.lower().strip()
+            blueprint = None
+
+            # ── STEP 1: Check pre-built MongoDB match table (fast, ~1ms) ──────────
+            if vegan_alternatives_sync is not None:
+                try:
+                    db_doc = vegan_alternatives_sync.find_one({"_id": name_lower})
+                    if db_doc and db_doc.get("best_vegan_substitute"):
+                        blueprint = {
+                            "status": "success",
+                            "original_ingredient": name,
+                            "best_vegan_substitute": db_doc["best_vegan_substitute"],
+                            "match_score": db_doc.get("match_score", 0),
+                            "compensation_blueprint": db_doc.get("compensation_blueprint", {
+                                "auxiliary_additions": [],
+                                "techniques": [],
+                                "spice_bridge": []
+                            })
+                        }
+                        print(f"[DB HIT] '{name}' → '{db_doc['best_vegan_substitute']}' (score: {db_doc.get('match_score', '?')})")
+                except Exception as e:
+                    print(f"[DB WARN] vegan_alternatives lookup failed for '{name}': {e}")
+
+            # ── STEP 2: Fallback to local vegan_engine (no LLM bootstrapping) ────
+            # Only runs if ingredient was NOT found in the MongoDB match table.
+            # We skip bootstrap_ingredient_profile() — it spends 1-60s per ingredient
+            # calling an LLM. If profile exists locally → instant math. If unknown → keep as-is.
+            if blueprint is None:
+                try:
+                    features = vegan_engine.load_features()
+                    if name in features:
+                        # Profile already cached locally — run matching math instantly (~10ms)
+                        blueprint = vegan_engine.generate_vegan_blueprint(name, archetype=archetype_fast)
+                        print(f"[LOCAL HIT] '{name}' → '{blueprint.get('best_vegan_substitute', 'N/A')}'")
+                    else:
+                        # Truly unknown ingredient — keep as-is, no LLM call
+                        print(f"[SKIP] '{name}' not in DB or local cache — keeping as-is")
+                        blueprint = {"status": "unknown"}
+                except Exception as e:
+                    print(f"[ENGINE ERROR] vegan_engine failed for '{name}': {e}")
+                    blueprint = {"status": "error"}
+
+
+            # ── STEP 3: Apply substitution + compensation ──────────────────────────
+            if blueprint and blueprint.get("status") == "success" and \
+               blueprint.get("original_ingredient") != blueprint.get("best_vegan_substitute"):
                 substitute = blueprint["best_vegan_substitute"]
-                
-                # Reconstruct original format with quantity
-                if qty is not None:
-                    veganized_ingredients.append(f"{qty}g {substitute}")
-                else:
-                    veganized_ingredients.append(substitute)
-                    
-                # Add compensations
-                for add in blueprint["compensation_blueprint"]["auxiliary_additions"]:
+                veganized_ingredients.append(f"{qty}g {substitute}" if qty is not None else substitute)
+                for add in blueprint.get("compensation_blueprint", {}).get("auxiliary_additions", []):
                     veganized_ingredients.append(f"{add['amount']} {add['name']}")
-                for spice in blueprint["compensation_blueprint"]["spice_bridge"]:
+                for spice in blueprint.get("compensation_blueprint", {}).get("spice_bridge", []):
                     veganized_ingredients.append(spice["spice"])
-                    
-                print(f"[VEGAN ENGINE] Replaced '{name}' with '{substitute}' + compensations.")
             else:
                 veganized_ingredients.append(raw_ing)
-                
+
         # Override the ingredients list with the newly veganized list
         clean_ingredients = veganized_ingredients
-
+ 
     print(f"[] Running Cost Constraint Optimization for Budget: INR {request.budget}...")
     calculated_ingredients, archetype = optimize_recipe_v2(clean_ingredients, request.budget, request.servings, request.state)
 

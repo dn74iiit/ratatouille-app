@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './index.css';
 
 const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8000' : 'https://ratatouille-backend.onrender.com';
@@ -42,6 +42,22 @@ function App() {
   const [indianLoading, setIndianLoading] = useState(false);
   const [indianTotal, setIndianTotal] = useState(0);
   const [expandedRecipe, setExpandedRecipe] = useState(null);
+
+  // Timer State
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+  useEffect(() => {
+    let interval = null;
+    if (loading || veganLoading || dbAltLoading || indianLoading) {
+      interval = setInterval(() => {
+        setElapsedSeconds(prev => prev + 1);
+      }, 1000);
+    } else {
+      setElapsedSeconds(0);
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [loading, veganLoading, dbAltLoading, indianLoading]);
 
 
   const handleSubmit = async (e) => {
@@ -766,6 +782,18 @@ function App() {
               )}
             </div>
           </section>
+        </div>
+      )}
+
+      {(loading || veganLoading || dbAltLoading || indianLoading) && (
+        <div className="floating-timer-tab">
+          <span className="loader" style={{width:'16px',height:'16px',borderWidth:'2px',borderColor:'#fff',borderBottomColor:'transparent',display:'inline-block',boxSizing:'border-box',animation:'rotation 1s linear infinite',borderRadius:'50%'}}></span>
+          <span className="timer-text">
+            {loading ? "Generating Recipe..." : 
+             veganLoading ? "Calculating Vegan Match..." : 
+             dbAltLoading || indianLoading ? "Loading Data..." : "Working..."}
+            <span style={{marginLeft:'8px',color:'#818cf8',fontWeight:'600'}}>({elapsedSeconds}s)</span>
+          </span>
         </div>
       )}
 
