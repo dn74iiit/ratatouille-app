@@ -606,7 +606,7 @@ async def get_indian_recipes(style: str = "", limit: int = 12, skip: int = 0):
     return {"status": "success", "total": total, "skip": skip, "limit": limit, "recipes": recipes}
 
 def bootstrap_ingredient_profile(ingredient_name):
-    \"\"\"Query Serverless Llama 3.3 70B to generate a physical-chemical JSON profile for an unseen ingredient.\"\"\"
+    """Query Serverless Llama 3.3 70B to generate a physical-chemical JSON profile for an unseen ingredient."""
     messages = [
         {"role": "system", "content": "You are a food chemistry and culinary database. Output only valid JSON. No explanations."},
         {"role": "user", "content": (
