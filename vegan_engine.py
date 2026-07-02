@@ -206,15 +206,25 @@ def generate_vegan_blueprint(ingredient_name, archetype="Curry"):
     clean_name = ingredient_name.lower().strip()
     
     if clean_name not in features:
-        fallback_data = classify_by_keyword(clean_name)
-        if fallback_data:
-            orig_data = fallback_data
+        # Try partial string match (e.g. 'shrimp' -> 'seafood (shrimp)')
+        partial_match_data = None
+        for db_key, db_data in features.items():
+            if clean_name in db_key or db_key in clean_name:
+                partial_match_data = db_data
+                break
+                
+        if partial_match_data:
+            orig_data = partial_match_data
         else:
-            return {
-                "status": "error",
-                "message": f"Ingredient '{ingredient_name}' not found in the database.",
-                "original_ingredient": clean_name
-            }
+            fallback_data = classify_by_keyword(clean_name)
+            if fallback_data:
+                orig_data = fallback_data
+            else:
+                return {
+                    "status": "error",
+                    "message": f"Ingredient '{ingredient_name}' not found in the database.",
+                    "original_ingredient": clean_name
+                }
     else:
         orig_data = features[clean_name]
     if orig_data.get("is_vegan"):
