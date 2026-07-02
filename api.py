@@ -755,13 +755,14 @@ def generate_recipe(request: RecipeRequest):
             if blueprint is None:
                 try:
                     features = vegan_engine.load_features()
-                    if name in features:
-                        # Profile already cached locally — run matching math instantly (~10ms)
+                    # Proceed if it's explicitly in DB OR if it matches a static fallback (e.g. shrimp, chicken, milk)
+                    if name in features or vegan_engine.classify_by_keyword(name) is not None:
+                        # Profile exists locally or mathematically covered — run matching math instantly (~10ms)
                         blueprint = vegan_engine.generate_vegan_blueprint(name, archetype=archetype_fast)
                         print(f"[LOCAL HIT] '{name}' → '{blueprint.get('best_vegan_substitute', 'N/A')}'")
                     else:
                         # Truly unknown ingredient — keep as-is, no LLM call
-                        print(f"[SKIP] '{name}' not in DB or local cache — keeping as-is")
+                        print(f"[SKIP] '{name}' not in DB and no static fallback — keeping as-is")
                         blueprint = {"status": "unknown"}
                 except Exception as e:
                     print(f"[ENGINE ERROR] vegan_engine failed for '{name}': {e}")
