@@ -802,7 +802,7 @@ def generate_recipe(request: RecipeRequest):
     chosen_client = _clients.get(request.model_version, _clients["v8"])()
     ai_text = query_hf_model(
         prompt,
-        max_new_tokens=1000,
+        max_new_tokens=500,
         temperature=0.6,
         top_p=0.9,
         repetition_penalty=1.05,
