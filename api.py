@@ -14,7 +14,7 @@ from nltk.stem import WordNetLemmatizer
 from scipy.optimize import linprog
 from dotenv import load_dotenv
 from gradio_client import Client
-from huggingface_hub import InferenceClient
+from groq import Groq
 from motor.motor_asyncio import AsyncIOMotorClient
 
 nltk.download('wordnet', quiet=True)
@@ -41,6 +41,7 @@ load_dotenv()
 HF_TOKEN    = os.getenv("HF_TOKEN")
 GITHUB_PAT  = os.getenv("GITHUB_PAT")
 MONGO_URI   = os.getenv("MONGO_URI")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 if not HF_TOKEN:
     raise RuntimeError("[!] HF_TOKEN not found in .env — cannot reach Hugging Face Inference API.")
@@ -129,21 +130,24 @@ inference_client = None
 def get_inference_client():
     global inference_client
     if inference_client is None:
-        inference_client = InferenceClient(model="meta-llama/Llama-3.3-70B-Instruct", token=HF_TOKEN)
+        if not GROQ_API_KEY:
+            raise RuntimeError("[!] GROQ_API_KEY not found in .env — cannot reach Groq API.")
+        inference_client = Groq(api_key=GROQ_API_KEY)
     return inference_client
 
 def query_serverless_llm(messages: list, max_tokens: int = 250, temperature: float = 0.1) -> str:
-    """Queries Hugging Face's Free Serverless Inference API (Llama 3.3 70B) using chat_completion."""
+    """Queries Groq API (llama-3.3-70b-versatile) for instantaneous serverless inference."""
     try:
         client = get_inference_client()
-        res = client.chat_completion(
+        res = client.chat.completions.create(
             messages=messages,
-            max_tokens=max_tokens,
+            model="llama-3.3-70b-versatile",
+            max_completion_tokens=max_tokens,
             temperature=temperature
         )
         return res.choices[0].message.content.strip()
     except Exception as e:
-        print(f"[WARN] Serverless Inference API query failed: {e}")
+        print(f"[WARN] Groq API query failed: {e}")
         return ""
 
 def query_hf_model(prompt: str, max_new_tokens: int = 350,
