@@ -1,11 +1,38 @@
 import os
 import json
 import numpy as np
+from pymongo import MongoClient
+from dotenv import load_dotenv
 
-# Load chemical features database
+load_dotenv()
+MONGO_URI = os.getenv("MONGO_URI")
+
+try:
+    if MONGO_URI:
+        db_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
+        chemical_features_collection = db_client.ratatouille.chemical_features
+    else:
+        chemical_features_collection = None
+except Exception as e:
+    print(f"[WARN] Failed to init MongoDB in vegan_engine: {e}")
+    chemical_features_collection = None
+
+# Local fallback
 DB_PATH = os.path.join(os.path.dirname(__file__), "chemical_features.json")
 
 def load_features():
+    if chemical_features_collection is not None:
+        try:
+            docs = chemical_features_collection.find()
+            features = {}
+            for doc in docs:
+                name = doc.pop("_id")
+                features[name] = doc
+            if features:
+                return features
+        except Exception as e:
+            print(f"[WARN] Failed to load features from MongoDB: {e}. Falling back to local file.")
+            
     if not os.path.exists(DB_PATH):
         raise FileNotFoundError(f"Database file not found at: {DB_PATH}")
     with open(DB_PATH, "r") as f:
@@ -328,14 +355,32 @@ def classify_by_keyword(name):
     return None
 
 def save_new_feature(name, data):
+    clean_name = name.lower().strip()
+    saved_to_cloud = False
+    
+    if chemical_features_collection is not None:
+        try:
+            chemical_features_collection.update_one(
+                {"_id": clean_name},
+                {"$set": data},
+                upsert=True
+            )
+            saved_to_cloud = True
+            print(f"[OK] Saved new feature '{clean_name}' directly to MongoDB Atlas.")
+        except Exception as e:
+            print(f"[ERROR] Failed to save new feature to MongoDB: {e}")
+
+    # Always save locally as a fallback so the JSON file stays loosely in sync
     try:
-        features = load_features()
-        clean_name = name.lower().strip()
+        features = {}
+        if os.path.exists(DB_PATH):
+            with open(DB_PATH, "r") as f:
+                features = json.load(f)
         features[clean_name] = data
         with open(DB_PATH, "w") as f:
             json.dump(features, f, indent=2)
-        return True
+        return saved_to_cloud or True
     except Exception as e:
-        print(f"[ERROR] Failed to save new feature to DB: {e}")
-        return False
+        print(f"[ERROR] Failed to save new feature to local DB: {e}")
+        return saved_to_cloud
 
