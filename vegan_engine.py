@@ -21,12 +21,12 @@ def jaccard_similarity(set_a, set_b):
 def texture_similarity(vec_a, vec_b):
     if not vec_a or not vec_b:
         return 0.5
-    # Vectors have length 6, values between 1 and 5
-    # Max Euclidean distance is sqrt(6 * (5-1)^2) = sqrt(96) ~= 9.798
+    # Vectors have length 5, values between 1.0 and 10.0
+    # Max Euclidean distance is sqrt(5 * (10-1)^2) = sqrt(405) ~= 20.124
     arr_a = np.array(vec_a, dtype=float)
     arr_b = np.array(vec_b, dtype=float)
     dist = np.linalg.norm(arr_a - arr_b)
-    max_dist = 9.798
+    max_dist = 20.124
     return float(1.0 - (dist / max_dist))
 
 def functional_overlap(role_a, role_b):
@@ -39,12 +39,12 @@ def calculate_composite_score(orig_data, cand_data, alpha=0.3, beta=0.4, gamma=0
         set(cand_data.get("flavor_molecules", []))
     )
     text_sim = texture_similarity(
-        orig_data.get("texture", []),
-        cand_data.get("texture", [])
+        orig_data.get("texture_profile", []),
+        cand_data.get("texture_profile", [])
     )
     func_sim = functional_overlap(
-        orig_data.get("role", ""),
-        cand_data.get("role", "")
+        orig_data.get("culinary_role", ""),
+        cand_data.get("culinary_role", "")
     )
     total_score = alpha * flavor_sim + beta * text_sim + gamma * func_sim
     return round(total_score, 4), {
@@ -63,7 +63,7 @@ def get_spice_bridge(original_mols, substitute_mols, all_features, top_k=3):
         
     bridge_scores = []
     for name, data in all_features.items():
-        if data.get("is_spice") and data.get("is_vegan"):
+        if data.get("culinary_role") in ["flavor_enhancer", "aromatic"] and data.get("is_vegan"):
             spice_mols = set(data.get("flavor_molecules", []))
             gap_covered = len(spice_mols & flavor_gap)
             bridge_score = gap_covered / len(flavor_gap) if len(flavor_gap) > 0 else 0.0
@@ -83,21 +83,20 @@ def get_spice_bridge(original_mols, substitute_mols, all_features, top_k=3):
 def calculate_delta_recommendations(orig_name, sub_name, orig_data, sub_data, archetype="Curry"):
     orig_macros = orig_data.get("macros", {})
     sub_macros = sub_data.get("macros", {})
-    orig_text = orig_data.get("texture", [0]*6)
-    sub_text = sub_data.get("texture", [0]*6)
+    orig_text = orig_data.get("texture_profile", [0]*5)
+    sub_text = sub_data.get("texture_profile", [0]*5)
     
-    delta_fat = orig_macros.get("fat", 0) - sub_macros.get("fat", 0)
-    delta_water = orig_macros.get("water", 0) - sub_macros.get("water", 0)
+    delta_fat = orig_macros.get("fats", 0) - sub_macros.get("fats", 0)
     
-    # 6D texture indices: 0=hardness, 1=chewiness, 2=fibrousness, 3=moisture, 4=elasticity, 5=granularity
+    # 5D texture indices: 0=hardness, 1=chewiness, 2=moisture, 3=fat_mouthfeel, 4=elasticity
     delta_chewiness = orig_text[1] - sub_text[1]
-    delta_fibrous = orig_text[2] - sub_text[2]
+    delta_moisture = orig_text[2] - sub_text[2]
     
     additions = []
     techniques = []
     
     # 1. Lipid Bridging (Fat Deficit)
-    if delta_fat > 0.1:
+    if delta_fat > 10.0:  # e.g. >10g difference per 100g
         if archetype in ["Curry", "Dry_Sabzi", "Soup"]:
             additions.append({
                 "name": "coconut oil or neutral vegetable oil",
@@ -125,7 +124,7 @@ def calculate_delta_recommendations(orig_name, sub_name, orig_data, sub_data, ar
                 "amount": "1 tsp",
                 "purpose": "adds savory, buttery dairy-like notes missing from the plant substitute"
             })
-        elif any(x in ["hydrogen_sulfide", "2-methyl-3-furanthiol", "pyrazines"] for x in orig_data.get("flavor_molecules", [])):
+        elif any(x in ["hydrogen sulfide", "2-methyl-3-furanthiol", "pyrazines"] for x in orig_data.get("flavor_molecules", [])):
             additions.append({
                 "name": "monosodium glutamate (MSG) or soy sauce",
                 "amount": "1/2 tsp",
@@ -133,11 +132,11 @@ def calculate_delta_recommendations(orig_name, sub_name, orig_data, sub_data, ar
             })
             
     # 2. Moisture Adjustments
-    if delta_water < -0.1:
+    if delta_moisture < -2.0:
         techniques.append(
             f"Wrap the {sub_name} in a clean kitchen towel and press it under a heavy object for 15 minutes to extract excess moisture and prevent sogginess."
         )
-    elif delta_water > 0.2:
+    elif delta_moisture > 4.0:
         if sub_name == "soya chunks":
             techniques.append(
                 "Soak the soya chunks in hot water for 15 minutes and squeeze the excess water out completely before cooking to allow it to absorb the recipe flavors."
@@ -152,7 +151,7 @@ def calculate_delta_recommendations(orig_name, sub_name, orig_data, sub_data, ar
         techniques.append(
             "Slice the king oyster mushroom stalks into round coins and score them in a cross-hatch pattern, then sauté in oil to mimic the firm, bouncy bite of shrimp."
         )
-    elif delta_fibrous > 2 or delta_chewiness > 1:
+    elif delta_chewiness > 3.0:
         if sub_name == "soya chunks":
             techniques.append(
                 "Soak the soya chunks in boiling water for 15 minutes, squeeze the water out completely, and pan-fry before adding to the sauce to mimic poultry fibers."
@@ -201,7 +200,7 @@ def generate_vegan_blueprint(ingredient_name, archetype="Curry"):
     # Find all vegan candidates
     candidates = []
     for name, data in features.items():
-        if data.get("is_vegan") and not data.get("is_spice"):
+        if data.get("is_vegan") and data.get("culinary_role") not in ["flavor_enhancer", "aromatic"]:
             candidates.append((name, data))
             
     if not candidates:
@@ -245,8 +244,7 @@ def generate_vegan_blueprint(ingredient_name, archetype="Curry"):
         "match_score": best_candidate["score"],
         "score_breakdown": best_candidate["breakdown"],
         "chemical_delta": {
-            "lipid_deficit": round(float(orig_data["macros"]["fat"] - sub_data["macros"]["fat"]), 3),
-            "moisture_excess": round(float(sub_data["macros"]["water"] - orig_data["macros"]["water"]), 3)
+            "lipid_deficit": round(float(orig_data["macros"]["fats"] - sub_data["macros"]["fats"]), 3)
         },
         "compensation_blueprint": {
             "auxiliary_additions": recommendations["additions"],
@@ -262,45 +260,45 @@ def generate_vegan_blueprint(ingredient_name, archetype="Curry"):
 STATIC_FALLBACKS = {
     "red_meat": {
         "is_vegan": False,
-        "macros": { "fat": 0.20, "protein": 0.22, "carb": 0.0, "water": 0.57 },
-        "texture": [4, 4, 4, 2, 2, 2],
-        "flavor_molecules": ["methanethiol", "dimethyl_sulfide", "2-methyl-3-furanthiol", "pyrazines"],
-        "role": "bulk_protein"
+        "macros": { "proteins": 26.0, "fats": 17.0, "carbs": 0.0 },
+        "texture_profile": [6.0, 7.5, 5.5, 7.0, 6.0],
+        "flavor_molecules": ["heptanal", "hexanal", "2-undecenal", "methional", "2-methyl-3-furanthiol"],
+        "culinary_role": "base_protein"
     },
     "poultry": {
         "is_vegan": False,
-        "macros": { "fat": 0.14, "protein": 0.25, "carb": 0.0, "water": 0.60 },
-        "texture": [3, 4, 4, 3, 2, 1],
-        "flavor_molecules": ["hydrogen_sulfide", "methyl_furan", "dimethyl_disulfide", "hexanal", "nonanal", "pyrazines"],
-        "role": "bulk_protein"
+        "macros": { "proteins": 27.0, "fats": 14.0, "carbs": 0.0 },
+        "texture_profile": [5.5, 7.0, 5.5, 5.5, 6.0],
+        "flavor_molecules": ["inosine monophosphate", "2-methyl-3-furanthiol", "methional", "dimethyl trisulfide", "heptanal"],
+        "culinary_role": "base_protein"
     },
     "seafood": {
         "is_vegan": False,
-        "macros": { "fat": 0.01, "protein": 0.24, "carb": 0.0, "water": 0.75 },
-        "texture": [3, 4, 1, 4, 3, 2],
-        "flavor_molecules": ["dimethyl_sulfide", "trimethylamine", "pyrrole", "hexanal", "sweet_esters"],
-        "role": "bulk_protein"
+        "macros": { "proteins": 24.0, "fats": 1.0, "carbs": 0.0 },
+        "texture_profile": [5.5, 6.5, 6.5, 1.5, 5.5],
+        "flavor_molecules": ["trimethylamine", "dimethyl sulfide", "inosine monophosphate", "glutamic acid", "hexanal"],
+        "culinary_role": "base_protein"
     },
     "dairy_fat": {
         "is_vegan": False,
-        "macros": { "fat": 0.81, "protein": 0.01, "carb": 0.01, "water": 0.16 },
-        "texture": [2, 1, 0, 2, 1, 1],
-        "flavor_molecules": ["diacetyl", "butyric_acid", "delta-decalactone", "lactones"],
-        "role": "fat_source"
+        "macros": { "proteins": 1.0, "fats": 81.0, "carbs": 0.1 },
+        "texture_profile": [5.0, 2.5, 3.0, 9.0, 3.5],
+        "flavor_molecules": ["diacetyl", "butyric acid", "delta-decalactone", "acetoin", "methyl ketones"],
+        "culinary_role": "fat_source"
     },
     "dairy_liquid": {
         "is_vegan": False,
-        "macros": { "fat": 0.03, "protein": 0.03, "carb": 0.05, "water": 0.88 },
-        "texture": [1, 1, 0, 5, 1, 1],
-        "flavor_molecules": ["dimethyl_sulfide", "diacetyl", "lactone"],
-        "role": "creamy_liquid"
+        "macros": { "proteins": 3.4, "fats": 3.7, "carbs": 4.8 },
+        "texture_profile": [1.0, 1.0, 9.0, 4.5, 1.5],
+        "flavor_molecules": ["lactose", "casein", "diacetyl", "dimethyl sulfide", "methyl ketones"],
+        "culinary_role": "dairy"
     },
     "sweetener": {
         "is_vegan": False,
-        "macros": { "fat": 0.0, "protein": 0.0, "carb": 0.82, "water": 0.18 },
-        "texture": [2, 1, 0, 2, 2, 1],
-        "flavor_molecules": ["phenylacetaldehyde", "floral_esters"],
-        "role": "sweetener"
+        "macros": { "proteins": 0.0, "fats": 0.0, "carbs": 99.9 },
+        "texture_profile": [8.0, 1.0, 1.0, 0.0, 1.0],
+        "flavor_molecules": ["sucrose", "glucose", "fructose", "caramelone", "maltol"],
+        "culinary_role": "sweetener"
     }
 }
 

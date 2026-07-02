@@ -1,949 +1,7515 @@
 {
-  "paneer": {
+  "Salt": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "sodium chloride",
+      "chloride ion",
+      "sodium ion",
+      "mineral salts"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      9.0,
+      1.0,
+      0.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Olive oil": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "oleocanthal",
+      "hexanal",
+      "squalene",
+      "beta-sitosterol",
+      "oleic acid"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.0,
+      9.5,
+      1.0
+    ]
+  },
+  "Butter": {
     "is_vegan": false,
     "macros": {
-      "fat": 0.22,
-      "protein": 0.18,
-      "carb": 0.04,
-      "water": 0.54
+      "proteins": 0.9,
+      "fats": 81.0,
+      "carbs": 0.1
     },
-    "texture": [
-      3,
-      3,
-      1,
-      2,
-      3,
-      2
-    ],
     "flavor_molecules": [
       "diacetyl",
-      "butanoic_acid",
-      "lactic_acid",
+      "butyric acid",
+      "delta-decalactone",
+      "methyl ketones",
       "acetoin"
     ],
-    "role": "bulk_protein"
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      5.0,
+      2.5,
+      3.0,
+      9.0,
+      3.5
+    ]
   },
-  "tofu": {
+  "Garlic": {
     "is_vegan": true,
     "macros": {
-      "fat": 0.04,
-      "protein": 0.08,
-      "carb": 0.02,
-      "water": 0.85
+      "proteins": 6.4,
+      "fats": 0.5,
+      "carbs": 33.1
     },
-    "texture": [
-      3,
-      3,
-      0,
-      2,
-      3,
-      1
-    ],
     "flavor_molecules": [
-      "hexanal",
-      "soy_volatiles",
-      "1-octen-3-ol"
+      "allicin",
+      "diallyl disulfide",
+      "alliin",
+      "diallyl trisulfide",
+      "allyl methyl sulfide"
     ],
-    "role": "bulk_protein"
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      7.0,
+      4.0,
+      5.5,
+      0.5,
+      2.0
+    ]
   },
-  "chicken": {
-    "is_vegan": false,
-    "macros": {
-      "fat": 0.14,
-      "protein": 0.25,
-      "carb": 0.0,
-      "water": 0.6
-    },
-    "texture": [
-      3,
-      4,
-      4,
-      3,
-      2,
-      1
-    ],
-    "flavor_molecules": [
-      "hydrogen_sulfide",
-      "methyl_furan",
-      "dimethyl_disulfide",
-      "hexanal",
-      "nonanal",
-      "pyrazines"
-    ],
-    "role": "bulk_protein"
-  },
-  "soya chunks": {
+  "Onion": {
     "is_vegan": true,
     "macros": {
-      "fat": 0.01,
-      "protein": 0.52,
-      "carb": 0.33,
-      "water": 0.08
+      "proteins": 1.1,
+      "fats": 0.1,
+      "carbs": 9.3
     },
-    "texture": [
-      4,
-      4,
-      5,
-      1,
-      3,
-      2
-    ],
     "flavor_molecules": [
-      "hexanal",
-      "soy_volatiles",
+      "propanethial S-oxide",
+      "dipropyl disulfide",
+      "quercetin",
+      "furfural",
+      "methyl propyl trisulfide"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.5,
+      3.5,
+      7.5,
+      0.2,
+      2.5
+    ]
+  },
+  "Black pepper": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 10.4,
+      "fats": 3.3,
+      "carbs": 63.9
+    },
+    "flavor_molecules": [
+      "piperine",
+      "myrcene",
+      "limonene",
+      "beta-caryophyllene",
+      "sabinene"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      8.5,
+      2.0,
+      1.5,
+      1.0,
+      1.0
+    ]
+  },
+  "Sugar": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 99.9
+    },
+    "flavor_molecules": [
+      "sucrose",
+      "glucose",
+      "fructose",
+      "caramelone",
       "maltol"
     ],
-    "role": "bulk_protein"
+    "culinary_role": "sweetener",
+    "texture_profile": [
+      8.0,
+      1.0,
+      1.0,
+      0.0,
+      1.0
+    ]
   },
-  "beef": {
-    "is_vegan": false,
-    "macros": {
-      "fat": 0.2,
-      "protein": 0.22,
-      "carb": 0.0,
-      "water": 0.57
-    },
-    "texture": [
-      4,
-      4,
-      4,
-      2,
-      2,
-      2
-    ],
-    "flavor_molecules": [
-      "methanethiol",
-      "dimethyl_sulfide",
-      "2-methyl-3-furanthiol",
-      "pyrazines"
-    ],
-    "role": "bulk_protein"
-  },
-  "tempeh": {
+  "Water": {
     "is_vegan": true,
     "macros": {
-      "fat": 0.11,
-      "protein": 0.19,
-      "carb": 0.09,
-      "water": 0.6
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.0
     },
-    "texture": [
-      3,
-      3,
-      2,
-      3,
-      1,
-      4
-    ],
     "flavor_molecules": [
-      "dimethyl_disulfide",
-      "2-methylbutanal",
-      "3-octanone"
+      "hydrogen oxide",
+      "dissolved minerals",
+      "dissolved oxygen",
+      "hydroxyl ions"
     ],
-    "role": "bulk_protein"
+    "culinary_role": "thickener",
+    "texture_profile": [
+      1.0,
+      1.0,
+      10.0,
+      0.0,
+      1.0
+    ]
   },
-  "egg": {
-    "is_vegan": false,
-    "macros": {
-      "fat": 0.1,
-      "protein": 0.13,
-      "carb": 0.01,
-      "water": 0.75
-    },
-    "texture": [
-      2,
-      2,
-      0,
-      4,
-      3,
-      1
-    ],
-    "flavor_molecules": [
-      "hydrogen_sulfide",
-      "dimethyl_sulfide",
-      "linalool"
-    ],
-    "role": "binder"
-  },
-  "aquafaba": {
+  "Lemon juice": {
     "is_vegan": true,
     "macros": {
-      "fat": 0.0,
-      "protein": 0.01,
-      "carb": 0.03,
-      "water": 0.95
+      "proteins": 0.4,
+      "fats": 0.1,
+      "carbs": 6.9
     },
-    "texture": [
-      1,
-      1,
-      0,
-      5,
-      2,
-      1
-    ],
     "flavor_molecules": [
-      "hexanal",
-      "beany_notes"
+      "citric acid",
+      "limonene",
+      "linalool",
+      "geraniol",
+      "neral"
     ],
-    "role": "binder"
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      0.1,
+      1.0
+    ]
   },
-  "butter": {
-    "is_vegan": false,
-    "macros": {
-      "fat": 0.81,
-      "protein": 0.01,
-      "carb": 0.01,
-      "water": 0.16
-    },
-    "texture": [
-      2,
-      1,
-      0,
-      2,
-      1,
-      1
-    ],
-    "flavor_molecules": [
-      "diacetyl",
-      "butyric_acid",
-      "delta-decalactone",
-      "lactones"
-    ],
-    "role": "fat_source"
-  },
-  "ghee": {
-    "is_vegan": false,
-    "macros": {
-      "fat": 0.99,
-      "protein": 0.0,
-      "carb": 0.0,
-      "water": 0.0
-    },
-    "texture": [
-      1,
-      1,
-      0,
-      1,
-      1,
-      1
-    ],
-    "flavor_molecules": [
-      "diacetyl",
-      "lactones",
-      "methyl_ketones"
-    ],
-    "role": "fat_source"
-  },
-  "coconut oil": {
+  "Tomato": {
     "is_vegan": true,
     "macros": {
-      "fat": 0.99,
-      "protein": 0.0,
-      "carb": 0.0,
-      "water": 0.0
+      "proteins": 0.9,
+      "fats": 0.2,
+      "carbs": 3.9
     },
-    "texture": [
-      1,
-      1,
-      0,
-      1,
-      1,
-      1
-    ],
     "flavor_molecules": [
-      "delta-decalactone",
-      "octanoic_acid",
-      "nonanone"
+      "lycopene",
+      "glutamic acid",
+      "2-isobutylthiazole",
+      "6-methyl-5-hepten-2-one",
+      "beta-ionone"
     ],
-    "role": "fat_source"
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      3.0,
+      2.5,
+      8.5,
+      0.3,
+      2.0
+    ]
   },
-  "olive oil": {
-    "is_vegan": true,
-    "macros": {
-      "fat": 0.99,
-      "protein": 0.0,
-      "carb": 0.0,
-      "water": 0.0
-    },
-    "texture": [
-      1,
-      1,
-      0,
-      1,
-      1,
-      1
-    ],
-    "flavor_molecules": [
-      "hexanal",
-      "hexenyl_acetate",
-      "oleocanthal"
-    ],
-    "role": "fat_source"
-  },
-  "milk": {
+  "Egg": {
     "is_vegan": false,
     "macros": {
-      "fat": 0.03,
-      "protein": 0.03,
-      "carb": 0.05,
-      "water": 0.88
+      "proteins": 13.0,
+      "fats": 10.6,
+      "carbs": 0.7
     },
-    "texture": [
-      1,
-      1,
-      0,
-      5,
-      1,
-      1
-    ],
     "flavor_molecules": [
-      "dimethyl_sulfide",
-      "diacetyl",
-      "lactone"
-    ],
-    "role": "creamy_liquid"
-  },
-  "coconut milk": {
-    "is_vegan": true,
-    "macros": {
-      "fat": 0.21,
-      "protein": 0.02,
-      "carb": 0.06,
-      "water": 0.7
-    },
-    "texture": [
-      1,
-      1,
-      0,
-      5,
-      1,
-      1
-    ],
-    "flavor_molecules": [
-      "delta-decalactone",
-      "octanoic_acid",
-      "sweet_esters"
-    ],
-    "role": "creamy_liquid"
-  },
-  "oat milk": {
-    "is_vegan": true,
-    "macros": {
-      "fat": 0.01,
-      "protein": 0.01,
-      "carb": 0.07,
-      "water": 0.9
-    },
-    "texture": [
-      1,
-      1,
-      0,
-      5,
-      1,
-      1
-    ],
-    "flavor_molecules": [
-      "maltol",
-      "oat_volatiles"
-    ],
-    "role": "creamy_liquid"
-  },
-  "cream": {
-    "is_vegan": false,
-    "macros": {
-      "fat": 0.35,
-      "protein": 0.02,
-      "carb": 0.03,
-      "water": 0.6
-    },
-    "texture": [
-      1,
-      1,
-      0,
-      4,
-      1,
-      1
-    ],
-    "flavor_molecules": [
-      "diacetyl",
-      "butyric_acid",
-      "delta-decalactone"
-    ],
-    "role": "creamy_liquid"
-  },
-  "cashew cream": {
-    "is_vegan": true,
-    "macros": {
-      "fat": 0.25,
-      "protein": 0.08,
-      "carb": 0.12,
-      "water": 0.55
-    },
-    "texture": [
-      1,
-      1,
-      0,
-      4,
-      1,
-      1
-    ],
-    "flavor_molecules": [
-      "nutty_aldehydes",
-      "sweet_esters"
-    ],
-    "role": "creamy_liquid"
-  },
-  "yogurt": {
-    "is_vegan": false,
-    "macros": {
-      "fat": 0.03,
-      "protein": 0.04,
-      "carb": 0.05,
-      "water": 0.87
-    },
-    "texture": [
-      2,
-      1,
-      0,
-      4,
-      1,
-      1
-    ],
-    "flavor_molecules": [
+      "trimethylamine",
+      "hydrogen sulfide",
       "acetaldehyde",
-      "lactic_acid",
+      "dimethyl sulfide",
       "diacetyl"
     ],
-    "role": "creamy_liquid"
+    "culinary_role": "binding_agent",
+    "texture_profile": [
+      4.5,
+      4.0,
+      6.5,
+      5.5,
+      7.5
+    ]
   },
-  "coconut yogurt": {
+  "Flour": {
     "is_vegan": true,
     "macros": {
-      "fat": 0.06,
-      "protein": 0.01,
-      "carb": 0.08,
-      "water": 0.84
+      "proteins": 10.3,
+      "fats": 1.0,
+      "carbs": 76.3
     },
-    "texture": [
-      2,
-      1,
-      0,
-      4,
-      1,
-      1
-    ],
     "flavor_molecules": [
+      "pyrazines",
+      "maltol",
       "acetaldehyde",
-      "delta-decalactone",
-      "sweet_esters"
+      "2-acetyl-1-pyrroline",
+      "hexanal"
     ],
-    "role": "creamy_liquid"
+    "culinary_role": "thickener",
+    "texture_profile": [
+      5.5,
+      2.0,
+      3.0,
+      0.5,
+      3.5
+    ]
   },
-  "honey": {
+  "Milk": {
     "is_vegan": false,
     "macros": {
-      "fat": 0.0,
-      "protein": 0.0,
-      "carb": 0.82,
-      "water": 0.18
+      "proteins": 3.4,
+      "fats": 3.7,
+      "carbs": 4.8
     },
-    "texture": [
-      2,
-      1,
-      0,
-      2,
-      2,
-      1
-    ],
     "flavor_molecules": [
-      "phenylacetaldehyde",
-      "methyl_anthranilate",
-      "floral_esters"
+      "lactose",
+      "casein",
+      "diacetyl",
+      "dimethyl sulfide",
+      "methyl ketones"
     ],
-    "role": "sweetener"
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.0,
+      4.5,
+      1.5
+    ]
   },
-  "maple syrup": {
+  "Vegetable oil": {
     "is_vegan": true,
     "macros": {
-      "fat": 0.0,
-      "protein": 0.0,
-      "carb": 0.67,
-      "water": 0.32
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
     },
-    "texture": [
-      2,
-      1,
-      0,
-      3,
-      2,
-      1
+    "flavor_molecules": [
+      "linoleic acid",
+      "oleic acid",
+      "hexanal",
+      "nonanal",
+      "2-pentylfuran"
     ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.0,
+      9.0,
+      1.0
+    ]
+  },
+  "Parmesan cheese": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 35.7,
+      "fats": 25.8,
+      "carbs": 4.1
+    },
+    "flavor_molecules": [
+      "butyric acid",
+      "propionic acid",
+      "glutamic acid",
+      "isovaleric acid",
+      "delta-decalactone"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      9.0,
+      4.5,
+      2.0,
+      7.0,
+      2.0
+    ]
+  },
+  "Parsley": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.0,
+      "fats": 0.8,
+      "carbs": 6.3
+    },
+    "flavor_molecules": [
+      "myristicin",
+      "apiol",
+      "beta-phellandrene",
+      "1-methoxy-4-(2-propenyl)benzene",
+      "limonene"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      2.5,
+      2.0,
+      7.5,
+      0.4,
+      2.5
+    ]
+  },
+  "Soy sauce": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 8.1,
+      "fats": 0.1,
+      "carbs": 6.7
+    },
+    "flavor_molecules": [
+      "glutamic acid",
+      "HEMF",
+      "furfuryl alcohol",
+      "4-ethylguaiacol",
+      "sotolon"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.0,
+      0.2,
+      1.0
+    ]
+  },
+  "Chicken breast": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 31.0,
+      "fats": 3.6,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "inosine monophosphate",
+      "methional",
+      "2-methyl-3-furanthiol",
+      "dimethyl trisulfide",
+      "heptanal"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      6.0,
+      7.0,
+      5.5,
+      3.5,
+      6.5
+    ]
+  },
+  "Brown sugar": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.1,
+      "fats": 0.0,
+      "carbs": 98.1
+    },
+    "flavor_molecules": [
+      "sucrose",
+      "molasses",
+      "furfural",
+      "5-HMF",
+      "caramelone"
+    ],
+    "culinary_role": "sweetener",
+    "texture_profile": [
+      6.5,
+      2.5,
+      3.5,
+      0.2,
+      1.5
+    ]
+  },
+  "Vanilla extract": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.1,
+      "fats": 0.1,
+      "carbs": 12.7
+    },
+    "flavor_molecules": [
+      "vanillin",
+      "4-hydroxybenzaldehyde",
+      "ethanol",
+      "guaiacol",
+      "acetic acid"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      8.5,
+      0.1,
+      1.0
+    ]
+  },
+  "Cumin": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 17.8,
+      "fats": 22.3,
+      "carbs": 44.2
+    },
+    "flavor_molecules": [
+      "cuminaldehyde",
+      "gamma-terpinene",
+      "beta-pinene",
+      "p-cymene",
+      "cuminyl alcohol"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.5,
+      2.0,
+      2.5,
+      3.0,
+      1.0
+    ]
+  },
+  "Mayonnaise": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 1.1,
+      "fats": 74.9,
+      "carbs": 0.6
+    },
+    "flavor_molecules": [
+      "acetic acid",
+      "citric acid",
+      "mustard glucosinolates",
+      "egg lecithin",
+      "hexanal"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.5,
+      3.5,
+      4.0,
+      9.5,
+      2.0
+    ]
+  },
+  "Paprika": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 14.1,
+      "fats": 12.9,
+      "carbs": 53.9
+    },
+    "flavor_molecules": [
+      "capsaicin",
+      "capsanthin",
+      "capsorubin",
+      "2-methoxy-3-isobutylpyrazine",
+      "geraniol"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.0,
+      1.5,
+      2.0,
+      2.5,
+      1.0
+    ]
+  },
+  "Oregano": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 9.0,
+      "fats": 4.3,
+      "carbs": 68.9
+    },
+    "flavor_molecules": [
+      "carvacrol",
+      "thymol",
+      "beta-bisabolene",
+      "gamma-terpinene",
+      "p-cymene"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      6.5,
+      2.0,
+      3.0,
+      1.5,
+      1.0
+    ]
+  },
+  "Cilantro": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.1,
+      "fats": 0.5,
+      "carbs": 3.7
+    },
+    "flavor_molecules": [
+      "linalool",
+      "2-decenal",
+      "2-dodecenol",
+      "decanal",
+      "dodecanal"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      2.0,
+      1.5,
+      8.0,
+      0.3,
+      2.0
+    ]
+  },
+  "Cinnamon": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 4.0,
+      "fats": 1.2,
+      "carbs": 80.6
+    },
+    "flavor_molecules": [
+      "cinnamaldehyde",
+      "eugenol",
+      "linalool",
+      "cinnamyl acetate",
+      "beta-caryophyllene"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.5,
+      2.0,
+      2.0,
+      0.8,
+      1.0
+    ]
+  },
+  "Cheddar cheese": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 24.9,
+      "fats": 33.1,
+      "carbs": 1.3
+    },
+    "flavor_molecules": [
+      "butyric acid",
+      "isovaleric acid",
+      "diacetyl",
+      "delta-decalactone",
+      "methyl ketones"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      7.5,
+      5.5,
+      3.5,
+      8.5,
+      4.5
+    ]
+  },
+  "Carrot": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.9,
+      "fats": 0.2,
+      "carbs": 9.6
+    },
+    "flavor_molecules": [
+      "alpha-pinene",
+      "beta-myrcene",
+      "terpinolene",
+      "carotol",
+      "beta-carotene"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      7.5,
+      5.0,
+      6.5,
+      0.3,
+      2.5
+    ]
+  },
+  "Heavy cream": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 2.1,
+      "fats": 37.0,
+      "carbs": 2.8
+    },
+    "flavor_molecules": [
+      "diacetyl",
+      "delta-decalactone",
+      "methyl ketones",
+      "butyric acid",
+      "acetoin"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      2.0,
+      7.0,
+      9.5,
+      2.0
+    ]
+  },
+  "Red pepper flakes": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 12.0,
+      "fats": 12.9,
+      "carbs": 56.6
+    },
+    "flavor_molecules": [
+      "capsaicin",
+      "dihydrocapsaicin",
+      "nordihydrocapsaicin",
+      "pyrazines",
+      "carotenoids"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      8.0,
+      2.0,
+      2.5,
+      1.5,
+      1.0
+    ]
+  },
+  "Bell pepper": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.0,
+      "fats": 0.3,
+      "carbs": 6.0
+    },
+    "flavor_molecules": [
+      "2-methoxy-3-isobutylpyrazine",
+      "hexanal",
+      "capsanthin",
+      "linalool",
+      "2-isobutyl-3-methoxypyrazine"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      4.5,
+      3.5,
+      8.0,
+      0.3,
+      3.5
+    ]
+  },
+  "Lemon": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.1,
+      "fats": 0.3,
+      "carbs": 9.3
+    },
+    "flavor_molecules": [
+      "limonene",
+      "citral",
+      "linalool",
+      "alpha-terpineol",
+      "gamma-terpinene"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      4.0,
+      3.0,
+      7.5,
+      0.2,
+      2.5
+    ]
+  },
+  "Lime": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.7,
+      "fats": 0.2,
+      "carbs": 10.5
+    },
+    "flavor_molecules": [
+      "limonene",
+      "beta-pinene",
+      "gamma-terpinene",
+      "neral",
+      "p-cymene"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      4.5,
+      3.0,
+      8.0,
+      0.2,
+      2.0
+    ]
+  },
+  "Chili powder": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 12.3,
+      "fats": 14.3,
+      "carbs": 49.7
+    },
+    "flavor_molecules": [
+      "capsaicin",
+      "dihydrocapsaicin",
+      "cumin aldehyde",
+      "carvacrol",
+      "pyrazines"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.5,
+      1.5,
+      2.5,
+      2.0,
+      1.0
+    ]
+  },
+  "Baking powder": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 27.7
+    },
+    "flavor_molecules": [
+      "sodium bicarbonate",
+      "monocalcium phosphate",
+      "sodium aluminum sulfate",
+      "tartaric acid"
+    ],
+    "culinary_role": "binding_agent",
+    "texture_profile": [
+      8.5,
+      1.0,
+      1.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Basil": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.2,
+      "fats": 0.6,
+      "carbs": 2.7
+    },
+    "flavor_molecules": [
+      "linalool",
+      "eugenol",
+      "1,8-cineole",
+      "estragole",
+      "beta-ocimene"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      2.0,
+      1.5,
+      7.5,
+      0.4,
+      2.0
+    ]
+  },
+  "Scallions": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.8,
+      "fats": 0.2,
+      "carbs": 7.3
+    },
+    "flavor_molecules": [
+      "dipropyl disulfide",
+      "allicin",
+      "quercetin",
+      "methyl propyl sulfide",
+      "propanethial S-oxide"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      3.5,
+      3.0,
+      8.5,
+      0.2,
+      3.0
+    ]
+  },
+  "Garlic powder": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 16.6,
+      "fats": 0.7,
+      "carbs": 72.7
+    },
+    "flavor_molecules": [
+      "allicin",
+      "diallyl disulfide",
+      "diallyl trisulfide",
+      "allyl methyl sulfide",
+      "3-vinyl-4H-1,2-dithiin"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      8.0,
+      1.5,
+      2.0,
+      0.3,
+      1.0
+    ]
+  },
+  "Honey": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 0.3,
+      "fats": 0.0,
+      "carbs": 82.4
+    },
+    "flavor_molecules": [
+      "furfural",
+      "hydroxymethylfurfural",
+      "phenylacetic acid",
+      "hotrienol",
+      "nonanal"
+    ],
+    "culinary_role": "sweetener",
+    "texture_profile": [
+      1.5,
+      7.5,
+      3.5,
+      0.5,
+      6.5
+    ]
+  },
+  "Balsamic vinegar": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.5,
+      "fats": 0.0,
+      "carbs": 17.0
+    },
+    "flavor_molecules": [
+      "acetic acid",
+      "5-acetoxymethyl-2-furaldehyde",
+      "5-HMF",
+      "phenylacetic acid",
+      "vanillin"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      3.5,
+      6.5,
+      0.1,
+      2.5
+    ]
+  },
+  "Ginger": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.8,
+      "fats": 0.8,
+      "carbs": 17.8
+    },
+    "flavor_molecules": [
+      "gingerol",
+      "shogaol",
+      "zingerone",
+      "geranial",
+      "beta-sesquiphellandrene"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      6.5,
+      4.5,
+      5.5,
+      0.5,
+      2.5
+    ]
+  },
+  "Mozzarella cheese": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 22.2,
+      "fats": 22.4,
+      "carbs": 2.2
+    },
+    "flavor_molecules": [
+      "diacetyl",
+      "acetaldehyde",
+      "lactic acid",
+      "butyric acid",
+      "acetic acid"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      5.0,
+      7.5,
+      5.5,
+      7.5,
+      8.5
+    ]
+  },
+  "Red onion": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.1,
+      "fats": 0.1,
+      "carbs": 9.3
+    },
+    "flavor_molecules": [
+      "quercetin",
+      "anthocyanins",
+      "propanethial S-oxide",
+      "dipropyl disulfide",
+      "methyl propyl trisulfide"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.5,
+      3.5,
+      7.5,
+      0.2,
+      2.5
+    ]
+  },
+  "Baking soda": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "sodium bicarbonate",
+      "carbon dioxide",
+      "sodium carbonate",
+      "alkaline salts"
+    ],
+    "culinary_role": "binding_agent",
+    "texture_profile": [
+      9.0,
+      1.0,
+      1.0,
+      0.0,
+      1.0
+    ]
+  },
+  "Bacon": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 37.0,
+      "fats": 42.0,
+      "carbs": 1.4
+    },
+    "flavor_molecules": [
+      "pyrazines",
+      "furans",
+      "2-methylbutanal",
+      "guaiacol",
+      "phenol"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      8.0,
+      6.5,
+      3.5,
+      8.0,
+      4.0
+    ]
+  },
+  "White wine": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.1,
+      "fats": 0.0,
+      "carbs": 2.6
+    },
+    "flavor_molecules": [
+      "ethanol",
+      "linalool",
+      "isoamyl acetate",
+      "2-phenylethanol",
+      "ethyl hexanoate"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.0,
+      0.1,
+      1.0
+    ]
+  },
+  "Chicken broth": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 1.3,
+      "fats": 0.4,
+      "carbs": 0.1
+    },
+    "flavor_molecules": [
+      "inosine monophosphate",
+      "glutamic acid",
+      "2-methyl-3-furanthiol",
+      "methional",
+      "dimethyl trisulfide"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      1.5,
+      1.0
+    ]
+  },
+  "Thyme": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 5.6,
+      "fats": 1.7,
+      "carbs": 24.5
+    },
+    "flavor_molecules": [
+      "thymol",
+      "carvacrol",
+      "linalool",
+      "para-cymene",
+      "gamma-terpinene"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      4.5,
+      2.5,
+      4.0,
+      0.8,
+      1.5
+    ]
+  },
+  "Cornstarch": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.3,
+      "fats": 0.1,
+      "carbs": 91.3
+    },
+    "flavor_molecules": [
+      "amylose",
+      "amylopectin",
+      "starch glucans",
+      "dextrins"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      7.0,
+      2.5,
+      2.5,
+      0.1,
+      4.5
+    ]
+  },
+  "Sour cream": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 2.4,
+      "fats": 19.4,
+      "carbs": 4.6
+    },
+    "flavor_molecules": [
+      "lactic acid",
+      "diacetyl",
+      "acetoin",
+      "acetaldehyde",
+      "butyric acid"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.5,
+      3.5,
+      5.5,
+      8.5,
+      3.5
+    ]
+  },
+  "Mustard": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 4.4,
+      "fats": 3.3,
+      "carbs": 5.8
+    },
+    "flavor_molecules": [
+      "allyl isothiocyanate",
+      "sinigrin",
+      "sinapine",
+      "p-hydroxybenzyl glucosinolate",
+      "acetic acid"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      2.0,
+      3.0,
+      5.5,
+      1.5,
+      2.0
+    ]
+  },
+  "Vinegar": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.9
+    },
+    "flavor_molecules": [
+      "acetic acid",
+      "ethyl acetate",
+      "acetaldehyde",
+      "lactic acid",
+      "propionic acid"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Celery": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.7,
+      "fats": 0.2,
+      "carbs": 3.0
+    },
+    "flavor_molecules": [
+      "3-n-butylphthalide",
+      "sedanenolide",
+      "limonene",
+      "apiol",
+      "selinene"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      4.0,
+      4.5,
+      9.0,
+      0.2,
+      4.0
+    ]
+  },
+  "Cayenne pepper": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 12.0,
+      "fats": 17.3,
+      "carbs": 56.6
+    },
+    "flavor_molecules": [
+      "capsaicin",
+      "dihydrocapsaicin",
+      "nordihydrocapsaicin",
+      "homodihydrocapsaicin",
+      "carotenoids"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.5,
+      1.5,
+      2.0,
+      2.5,
+      1.0
+    ]
+  },
+  "Ground beef": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 26.1,
+      "fats": 15.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "heptanal",
+      "2-undecenal",
+      "2-methyl-3-furanthiol",
+      "dimethyl trisulfide",
+      "methional"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.0,
+      6.5,
+      5.0,
+      6.5,
+      5.0
+    ]
+  },
+  "Nutmeg": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 5.8,
+      "fats": 36.3,
+      "carbs": 49.3
+    },
+    "flavor_molecules": [
+      "myristicin",
+      "elemicin",
+      "eugenol",
+      "alpha-pinene",
+      "safrole"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      8.0,
+      2.0,
+      2.0,
+      4.0,
+      1.0
+    ]
+  },
+  "Coriander": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 12.4,
+      "fats": 17.8,
+      "carbs": 54.9
+    },
+    "flavor_molecules": [
+      "linalool",
+      "alpha-pinene",
+      "gamma-terpinene",
+      "borneol",
+      "geraniol"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.0,
+      2.0,
+      3.0,
+      2.5,
+      1.0
+    ]
+  },
+  "Almonds": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 21.2,
+      "fats": 49.9,
+      "carbs": 21.6
+    },
+    "flavor_molecules": [
+      "benzaldehyde",
+      "amygdalin",
+      "linalool",
+      "furfural",
+      "vanillin"
+    ],
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      9.0,
+      7.0,
+      2.0,
+      7.5,
+      2.5
+    ]
+  },
+  "Apple cider vinegar": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.9
+    },
+    "flavor_molecules": [
+      "acetic acid",
+      "malic acid",
+      "ethyl acetate",
+      "acetaldehyde",
+      "lactic acid"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Avocado": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.0,
+      "fats": 14.7,
+      "carbs": 8.5
+    },
+    "flavor_molecules": [
+      "trans-2-hexenal",
+      "beta-caryophyllene",
+      "methyl chavicol",
+      "eugenol",
+      "2-heptanol"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      2.5,
+      4.0,
+      6.5,
+      8.5,
+      3.0
+    ]
+  },
+  "Sesame oil": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "sesamol",
+      "sesamin",
+      "pyrazines",
+      "furans",
+      "thiophenes"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.5,
+      9.0,
+      1.0
+    ]
+  },
+  "Rosemary": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.3,
+      "fats": 5.9,
+      "carbs": 20.7
+    },
+    "flavor_molecules": [
+      "1,8-cineole",
+      "camphor",
+      "alpha-pinene",
+      "borneol",
+      "verbenone"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.0,
+      3.0,
+      4.5,
+      1.0,
+      2.0
+    ]
+  },
+  "Soy": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 36.5,
+      "fats": 19.9,
+      "carbs": 30.2
+    },
+    "flavor_molecules": [
+      "genistein",
+      "daidzein",
+      "hexanal",
+      "2-pentylfuran",
+      "acetaldehyde"
+    ],
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      5.5,
+      5.0,
+      5.5,
+      4.5,
+      4.0
+    ]
+  },
+  "Green onion": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.8,
+      "fats": 0.2,
+      "carbs": 7.3
+    },
+    "flavor_molecules": [
+      "dipropyl disulfide",
+      "propanethial S-oxide",
+      "methyl propyl sulfide",
+      "allicin",
+      "quercetin"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      3.5,
+      3.0,
+      8.5,
+      0.2,
+      3.0
+    ]
+  },
+  "Red wine vinegar": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.3
+    },
+    "flavor_molecules": [
+      "acetic acid",
+      "ethyl acetate",
+      "lactic acid",
+      "anthocyanins",
+      "tartaric acid"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Peanut butter": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 25.1,
+      "fats": 50.4,
+      "carbs": 20.0
+    },
+    "flavor_molecules": [
+      "pyrazines",
+      "2-acetylpyridine",
+      "2-acetyl-1-pyrroline",
+      "furaneol",
+      "methylbutanals"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      3.5,
+      7.5,
+      2.5,
+      9.0,
+      4.5
+    ]
+  },
+  "Jalapeno": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.9,
+      "fats": 0.4,
+      "carbs": 6.5
+    },
+    "flavor_molecules": [
+      "capsaicin",
+      "2-methoxy-3-isobutylpyrazine",
+      "dihydrocapsaicin",
+      "linalool",
+      "hexanal"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      4.5,
+      3.5,
+      7.5,
+      0.3,
+      3.5
+    ]
+  },
+  "Maple syrup": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.1,
+      "carbs": 67.0
+    },
     "flavor_molecules": [
       "sotolon",
       "vanillin",
-      "maple_furanone"
+      "maltol",
+      "cyclotene",
+      "furaneol"
     ],
-    "role": "sweetener"
+    "culinary_role": "sweetener",
+    "texture_profile": [
+      1.0,
+      6.0,
+      4.5,
+      0.2,
+      5.5
+    ]
   },
-  "shrimp": {
-    "is_vegan": false,
-    "macros": {
-      "fat": 0.01,
-      "protein": 0.24,
-      "carb": 0.0,
-      "water": 0.75
-    },
-    "texture": [
-      3,
-      4,
-      1,
-      4,
-      3,
-      2
-    ],
-    "flavor_molecules": [
-      "dimethyl_sulfide",
-      "trimethylamine",
-      "pyrrole",
-      "hexanal",
-      "sweet_esters"
-    ],
-    "role": "bulk_protein"
-  },
-  "king oyster mushroom": {
+  "Tomato paste": {
     "is_vegan": true,
     "macros": {
-      "fat": 0.01,
-      "protein": 0.03,
-      "carb": 0.07,
-      "water": 0.89
+      "proteins": 3.8,
+      "fats": 0.5,
+      "carbs": 18.9
     },
-    "texture": [
-      2,
-      3,
-      2,
-      4,
-      2,
-      2
-    ],
     "flavor_molecules": [
-      "octen-3-ol",
-      "hexanal",
-      "pyrrole",
-      "umami_peptides"
+      "lycopene",
+      "glutamic acid",
+      "2-isobutylthiazole",
+      "6-methyl-5-hepten-2-one",
+      "dimethyl sulfide"
     ],
-    "role": "bulk_protein"
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      2.5,
+      5.5,
+      4.5,
+      0.5,
+      3.5
+    ]
   },
-  "cumin": {
+  "Bread crumbs": {
     "is_vegan": true,
-    "is_spice": true,
+    "macros": {
+      "proteins": 13.0,
+      "fats": 4.0,
+      "carbs": 71.2
+    },
     "flavor_molecules": [
-      "cuminaldehyde",
-      "cymene",
-      "terpenes"
-    ],
-    "role": "seasoning"
-  },
-  "coriander": {
-    "is_vegan": true,
-    "is_spice": true,
-    "flavor_molecules": [
-      "linalool",
-      "pinene",
-      "limonene"
-    ],
-    "role": "seasoning"
-  },
-  "turmeric": {
-    "is_vegan": true,
-    "is_spice": true,
-    "flavor_molecules": [
-      "turmerone",
-      "curlone",
-      "zingiberene"
-    ],
-    "role": "seasoning"
-  },
-  "smoked paprika": {
-    "is_vegan": true,
-    "is_spice": true,
-    "flavor_molecules": [
-      "guaiacol",
-      "syringol",
+      "pyrazines",
+      "maltol",
+      "2-acetyl-1-pyrroline",
       "furfural",
-      "pyrazines"
+      "furaneol"
     ],
-    "role": "seasoning"
+    "culinary_role": "thickener",
+    "texture_profile": [
+      7.5,
+      3.5,
+      2.5,
+      1.5,
+      2.0
+    ]
   },
-  "nutritional yeast": {
+  "Lime juice": {
     "is_vegan": true,
-    "is_spice": true,
+    "macros": {
+      "proteins": 0.3,
+      "fats": 0.1,
+      "carbs": 7.1
+    },
     "flavor_molecules": [
-      "glutamic_acid",
-      "ethyl_butyrate",
-      "dimethyl_sulfide"
+      "citric acid",
+      "limonene",
+      "gamma-terpinene",
+      "beta-pinene",
+      "geranial"
     ],
-    "role": "seasoning"
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      0.1,
+      1.0
+    ]
   },
-  "monosodium glutamate": {
-    "is_vegan": true,
-    "is_spice": true,
-    "flavor_molecules": [
-      "glutamic_acid",
-      "sodium_volatiles"
-    ],
-    "role": "seasoning"
-  },
-  "mutton": {
+  "Shrimp": {
     "is_vegan": false,
     "macros": {
-      "fat": 0.2,
-      "protein": 0.22,
-      "carb": 0.0,
-      "water": 0.58
+      "proteins": 24.0,
+      "fats": 0.9,
+      "carbs": 0.2
     },
-    "texture": [
-      4,
-      4,
-      4,
-      2,
-      2,
-      2
-    ],
-    "flavor_molecules": [
-      "methyl_propanoate",
-      "dimethyl_sulfide",
-      "pyrazines"
-    ],
-    "role": "bulk_protein"
-  },
-  "onion": {
-    "is_vegan": true,
-    "macros": {
-      "fat": 0.0,
-      "protein": 1.0,
-      "carb": 4.33,
-      "water": 87.23
-    },
-    "texture": [
-      3,
-      2,
-      5,
-      2,
-      2,
-      2
-    ],
-    "flavor_molecules": [
-      "aldehydes",
-      "sulfur containing compounds",
-      "esters"
-    ],
-    "role": "seasoning"
-  },
-  "garlic": {
-    "is_vegan": true,
-    "macros": {
-      "fat": 0.0,
-      "protein": 0.01,
-      "carb": 0.0,
-      "water": 0.88
-    },
-    "texture": [
-      4,
-      5,
-      2,
-      1,
-      1,
-      1
-    ],
-    "flavor_molecules": [
-      "allicin",
-      "S-allylcysteine",
-      "N-allylcysteine"
-    ],
-    "role": "seasoning"
-  },
-  "tomato puree": {
-    "is_vegan": true,
-    "macros": {
-      "fat": 0.0,
-      "protein": 0.01,
-      "carb": 0.88,
-      "water": 0.99
-    },
-    "texture": [
-      3,
-      2,
-      1,
-      5,
-      4,
-      4
-    ],
-    "flavor_molecules": [
-      "hexanal",
-      "cinnamaldehyde",
-      "geraniol"
-    ],
-    "role": "creamy_liquid"
-  },
-  "fish": {
-    "is_vegan": false,
-    "macros": {
-      "fat": 0.05,
-      "protein": 0.2,
-      "carb": 0.0,
-      "water": 0.75
-    },
-    "texture": [
-      3,
-      4,
-      1,
-      4,
-      3,
-      2
-    ],
     "flavor_molecules": [
       "trimethylamine",
-      "dimethyl_sulfide",
+      "dimethyl sulfide",
+      "pyrazines",
+      "inosine monophosphate",
+      "betaine"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      6.0,
+      7.5,
+      6.5,
+      1.5,
+      5.5
+    ]
+  },
+  "Dijon mustard": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 7.0,
+      "fats": 4.7,
+      "carbs": 5.3
+    },
+    "flavor_molecules": [
+      "allyl isothiocyanate",
+      "sinigrin",
+      "acetic acid",
+      "turmeric",
+      "white wine"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      2.0,
+      4.0,
+      5.5,
+      1.5,
+      3.0
+    ]
+  },
+  "Spinach": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.9,
+      "fats": 0.4,
+      "carbs": 3.6
+    },
+    "flavor_molecules": [
+      "oxalic acid",
+      "hexanal",
+      "methyl hexadecanoate",
+      "linolenic acid",
+      "2-hexenal"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      2.0,
+      2.0,
+      9.0,
+      0.3,
+      2.5
+    ]
+  },
+  "Bay leaf": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 7.6,
+      "fats": 8.4,
+      "carbs": 74.9
+    },
+    "flavor_molecules": [
+      "1,8-cineole",
+      "alpha-terpinyl acetate",
+      "eugenol",
+      "sabinene",
+      "linalool"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      8.0,
+      4.0,
+      2.5,
+      1.5,
+      2.0
+    ]
+  },
+  "White sugar": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 99.9
+    },
+    "flavor_molecules": [
+      "sucrose",
+      "glucose",
+      "fructose",
+      "caramelone",
+      "maltol"
+    ],
+    "culinary_role": "sweetener",
+    "texture_profile": [
+      8.0,
+      1.0,
+      1.0,
+      0.0,
+      1.0
+    ]
+  },
+  "Mint": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.3,
+      "fats": 0.7,
+      "carbs": 8.4
+    },
+    "flavor_molecules": [
+      "menthol",
+      "menthone",
+      "isomenthone",
+      "limonene",
+      "1,8-cineole"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      2.5,
+      2.0,
+      7.5,
+      0.4,
+      2.5
+    ]
+  },
+  "Sriracha": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.6,
+      "fats": 0.4,
+      "carbs": 8.0
+    },
+    "flavor_molecules": [
+      "capsaicin",
+      "acetic acid",
+      "garlic sulfides",
+      "sugar",
+      "citric acid"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.5,
+      4.0,
+      6.5,
+      0.5,
+      3.0
+    ]
+  },
+  "Mushroom": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.1,
+      "fats": 0.3,
+      "carbs": 3.3
+    },
+    "flavor_molecules": [
+      "glutamic acid",
+      "guanosine monophosphate",
+      "1-octen-3-ol",
+      "ergosterol",
+      "lenthionine"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      4.0,
+      6.0,
+      7.5,
+      0.5,
+      4.5
+    ]
+  },
+  "Walnut": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 15.2,
+      "fats": 65.2,
+      "carbs": 13.7
+    },
+    "flavor_molecules": [
+      "juglone",
+      "alpha-linolenic acid",
+      "vanillin",
       "hexanal",
       "nonanal"
     ],
-    "role": "bulk_protein"
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      8.5,
+      6.5,
+      2.0,
+      8.5,
+      2.5
+    ]
   },
-  "pork": {
+  "Chocolate chips": {
     "is_vegan": false,
     "macros": {
-      "fat": 0.2,
-      "protein": 0.27,
-      "carb": 0.0,
-      "water": 0.53
+      "proteins": 5.5,
+      "fats": 30.0,
+      "carbs": 59.5
     },
-    "texture": [
-      4,
-      4,
-      4,
-      3,
-      3,
-      1
-    ],
     "flavor_molecules": [
-      "hexanal",
-      "octanal",
-      "1-octen-3-ol",
-      "pyrazines"
-    ],
-    "role": "bulk_protein"
-  },
-  "crab": {
-    "is_vegan": false,
-    "macros": {
-      "fat": 0.02,
-      "protein": 0.19,
-      "carb": 0.0,
-      "water": 0.79
-    },
-    "texture": [
-      2,
-      4,
-      1,
-      5,
-      3,
-      2
-    ],
-    "flavor_molecules": [
-      "trimethylamine",
-      "dimethyl_trisulfide",
-      "sweet_esters"
-    ],
-    "role": "bulk_protein"
-  },
-  "duck": {
-    "is_vegan": false,
-    "macros": {
-      "fat": 0.28,
-      "protein": 0.19,
-      "carb": 0.0,
-      "water": 0.53
-    },
-    "texture": [
-      4,
-      4,
-      4,
-      2,
-      2,
-      1
-    ],
-    "flavor_molecules": [
-      "hexanal",
-      "nonanal",
-      "decadienal",
-      "hydrogen_sulfide"
-    ],
-    "role": "bulk_protein"
-  },
-  "squid": {
-    "is_vegan": false,
-    "macros": {
-      "fat": 0.01,
-      "protein": 0.16,
-      "carb": 0.03,
-      "water": 0.8
-    },
-    "texture": [
-      5,
-      4,
-      1,
-      4,
-      3,
-      1
-    ],
-    "flavor_molecules": [
-      "trimethylamine",
-      "dimethyl_sulfide",
-      "amino_acids"
-    ],
-    "role": "bulk_protein"
-  },
-  "turkey": {
-    "is_vegan": false,
-    "macros": {
-      "fat": 0.07,
-      "protein": 0.29,
-      "carb": 0.0,
-      "water": 0.64
-    },
-    "texture": [
-      3,
-      4,
-      3,
-      3,
-      2,
-      1
-    ],
-    "flavor_molecules": [
-      "hexanal",
-      "nonanal",
-      "dimethyl_disulfide",
-      "pyrazines"
-    ],
-    "role": "bulk_protein"
-  },
-  "bacon": {
-    "is_vegan": false,
-    "macros": {
-      "fat": 0.42,
-      "protein": 0.37,
-      "carb": 0.01,
-      "water": 0.2
-    },
-    "texture": [
-      5,
-      5,
-      2,
-      1,
-      2,
-      1
-    ],
-    "flavor_molecules": [
-      "guaiacol",
-      "syringol",
-      "furans",
+      "theobromine",
       "pyrazines",
-      "hexanal"
+      "phenylethylamine",
+      "vanillin",
+      "2-acetyl-1-pyrroline"
     ],
-    "role": "bulk_protein"
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      6.5,
+      4.5,
+      2.0,
+      8.0,
+      3.5
+    ]
   },
-  "sausage": {
+  "Cream cheese": {
     "is_vegan": false,
     "macros": {
-      "fat": 0.3,
-      "protein": 0.14,
-      "carb": 0.02,
-      "water": 0.54
+      "proteins": 5.9,
+      "fats": 34.4,
+      "carbs": 2.7
     },
-    "texture": [
-      3,
-      3,
-      4,
-      3,
-      2,
-      1
-    ],
     "flavor_molecules": [
-      "hexanal",
-      "octanal",
-      "terpenes",
-      "phenols"
+      "diacetyl",
+      "lactic acid",
+      "acetaldehyde",
+      "butyric acid",
+      "acetic acid"
     ],
-    "role": "bulk_protein"
+    "culinary_role": "dairy",
+    "texture_profile": [
+      2.5,
+      5.0,
+      5.0,
+      9.5,
+      5.5
+    ]
   },
-  "banana blossom": {
+  "Zucchini": {
     "is_vegan": true,
     "macros": {
-      "fat": 0.01,
-      "protein": 0.02,
-      "carb": 0.08,
-      "water": 0.89
+      "proteins": 1.2,
+      "fats": 0.3,
+      "carbs": 3.1
     },
-    "texture": [
-      3,
-      4,
-      1,
-      4,
-      3,
-      2
+    "flavor_molecules": [
+      "hexanal",
+      "2-hexenal",
+      "nonanal",
+      "linalool",
+      "beta-ionone"
     ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      3.0,
+      3.0,
+      8.5,
+      0.3,
+      3.0
+    ]
+  },
+  "Beef broth": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 1.5,
+      "fats": 0.2,
+      "carbs": 0.5
+    },
+    "flavor_molecules": [
+      "glutamic acid",
+      "inosine monophosphate",
+      "methional",
+      "2-methyl-3-furanthiol",
+      "heptanal"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      1.0,
+      1.0
+    ]
+  },
+  "Canola oil": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "oleic acid",
+      "linoleic acid",
+      "erucic acid",
+      "hexanal",
+      "nonanal"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.0,
+      9.0,
+      1.0
+    ]
+  },
+  "Coconut oil": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "lauric acid",
+      "caprylic acid",
+      "delta-decalactone",
+      "methyl hexanoate",
+      "nonalactone"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      4.5,
+      2.0,
+      2.5,
+      9.5,
+      1.5
+    ]
+  },
+  "Potato": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.0,
+      "fats": 0.1,
+      "carbs": 17.5
+    },
+    "flavor_molecules": [
+      "methional",
+      "2-ethyl-3,6-dimethylpyrazine",
+      "3-methylbutanal",
+      "2-propionylpyrroline",
+      "glucose"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      5.0,
+      3.5,
+      7.5,
+      0.2,
+      3.0
+    ]
+  },
+  "Peanuts": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 25.8,
+      "fats": 49.2,
+      "carbs": 16.1
+    },
+    "flavor_molecules": [
+      "pyrazines",
+      "2-acetylpyridine",
+      "hexanal",
+      "furans",
+      "methylbutanals"
+    ],
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      8.5,
+      6.0,
+      2.5,
+      8.0,
+      2.5
+    ]
+  },
+  "Cocoa powder": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 19.6,
+      "fats": 13.7,
+      "carbs": 57.9
+    },
+    "flavor_molecules": [
+      "theobromine",
+      "pyrazines",
+      "phenylethylamine",
+      "epicatechin",
+      "vanillin"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.5,
+      2.0,
+      2.0,
+      2.5,
+      1.0
+    ]
+  },
+  "Cucumber": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.7,
+      "fats": 0.1,
+      "carbs": 3.6
+    },
+    "flavor_molecules": [
+      "2,6-nonadienal",
+      "nonanal",
+      "2-nonenal",
+      "hexanal",
+      "2-hexenal"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      3.5,
+      3.0,
+      9.5,
+      0.1,
+      3.0
+    ]
+  },
+  "Clove": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 5.9,
+      "fats": 13.0,
+      "carbs": 65.5
+    },
+    "flavor_molecules": [
+      "eugenol",
+      "beta-caryophyllene",
+      "acetyleugenol",
+      "alpha-humulene",
+      "vanillin"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      8.5,
+      2.5,
+      2.5,
+      2.0,
+      1.5
+    ]
+  },
+  "Orange juice": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.7,
+      "fats": 0.2,
+      "carbs": 10.4
+    },
+    "flavor_molecules": [
+      "limonene",
+      "linalool",
+      "nootkatone",
+      "decanal",
+      "octanal"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.5,
+      9.5,
+      0.1,
+      1.0
+    ]
+  },
+  "White pepper": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 10.4,
+      "fats": 2.1,
+      "carbs": 68.6
+    },
+    "flavor_molecules": [
+      "piperine",
+      "alpha-pinene",
+      "limonene",
+      "sotolon",
+      "p-cymene"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      8.5,
+      1.5,
+      1.5,
+      0.8,
+      1.0
+    ]
+  },
+  "Apple": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.3,
+      "fats": 0.2,
+      "carbs": 13.8
+    },
+    "flavor_molecules": [
+      "hexyl acetate",
+      "ethyl butanoate",
+      "2-methylbutyl acetate",
+      "butyl acetate",
+      "hexanal"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.5,
+      5.0,
+      8.5,
+      0.2,
+      4.0
+    ]
+  },
+  "Cabbage": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.3,
+      "fats": 0.1,
+      "carbs": 5.8
+    },
+    "flavor_molecules": [
+      "allyl isothiocyanate",
+      "dimethyl trisulfide",
+      "2-propenyl glucosinolate",
+      "hexanal",
+      "2-hexenal"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.0,
+      4.5,
+      8.0,
+      0.2,
+      4.0
+    ]
+  },
+  "Oats": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 16.9,
+      "fats": 6.9,
+      "carbs": 66.3
+    },
+    "flavor_molecules": [
+      "avenanthramides",
+      "hexanal",
+      "nonanal",
+      "2-pentylfuran",
+      "furaneol"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      6.0,
+      5.0,
+      4.0,
+      1.5,
+      4.0
+    ]
+  },
+  "Coconut milk": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.3,
+      "fats": 21.3,
+      "carbs": 5.5
+    },
+    "flavor_molecules": [
+      "lauric acid",
+      "delta-decalactone",
+      "nonalactone",
+      "2-nonanone",
+      "methyl hexanoate"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      2.5,
+      6.5,
+      8.5,
+      2.0
+    ]
+  },
+  "Salmon": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 20.4,
+      "fats": 13.4,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "dimethyl sulfide",
+      "hexanal",
+      "DHA",
+      "omega-3 fatty acids"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      4.5,
+      6.0,
+      6.5,
+      7.5,
+      5.5
+    ]
+  },
+  "Feta cheese": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 14.2,
+      "fats": 21.3,
+      "carbs": 4.1
+    },
+    "flavor_molecules": [
+      "butyric acid",
+      "caproic acid",
+      "lactic acid",
+      "2-heptanone",
+      "acetic acid"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      5.5,
+      3.5,
+      5.5,
+      7.0,
+      2.5
+    ]
+  },
+  "Pork": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 27.3,
+      "fats": 14.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "2-methylbutanal",
+      "3-methylbutanal",
+      "methional",
+      "skatole"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.5,
+      7.0,
+      5.5,
+      6.0,
+      5.5
+    ]
+  },
+  "Blueberries": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.7,
+      "fats": 0.3,
+      "carbs": 14.5
+    },
+    "flavor_molecules": [
+      "anthocyanins",
+      "pterostilbene",
+      "ethyl butanoate",
+      "linalool",
+      "hexanal"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      4.0,
+      3.5,
+      8.5,
+      0.3,
+      3.5
+    ]
+  },
+  "Corn": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.4,
+      "fats": 1.5,
+      "carbs": 19.0
+    },
+    "flavor_molecules": [
+      "2-acetyl-1-pyrroline",
+      "dimethyl sulfide",
+      "geraniol",
+      "hexanal",
+      "indole"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      5.5,
+      5.5,
+      7.5,
+      1.5,
+      4.0
+    ]
+  },
+  "Sesame seeds": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 17.7,
+      "fats": 49.7,
+      "carbs": 23.5
+    },
+    "flavor_molecules": [
+      "sesamin",
+      "sesamol",
+      "sesamolin",
+      "furans",
+      "thiophenes"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      8.5,
+      4.5,
+      2.5,
+      7.5,
+      2.0
+    ]
+  },
+  "Prosciutto": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 25.9,
+      "fats": 16.0,
+      "carbs": 0.3
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "2-methylbutanal",
+      "pyrazines",
+      "guaiacol",
+      "phenol"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      6.5,
+      8.5,
+      3.5,
+      7.5,
+      5.0
+    ]
+  },
+  "Ketchup": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.7,
+      "fats": 0.4,
+      "carbs": 25.0
+    },
+    "flavor_molecules": [
+      "lycopene",
+      "acetic acid",
+      "citric acid",
+      "capsaicin",
+      "fructose"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.5,
+      5.0,
+      6.0,
+      0.5,
+      4.0
+    ]
+  },
+  "Yogurt": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 3.5,
+      "fats": 3.3,
+      "carbs": 4.7
+    },
+    "flavor_molecules": [
+      "lactic acid",
+      "acetaldehyde",
+      "diacetyl",
+      "butyric acid",
+      "acetic acid"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      4.0,
+      7.5,
+      4.5,
+      4.0
+    ]
+  },
+  "Mustard powder": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 26.1,
+      "fats": 36.2,
+      "carbs": 26.9
+    },
+    "flavor_molecules": [
+      "allyl isothiocyanate",
+      "p-hydroxybenzyl isothiocyanate",
+      "sinigrin",
+      "gluconapin",
+      "sinapine"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      8.0,
+      1.5,
+      2.0,
+      3.5,
+      1.0
+    ]
+  },
+  "Vegetable broth": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.5,
+      "fats": 0.1,
+      "carbs": 1.5
+    },
+    "flavor_molecules": [
+      "glutamic acid",
+      "furfural",
+      "2-pentylfuran",
+      "hexanal",
+      "limonene"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      0.2,
+      1.0
+    ]
+  },
+  "Strawberries": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.8,
+      "fats": 0.3,
+      "carbs": 7.7
+    },
+    "flavor_molecules": [
+      "furaneol",
+      "methyl anthranilate",
+      "linalool",
+      "ethyl butanoate",
+      "nerolidol"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      3.5,
+      3.0,
+      9.0,
+      0.3,
+      3.0
+    ]
+  },
+  "Asparagus": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.2,
+      "fats": 0.1,
+      "carbs": 3.9
+    },
+    "flavor_molecules": [
+      "asparagusic acid",
+      "dimethyl sulfide",
+      "dimethyl disulfide",
+      "methyl mercaptan",
+      "1-octen-3-ol"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      4.5,
+      4.5,
+      8.0,
+      0.2,
+      4.0
+    ]
+  },
+  "Pineapple": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.5,
+      "fats": 0.1,
+      "carbs": 13.1
+    },
+    "flavor_molecules": [
+      "allyl hexanoate",
+      "ethyl-2-methylbutanoate",
+      "methyl hexanoate",
+      "furanones",
+      "methyl butyrate"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      4.0,
+      4.5,
+      9.0,
+      0.2,
+      3.5
+    ]
+  },
+  "Cauliflower": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.9,
+      "fats": 0.3,
+      "carbs": 5.0
+    },
+    "flavor_molecules": [
+      "allyl isothiocyanate",
+      "indole-3-carbinol",
+      "dimethyl sulfide",
+      "hexanal",
+      "2-propenyl glucosinolate"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.5,
+      4.5,
+      7.5,
+      0.3,
+      3.5
+    ]
+  },
+  "Fish sauce": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 5.1,
+      "fats": 0.0,
+      "carbs": 3.6
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "glutamic acid",
+      "putrescine",
+      "cadaverine",
+      "acetic acid"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.0,
+      0.0,
+      1.0
+    ]
+  },
+  "Broccoli": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.8,
+      "fats": 0.4,
+      "carbs": 6.6
+    },
+    "flavor_molecules": [
+      "sulforaphane",
+      "allyl isothiocyanate",
+      "indole-3-carbinol",
+      "dimethyl sulfide",
+      "glucoraphanin"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.0,
+      4.0,
+      7.5,
+      0.3,
+      3.5
+    ]
+  },
+  "Allspice": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 6.1,
+      "fats": 8.7,
+      "carbs": 72.1
+    },
+    "flavor_molecules": [
+      "eugenol",
+      "caryophyllene",
+      "methyl eugenol",
+      "alpha-terpineol",
+      "1,8-cineole"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      8.0,
+      2.0,
+      2.0,
+      1.5,
+      1.0
+    ]
+  },
+  "Avocado oil": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "oleic acid",
+      "linoleic acid",
+      "beta-sitosterol",
+      "tocopherols",
+      "hexanal"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.0,
+      9.5,
+      1.0
+    ]
+  },
+  "Black beans": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 21.6,
+      "fats": 0.9,
+      "carbs": 62.4
+    },
+    "flavor_molecules": [
+      "saponins",
+      "anthocyanins",
+      "hexanal",
+      "2-pentanone",
+      "phenylacetaldehyde"
+    ],
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      6.5,
+      5.5,
+      6.5,
+      0.5,
+      4.5
+    ]
+  },
+  "Almond milk": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.4,
+      "fats": 1.1,
+      "carbs": 3.4
+    },
+    "flavor_molecules": [
+      "benzaldehyde",
+      "vanillin",
+      "linalool",
+      "tocopherols",
+      "amygdalin"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.0,
+      1.5,
+      1.0
+    ]
+  },
+  "Green beans": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.8,
+      "fats": 0.1,
+      "carbs": 7.0
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "2-hexenal",
+      "3-hexenal",
+      "trans-2-hexenal",
+      "2-pentylfuran"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      4.5,
+      5.0,
+      8.0,
+      0.2,
+      4.5
+    ]
+  },
+  "Turmeric": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 7.8,
+      "fats": 9.9,
+      "carbs": 64.9
+    },
+    "flavor_molecules": [
+      "curcumin",
+      "ar-turmerone",
+      "alpha-turmerone",
+      "beta-turmerone",
+      "zingiberene"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.5,
+      2.0,
+      3.0,
+      2.0,
+      1.0
+    ]
+  },
+  "Chicken": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 27.3,
+      "fats": 14.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "inosine monophosphate",
+      "2-methyl-3-furanthiol",
+      "methional",
+      "dimethyl trisulfide",
+      "heptanal"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.5,
+      7.0,
+      5.5,
+      5.5,
+      6.0
+    ]
+  },
+  "Ghee": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 99.5,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "diacetyl",
+      "butyric acid",
+      "delta-decalactone",
+      "2-heptanone",
+      "dimethyl sulfide"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      2.5,
+      1.5,
+      2.5,
+      9.5,
+      1.5
+    ]
+  },
+  "Bread": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 8.9,
+      "fats": 3.2,
+      "carbs": 49.1
+    },
+    "flavor_molecules": [
+      "2-acetyl-1-pyrroline",
+      "pyrazines",
+      "furfural",
+      "maltol",
+      "acetic acid"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      4.0,
+      5.5,
+      4.5,
+      1.5,
+      4.5
+    ]
+  },
+  "Red wine": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.1,
+      "fats": 0.0,
+      "carbs": 2.6
+    },
+    "flavor_molecules": [
+      "ethanol",
+      "anthocyanins",
+      "resveratrol",
+      "tannins",
+      "ethyl acetate"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.0,
+      0.1,
+      1.0
+    ]
+  },
+  "Rice": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.7,
+      "fats": 0.3,
+      "carbs": 28.2
+    },
+    "flavor_molecules": [
+      "2-acetyl-1-pyrroline",
+      "hexanal",
+      "nonanal",
+      "pentanal",
+      "2-pentylfuran"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      5.0,
+      4.5,
+      5.5,
+      0.3,
+      4.0
+    ]
+  },
+  "Pasta": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 5.0,
+      "fats": 0.6,
+      "carbs": 25.0
+    },
+    "flavor_molecules": [
+      "pyrazines",
+      "maltol",
+      "acetaldehyde",
+      "2-acetyl-1-pyrroline",
+      "hexanal"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      4.5,
+      6.5,
+      5.5,
+      0.5,
+      5.5
+    ]
+  },
+  "Chickpeas": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 19.3,
+      "fats": 6.0,
+      "carbs": 60.6
+    },
     "flavor_molecules": [
       "hexanal",
       "nonanal",
-      "green_notes"
+      "2-pentylfuran",
+      "phenylacetaldehyde",
+      "2-heptanone"
     ],
-    "role": "bulk_protein"
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      6.0,
+      5.5,
+      6.5,
+      1.5,
+      4.5
+    ]
   },
-  "jackfruit": {
+  "Beef": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 26.1,
+      "fats": 17.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "heptanal",
+      "hexanal",
+      "2-undecenal",
+      "methional",
+      "2-methyl-3-furanthiol"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      6.0,
+      7.5,
+      5.5,
+      7.0,
+      6.0
+    ]
+  },
+  "Orange": {
     "is_vegan": true,
     "macros": {
-      "fat": 0.01,
-      "protein": 0.02,
-      "carb": 0.23,
-      "water": 0.74
+      "proteins": 0.9,
+      "fats": 0.1,
+      "carbs": 11.8
     },
-    "texture": [
-      4,
-      4,
-      3,
-      3,
-      3,
-      1
-    ],
     "flavor_molecules": [
-      "ethyl_isovalerate",
-      "isoamyl_acetate",
+      "limonene",
+      "linalool",
+      "decanal",
+      "octanal",
+      "nootkatone"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      4.5,
+      3.5,
+      8.5,
+      0.2,
+      3.0
+    ]
+  },
+  "Sausage": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 14.0,
+      "fats": 30.0,
+      "carbs": 2.0
+    },
+    "flavor_molecules": [
+      "pyrazines",
+      "phenol",
+      "guaiacol",
+      "2-methylbutanal",
+      "carvacrol"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      6.0,
+      7.5,
+      4.5,
+      8.5,
+      5.5
+    ]
+  },
+  "Maple": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.1,
+      "carbs": 67.0
+    },
+    "flavor_molecules": [
+      "sotolon",
+      "vanillin",
+      "maltol",
+      "cyclotene",
+      "furaneol"
+    ],
+    "culinary_role": "sweetener",
+    "texture_profile": [
+      1.0,
+      6.0,
+      4.5,
+      0.2,
+      5.5
+    ]
+  },
+  "Lime zest": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.5,
+      "fats": 0.2,
+      "carbs": 8.0
+    },
+    "flavor_molecules": [
+      "limonene",
+      "gamma-terpinene",
+      "beta-pinene",
+      "citral",
+      "bergapten"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.5,
+      3.5,
+      4.5,
+      0.3,
+      2.5
+    ]
+  },
+  "Lemon zest": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.5,
+      "fats": 0.3,
+      "carbs": 8.5
+    },
+    "flavor_molecules": [
+      "limonene",
+      "citral",
+      "linalool",
+      "alpha-terpineol",
+      "bergapten"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.5,
+      3.0,
+      4.5,
+      0.3,
+      2.0
+    ]
+  },
+  "Dill": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.5,
+      "fats": 1.1,
+      "carbs": 7.0
+    },
+    "flavor_molecules": [
+      "carvone",
+      "limonene",
+      "phellandrene",
+      "dill ether",
+      "anethole"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      2.5,
+      2.0,
+      7.5,
+      0.4,
+      2.0
+    ]
+  },
+  "Fennel": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.2,
+      "fats": 0.2,
+      "carbs": 7.3
+    },
+    "flavor_molecules": [
+      "anethole",
+      "fenchone",
+      "methyl chavicol",
+      "limonene",
+      "alpha-pinene"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      4.0,
+      4.0,
+      8.0,
+      0.3,
+      3.5
+    ]
+  },
+  "Cardamom": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 10.8,
+      "fats": 6.7,
+      "carbs": 68.5
+    },
+    "flavor_molecules": [
+      "1,8-cineole",
+      "alpha-terpinyl acetate",
+      "limonene",
+      "linalool",
+      "terpinen-4-ol"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.5,
+      2.0,
+      2.5,
+      1.5,
+      1.0
+    ]
+  },
+  "Anise": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 17.6,
+      "fats": 15.9,
+      "carbs": 50.0
+    },
+    "flavor_molecules": [
+      "anethole",
+      "methyl chavicol",
+      "pseudoisoeugenol",
+      "anisaldehyde",
+      "alpha-pinene"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.5,
+      2.0,
+      2.5,
+      2.0,
+      1.0
+    ]
+  },
+  "Tarragon": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 22.8,
+      "fats": 7.2,
+      "carbs": 50.2
+    },
+    "flavor_molecules": [
+      "estragole",
+      "anethole",
+      "limonene",
+      "beta-ocimene",
+      "cis-ocimene"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      4.0,
+      2.5,
+      5.5,
+      1.0,
+      2.0
+    ]
+  },
+  "Chives": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.3,
+      "fats": 0.7,
+      "carbs": 4.4
+    },
+    "flavor_molecules": [
+      "dipropyl disulfide",
+      "allicin",
+      "propyl propene sulfide",
+      "dimethyl disulfide",
+      "quercetin"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      2.5,
+      2.0,
+      8.5,
+      0.3,
+      2.5
+    ]
+  },
+  "Marjoram": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 12.7,
+      "fats": 7.0,
+      "carbs": 60.6
+    },
+    "flavor_molecules": [
+      "terpinen-4-ol",
+      "sabinene",
+      "linalool",
+      "gamma-terpinene",
+      "para-cymene"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.5,
+      2.5,
+      3.5,
+      1.0,
+      1.5
+    ]
+  },
+  "Sage": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 10.6,
+      "fats": 12.7,
+      "carbs": 60.7
+    },
+    "flavor_molecules": [
+      "thujone",
+      "camphor",
+      "1,8-cineole",
+      "borneol",
+      "alpha-pinene"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.0,
+      2.5,
+      4.0,
+      1.5,
+      1.5
+    ]
+  },
+  "Lemongrass": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.8,
+      "fats": 0.5,
+      "carbs": 25.3
+    },
+    "flavor_molecules": [
+      "citral",
+      "geraniol",
+      "neral",
+      "limonene",
+      "beta-myrcene"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      7.0,
+      5.0,
+      4.5,
+      0.3,
+      2.5
+    ]
+  },
+  "Saffron": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 11.4,
+      "fats": 5.9,
+      "carbs": 65.4
+    },
+    "flavor_molecules": [
+      "safranal",
+      "picrocrocin",
+      "crocin",
+      "crocetin",
+      "4-ketoisophorone"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      6.0,
+      2.0,
+      3.0,
+      0.8,
+      1.5
+    ]
+  },
+  "Star anise": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 17.6,
+      "fats": 15.9,
+      "carbs": 50.0
+    },
+    "flavor_molecules": [
+      "anethole",
+      "methyl chavicol",
+      "foeniculin",
+      "anisaldehyde",
+      "limonene"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      8.5,
+      3.0,
+      2.0,
+      2.0,
+      1.5
+    ]
+  },
+  "Curry powder": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 12.7,
+      "fats": 14.0,
+      "carbs": 55.8
+    },
+    "flavor_molecules": [
+      "curcumin",
+      "cuminaldehyde",
+      "carvacrol",
+      "capsaicin",
+      "eugenol"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.5,
+      1.5,
+      2.5,
+      2.0,
+      1.0
+    ]
+  },
+  "Garam masala": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 12.5,
+      "fats": 15.0,
+      "carbs": 52.0
+    },
+    "flavor_molecules": [
+      "eugenol",
+      "cinnamaldehyde",
+      "cuminaldehyde",
+      "1,8-cineole",
+      "capsaicin"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.5,
+      2.0,
+      2.5,
+      2.5,
+      1.0
+    ]
+  },
+  "Five spice": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 10.0,
+      "fats": 10.0,
+      "carbs": 60.0
+    },
+    "flavor_molecules": [
+      "anethole",
+      "eugenol",
+      "cinnamaldehyde",
+      "cuminaldehyde",
+      "piperine"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.5,
+      2.0,
+      2.0,
+      2.0,
+      1.0
+    ]
+  },
+  "Chili flakes": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 12.0,
+      "fats": 12.9,
+      "carbs": 56.6
+    },
+    "flavor_molecules": [
+      "capsaicin",
+      "dihydrocapsaicin",
+      "nordihydrocapsaicin",
+      "pyrazines",
+      "carotenoids"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.5,
+      2.0,
+      2.5,
+      1.5,
+      1.0
+    ]
+  },
+  "Chipotle": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 12.0,
+      "fats": 12.9,
+      "carbs": 52.0
+    },
+    "flavor_molecules": [
+      "capsaicin",
+      "pyrazines",
+      "guaiacol",
+      "phenol",
+      "eugenol"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      6.5,
+      3.5,
+      4.5,
+      2.0,
+      2.0
+    ]
+  },
+  "Habanero": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.5,
+      "fats": 0.6,
+      "carbs": 8.8
+    },
+    "flavor_molecules": [
+      "capsaicin",
+      "dihydrocapsaicin",
+      "linalool",
+      "2-methoxy-3-isobutylpyrazine",
+      "isovaleric acid"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      4.0,
+      3.0,
+      7.5,
+      0.4,
+      3.0
+    ]
+  },
+  "Poblano": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.5,
+      "fats": 0.4,
+      "carbs": 7.0
+    },
+    "flavor_molecules": [
+      "capsaicin",
+      "2-methoxy-3-isobutylpyrazine",
+      "hexanal",
+      "linalool",
+      "limonene"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      4.5,
+      4.0,
+      8.0,
+      0.3,
+      3.5
+    ]
+  },
+  "Serrano": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.7,
+      "fats": 0.4,
+      "carbs": 7.0
+    },
+    "flavor_molecules": [
+      "capsaicin",
+      "dihydrocapsaicin",
+      "hexanal",
+      "linalool",
+      "2-methoxy-3-isobutylpyrazine"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      4.5,
+      3.5,
+      7.5,
+      0.3,
+      3.5
+    ]
+  },
+  "Gochugaru": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 12.0,
+      "fats": 12.9,
+      "carbs": 56.6
+    },
+    "flavor_molecules": [
+      "capsaicin",
+      "dihydrocapsaicin",
+      "capsorubin",
+      "capsanthin",
+      "pyrazines"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.0,
+      2.0,
+      3.5,
+      2.0,
+      1.5
+    ]
+  },
+  "Anchovy": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 28.9,
+      "fats": 9.7,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "glutamic acid",
+      "inosine monophosphate",
+      "acetic acid",
+      "putrescine"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      5.5,
+      5.5,
+      5.0,
+      4.5,
+      4.0
+    ]
+  },
+  "Capers": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.4,
+      "fats": 0.9,
+      "carbs": 4.9
+    },
+    "flavor_molecules": [
+      "rutin",
+      "acetic acid",
+      "glucocapparin",
+      "isothiocyanate",
+      "quercetin"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      5.0,
+      4.5,
+      6.5,
+      0.5,
+      3.0
+    ]
+  },
+  "Olives": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.8,
+      "fats": 11.0,
+      "carbs": 3.1
+    },
+    "flavor_molecules": [
+      "oleocanthal",
+      "oleuropein",
+      "hydroxytyrosol",
+      "hexanal",
+      "3-hexenol"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      5.5,
+      5.5,
+      5.5,
+      7.5,
+      3.5
+    ]
+  },
+  "Sun-dried tomatoes": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 14.1,
+      "fats": 2.8,
+      "carbs": 55.8
+    },
+    "flavor_molecules": [
+      "lycopene",
+      "glutamic acid",
+      "guaiacol",
+      "2-isobutylthiazole",
+      "dimethyl sulfide"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.0,
+      7.0,
+      3.5,
+      1.5,
+      3.5
+    ]
+  },
+  "Artichoke": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.3,
+      "fats": 0.2,
+      "carbs": 10.5
+    },
+    "flavor_molecules": [
+      "cynarin",
+      "chlorogenic acid",
+      "luteolin",
+      "sesquiterpene lactones",
+      "caffeic acid"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.5,
+      5.0,
+      7.0,
+      0.3,
+      4.0
+    ]
+  },
+  "Eggplant": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.0,
+      "fats": 0.2,
+      "carbs": 5.9
+    },
+    "flavor_molecules": [
+      "chlorogenic acid",
+      "hexanal",
+      "2-hexenal",
+      "beta-caryophyllene",
+      "1-octen-3-ol"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      3.0,
+      4.5,
+      8.0,
+      0.4,
+      3.5
+    ]
+  },
+  "Butternut squash": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.0,
+      "fats": 0.1,
+      "carbs": 11.7
+    },
+    "flavor_molecules": [
+      "beta-carotene",
+      "hexanal",
+      "2-hexenal",
+      "maltol",
+      "lactones"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      4.5,
+      4.0,
+      7.5,
+      0.3,
+      3.5
+    ]
+  },
+  "Sweet potato": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.6,
+      "fats": 0.1,
+      "carbs": 20.1
+    },
+    "flavor_molecules": [
+      "beta-carotene",
+      "maltol",
+      "furaneol",
+      "eugenol",
+      "linalool"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      5.0,
+      4.5,
+      7.0,
+      0.3,
+      3.5
+    ]
+  },
+  "Pumpkin": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.0,
+      "fats": 0.1,
+      "carbs": 6.5
+    },
+    "flavor_molecules": [
+      "beta-carotene",
+      "hexanal",
+      "2-hexenal",
+      "maltol",
+      "trans-2-nonenal"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      4.0,
+      4.0,
+      8.0,
+      0.3,
+      3.0
+    ]
+  },
+  "Radish": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.7,
+      "fats": 0.1,
+      "carbs": 3.4
+    },
+    "flavor_molecules": [
+      "4-methylthio-3-butenyl isothiocyanate",
+      "glucoraphasatin",
+      "isothiocyanate",
+      "allyl isothiocyanate",
+      "quercetin"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      7.0,
+      5.0,
+      8.5,
+      0.1,
+      4.0
+    ]
+  },
+  "Turnip": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.9,
+      "fats": 0.1,
+      "carbs": 6.4
+    },
+    "flavor_molecules": [
+      "allyl isothiocyanate",
+      "dimethyl trisulfide",
+      "glucosinolates",
+      "hexanal",
+      "2-hexenal"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      6.5,
+      5.0,
+      8.0,
+      0.2,
+      3.5
+    ]
+  },
+  "Parsnip": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.6,
+      "fats": 0.3,
+      "carbs": 18.0
+    },
+    "flavor_molecules": [
+      "myristicin",
+      "alpha-pinene",
+      "beta-myrcene",
+      "phthalides",
+      "falcarinol"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.5,
+      4.5,
+      7.0,
+      0.3,
+      3.5
+    ]
+  },
+  "Beetroot": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.6,
+      "fats": 0.2,
+      "carbs": 9.6
+    },
+    "flavor_molecules": [
+      "betanin",
+      "geosmin",
+      "beta-ionone",
+      "nonanal",
+      "2-heptanone"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.5,
+      5.0,
+      7.5,
+      0.2,
+      3.5
+    ]
+  },
+  "Leek": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.5,
+      "fats": 0.3,
+      "carbs": 14.2
+    },
+    "flavor_molecules": [
+      "dipropyl disulfide",
+      "allyl methyl sulfide",
+      "propanethial S-oxide",
+      "quercetin",
+      "kaempferol"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      4.5,
+      4.0,
+      8.0,
+      0.2,
+      3.5
+    ]
+  },
+  "Shallot": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.5,
+      "fats": 0.1,
+      "carbs": 16.8
+    },
+    "flavor_molecules": [
+      "dipropyl disulfide",
+      "propanethial S-oxide",
+      "allicin",
+      "quercetin",
+      "kaempferol"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.5,
+      4.0,
+      7.5,
+      0.2,
+      3.0
+    ]
+  },
+  "Watercress": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.3,
+      "fats": 0.1,
+      "carbs": 1.3
+    },
+    "flavor_molecules": [
+      "phenethyl isothiocyanate",
+      "gluconasturtiin",
+      "glucosinolates",
+      "beta-carotene",
       "hexanal"
     ],
-    "role": "bulk_protein"
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      2.5,
+      2.5,
+      9.0,
+      0.2,
+      2.5
+    ]
   },
-  "soya granules": {
+  "Arugula": {
     "is_vegan": true,
     "macros": {
-      "fat": 0.01,
-      "protein": 0.52,
-      "carb": 0.33,
-      "water": 0.08
+      "proteins": 2.6,
+      "fats": 0.7,
+      "carbs": 3.7
     },
-    "texture": [
-      3,
-      3,
-      4,
-      2,
-      3,
-      1
+    "flavor_molecules": [
+      "sulforaphane",
+      "glucoerucin",
+      "erucin",
+      "allyl isothiocyanate",
+      "beta-ionone"
     ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      2.5,
+      2.0,
+      8.5,
+      0.4,
+      2.5
+    ]
+  },
+  "Kale": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 4.3,
+      "fats": 0.9,
+      "carbs": 8.8
+    },
+    "flavor_molecules": [
+      "sulforaphane",
+      "indole-3-carbinol",
+      "quercetin",
+      "kaempferol",
+      "glucosinolates"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      4.5,
+      4.5,
+      7.0,
+      0.4,
+      3.5
+    ]
+  },
+  "Romaine": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.2,
+      "fats": 0.3,
+      "carbs": 3.3
+    },
     "flavor_molecules": [
       "hexanal",
-      "soy_volatiles",
+      "2-hexenal",
+      "sesquiterpene lactones",
+      "chlorophyll",
+      "carotenoids"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      3.0,
+      3.5,
+      9.0,
+      0.2,
+      3.5
+    ]
+  },
+  "Iceberg": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.9,
+      "fats": 0.1,
+      "carbs": 3.0
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "2-hexenal",
+      "sesquiterpene lactones",
+      "cis-3-hexenol",
+      "chlorophyll"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      2.5,
+      3.5,
+      9.5,
+      0.1,
+      3.5
+    ]
+  },
+  "Radicchio": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.4,
+      "fats": 0.3,
+      "carbs": 4.5
+    },
+    "flavor_molecules": [
+      "lactucopicrin",
+      "inulin",
+      "anthocyanins",
+      "quercetin",
+      "chicoric acid"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      4.0,
+      3.5,
+      8.0,
+      0.2,
+      3.0
+    ]
+  },
+  "Endive": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.9,
+      "fats": 0.1,
+      "carbs": 3.4
+    },
+    "flavor_molecules": [
+      "lactucopicrin",
+      "intybin",
+      "caffeic acid",
+      "chicoric acid",
+      "quercetin"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      3.5,
+      3.5,
+      9.0,
+      0.2,
+      3.5
+    ]
+  },
+  "Brussels sprouts": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.4,
+      "fats": 0.3,
+      "carbs": 8.9
+    },
+    "flavor_molecules": [
+      "sinigrin",
+      "allyl isothiocyanate",
+      "dimethyl trisulfide",
+      "indole-3-carbinol",
+      "glucosinolates"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.5,
+      5.0,
+      7.0,
+      0.3,
+      4.0
+    ]
+  },
+  "Bok choy": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.5,
+      "fats": 0.2,
+      "carbs": 2.2
+    },
+    "flavor_molecules": [
+      "glucosinolates",
+      "allyl isothiocyanate",
+      "hexanal",
+      "trans-2-hexenal",
+      "indole"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      3.5,
+      3.5,
+      9.0,
+      0.2,
+      3.5
+    ]
+  },
+  "Swiss chard": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.8,
+      "fats": 0.2,
+      "carbs": 3.7
+    },
+    "flavor_molecules": [
+      "betanin",
+      "oxalic acid",
+      "glutamic acid",
+      "hexanal",
+      "2-hexenal"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      3.0,
+      3.0,
+      8.5,
+      0.2,
+      3.0
+    ]
+  },
+  "Collard greens": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.0,
+      "fats": 0.4,
+      "carbs": 5.4
+    },
+    "flavor_molecules": [
+      "sinigrin",
+      "gluconapin",
+      "indole-3-carbinol",
+      "sulforaphane",
+      "hexanal"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      4.0,
+      4.5,
+      7.5,
+      0.3,
+      3.5
+    ]
+  },
+  "Mustard greens": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.9,
+      "fats": 0.4,
+      "carbs": 4.7
+    },
+    "flavor_molecules": [
+      "allyl isothiocyanate",
+      "sinigrin",
+      "glucosinolates",
+      "gluconapin",
+      "quercetin"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      3.5,
+      3.5,
+      8.5,
+      0.3,
+      3.0
+    ]
+  },
+  "Cabbage (red)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.4,
+      "fats": 0.2,
+      "carbs": 7.4
+    },
+    "flavor_molecules": [
+      "anthocyanins",
+      "allyl isothiocyanate",
+      "sinigrin",
+      "gluconapin",
+      "quercetin"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.5,
+      5.0,
+      8.0,
+      0.2,
+      4.0
+    ]
+  },
+  "Cabbage (Napa)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.2,
+      "fats": 0.2,
+      "carbs": 3.2
+    },
+    "flavor_molecules": [
+      "allyl isothiocyanate",
+      "glucosinolates",
+      "hexanal",
+      "2-hexenal",
+      "dimethyl sulfide"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      3.5,
+      3.5,
+      9.0,
+      0.2,
+      3.5
+    ]
+  },
+  "Seaweed": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 5.1,
+      "fats": 0.3,
+      "carbs": 9.6
+    },
+    "flavor_molecules": [
+      "dimethyl sulfide",
+      "glutamic acid",
+      "fucoxanthin",
+      "mannitol",
+      "alginic acid"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      3.5,
+      4.5,
+      8.5,
+      0.5,
+      5.5
+    ]
+  },
+  "Tofu": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 8.1,
+      "fats": 4.2,
+      "carbs": 2.0
+    },
+    "flavor_molecules": [
+      "genistein",
+      "daidzein",
+      "hexanal",
+      "2-pentylfuran",
+      "acetaldehyde"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      3.5,
+      5.0,
+      7.5,
+      3.5,
+      6.0
+    ]
+  },
+  "Tempeh": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 20.3,
+      "fats": 11.4,
+      "carbs": 7.6
+    },
+    "flavor_molecules": [
+      "acetaldehyde",
+      "diacetyl",
+      "hexanal",
+      "genistein",
+      "daidzein"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      7.0,
+      7.0,
+      5.0,
+      4.5,
+      5.5
+    ]
+  },
+  "Seitan": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 25.0,
+      "fats": 1.9,
+      "carbs": 14.0
+    },
+    "flavor_molecules": [
+      "pyrazines",
+      "glutamic acid",
+      "hexanal",
+      "2-acetyl-1-pyrroline",
+      "methional"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      7.0,
+      8.5,
+      5.0,
+      2.0,
+      8.0
+    ]
+  },
+  "Edamame": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 11.9,
+      "fats": 5.2,
+      "carbs": 8.9
+    },
+    "flavor_molecules": [
+      "genistein",
+      "hexanal",
+      "2-pentylfuran",
+      "1-hexanol",
+      "trans-2-hexenal"
+    ],
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      5.5,
+      5.5,
+      7.0,
+      3.5,
+      4.5
+    ]
+  },
+  "Lentils (red)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 26.0,
+      "fats": 1.1,
+      "carbs": 60.1
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "2-pentylfuran",
+      "nonanal",
+      "guaiacol",
+      "2-heptanone"
+    ],
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      5.5,
+      4.5,
+      6.5,
+      0.8,
+      4.5
+    ]
+  },
+  "Lentils (green)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 26.0,
+      "fats": 1.0,
+      "carbs": 60.1
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "nonanal",
+      "2-pentylfuran",
+      "2-acetylpyridine",
+      "1-hexanol"
+    ],
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      6.0,
+      5.0,
+      6.5,
+      0.8,
+      4.5
+    ]
+  },
+  "Lentils (brown)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 26.0,
+      "fats": 1.0,
+      "carbs": 60.1
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "nonanal",
+      "guaiacol",
+      "2-pentylfuran",
+      "2-heptanone"
+    ],
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      6.5,
+      5.5,
+      6.0,
+      0.8,
+      4.5
+    ]
+  },
+  "Beans (kidney)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 22.5,
+      "fats": 0.8,
+      "carbs": 60.0
+    },
+    "flavor_molecules": [
+      "phytohaemagglutinin",
+      "hexanal",
+      "phenylacetaldehyde",
+      "2-pentylfuran",
+      "nonanal"
+    ],
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      6.5,
+      5.5,
+      6.5,
+      0.5,
+      4.5
+    ]
+  },
+  "Beans (pinto)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 21.4,
+      "fats": 1.2,
+      "carbs": 62.6
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "2-pentylfuran",
+      "nonanal",
+      "phenylacetaldehyde",
+      "2-heptanone"
+    ],
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      6.5,
+      5.0,
+      6.5,
+      0.5,
+      4.5
+    ]
+  },
+  "Beans (navy)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 22.3,
+      "fats": 1.5,
+      "carbs": 60.8
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "nonanal",
+      "2-pentylfuran",
+      "2-acetylpyridine",
+      "vanillin"
+    ],
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      6.0,
+      5.5,
+      7.0,
+      0.5,
+      5.0
+    ]
+  },
+  "Beans (cannellini)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 21.0,
+      "fats": 0.9,
+      "carbs": 61.0
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "nonanal",
+      "guaiacol",
+      "phenylacetaldehyde",
+      "2-pentylfuran"
+    ],
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      5.5,
+      5.5,
+      7.0,
+      0.5,
+      5.0
+    ]
+  },
+  "Peas": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 5.4,
+      "fats": 0.4,
+      "carbs": 14.5
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "2-hexenal",
+      "2-pentylfuran",
+      "methyl mercaptan",
+      "dimethyl sulfide"
+    ],
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      5.0,
+      4.5,
+      7.5,
+      0.5,
+      4.0
+    ]
+  },
+  "Snow peas": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.8,
+      "fats": 0.2,
+      "carbs": 7.6
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "2-hexenal",
+      "trans-2-hexenal",
+      "dimethyl sulfide",
+      "linalool"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      4.5,
+      4.5,
+      8.0,
+      0.2,
+      5.0
+    ]
+  },
+  "Snap peas": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.8,
+      "fats": 0.1,
+      "carbs": 7.6
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "2-hexenal",
+      "trans-2-hexenal",
+      "linalool",
+      "2-pentylfuran"
+    ],
+    "culinary_role": "aromatic",
+    "texture_profile": [
+      5.0,
+      5.0,
+      8.0,
+      0.2,
+      5.5
+    ]
+  },
+  "Corn (sweet)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.4,
+      "fats": 1.5,
+      "carbs": 19.0
+    },
+    "flavor_molecules": [
+      "2-acetyl-1-pyrroline",
+      "dimethyl sulfide",
+      "geraniol",
+      "hexanal",
+      "indole"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      5.5,
+      5.5,
+      7.5,
+      1.5,
+      4.5
+    ]
+  },
+  "Rice (white)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.7,
+      "fats": 0.3,
+      "carbs": 28.2
+    },
+    "flavor_molecules": [
+      "2-acetyl-1-pyrroline",
+      "hexanal",
+      "nonanal",
+      "pentanal",
+      "2-pentylfuran"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      4.5,
+      4.0,
+      5.5,
+      0.3,
+      4.0
+    ]
+  },
+  "Rice (brown)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.6,
+      "fats": 0.9,
+      "carbs": 23.0
+    },
+    "flavor_molecules": [
+      "2-acetyl-1-pyrroline",
+      "hexanal",
+      "2-pentylfuran",
+      "guaiacol",
+      "nonanal"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      5.0,
+      5.0,
+      5.5,
+      0.6,
+      4.5
+    ]
+  },
+  "Rice (basmati)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.7,
+      "fats": 0.3,
+      "carbs": 27.9
+    },
+    "flavor_molecules": [
+      "2-acetyl-1-pyrroline",
+      "hexanal",
+      "linalool",
+      "nonanal",
+      "geranial"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      4.5,
+      4.5,
+      5.0,
+      0.3,
+      4.5
+    ]
+  },
+  "Rice (jasmine)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.7,
+      "fats": 0.3,
+      "carbs": 28.0
+    },
+    "flavor_molecules": [
+      "2-acetyl-1-pyrroline",
+      "linalool",
+      "hexanal",
+      "geraniol",
+      "nonanal"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      4.0,
+      3.5,
+      6.0,
+      0.3,
+      4.0
+    ]
+  },
+  "Rice (Arborio)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.9,
+      "fats": 0.3,
+      "carbs": 29.0
+    },
+    "flavor_molecules": [
+      "amylopectin",
+      "hexanal",
+      "nonanal",
+      "2-pentylfuran",
+      "pentanal"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      4.5,
+      5.5,
+      6.5,
+      1.0,
+      6.5
+    ]
+  },
+  "Quinoa": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 4.4,
+      "fats": 1.9,
+      "carbs": 21.3
+    },
+    "flavor_molecules": [
+      "saponins",
+      "hexanal",
+      "guaiacol",
+      "2-pentylfuran",
+      "vanillin"
+    ],
+    "culinary_role": "bulk_protein",
+    "texture_profile": [
+      5.5,
+      5.0,
+      6.0,
+      1.0,
+      4.5
+    ]
+  },
+  "Couscous": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.8,
+      "fats": 0.2,
+      "carbs": 23.2
+    },
+    "flavor_molecules": [
+      "pyrazines",
+      "maltol",
+      "2-acetyl-1-pyrroline",
+      "hexanal",
+      "furfural"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      4.5,
+      4.0,
+      6.0,
+      0.3,
+      3.5
+    ]
+  },
+  "Bulgur": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.1,
+      "fats": 0.2,
+      "carbs": 18.6
+    },
+    "flavor_molecules": [
+      "pyrazines",
+      "hexanal",
+      "nonanal",
+      "guaiacol",
       "maltol"
     ],
-    "role": "bulk_protein"
+    "culinary_role": "thickener",
+    "texture_profile": [
+      5.5,
+      5.0,
+      6.0,
+      0.4,
+      4.5
+    ]
+  },
+  "Barley": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.3,
+      "fats": 0.4,
+      "carbs": 28.2
+    },
+    "flavor_molecules": [
+      "pyrazines",
+      "hexanal",
+      "guaiacol",
+      "2-pentylfuran",
+      "furaneol"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      5.5,
+      6.0,
+      6.5,
+      0.5,
+      5.5
+    ]
+  },
+  "Farro": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 6.6,
+      "fats": 1.0,
+      "carbs": 26.0
+    },
+    "flavor_molecules": [
+      "pyrazines",
+      "hexanal",
+      "guaiacol",
+      "nonanal",
+      "maltol"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      6.0,
+      6.0,
+      6.0,
+      0.5,
+      5.5
+    ]
+  },
+  "Millet": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.5,
+      "fats": 1.0,
+      "carbs": 23.7
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "nonanal",
+      "2-pentylfuran",
+      "pyrazines",
+      "vanillin"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      5.5,
+      5.0,
+      6.5,
+      0.5,
+      4.5
+    ]
+  },
+  "Polenta": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.5,
+      "fats": 0.4,
+      "carbs": 18.0
+    },
+    "flavor_molecules": [
+      "2-acetyl-1-pyrroline",
+      "dimethyl sulfide",
+      "hexanal",
+      "nonanal",
+      "indole"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      4.5,
+      5.5,
+      6.5,
+      1.0,
+      5.0
+    ]
+  },
+  "Oats (rolled)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 13.2,
+      "fats": 5.1,
+      "carbs": 67.7
+    },
+    "flavor_molecules": [
+      "avenanthramides",
+      "hexanal",
+      "nonanal",
+      "2-pentylfuran",
+      "furaneol"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      5.5,
+      5.5,
+      4.5,
+      1.5,
+      5.0
+    ]
+  },
+  "Oats (steel-cut)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 14.0,
+      "fats": 5.5,
+      "carbs": 66.3
+    },
+    "flavor_molecules": [
+      "avenanthramides",
+      "hexanal",
+      "nonanal",
+      "guaiacol",
+      "2-pentylfuran"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      6.5,
+      7.0,
+      5.0,
+      1.5,
+      5.5
+    ]
+  },
+  "Flour (all-purpose)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 10.3,
+      "fats": 1.0,
+      "carbs": 76.3
+    },
+    "flavor_molecules": [
+      "pyrazines",
+      "maltol",
+      "acetaldehyde",
+      "hexanal",
+      "2-acetyl-1-pyrroline"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      5.5,
+      2.0,
+      3.0,
+      0.5,
+      3.5
+    ]
+  },
+  "Flour (whole wheat)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 13.2,
+      "fats": 1.9,
+      "carbs": 72.6
+    },
+    "flavor_molecules": [
+      "pyrazines",
+      "guaiacol",
+      "hexanal",
+      "nonanal",
+      "phytic acid"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      6.5,
+      3.5,
+      3.5,
+      1.0,
+      4.0
+    ]
+  },
+  "Flour (almond)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 21.2,
+      "fats": 53.3,
+      "carbs": 18.0
+    },
+    "flavor_molecules": [
+      "benzaldehyde",
+      "amygdalin",
+      "linalool",
+      "vanillin",
+      "furfural"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      6.0,
+      3.5,
+      3.0,
+      6.5,
+      3.0
+    ]
+  },
+  "Flour (coconut)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 18.0,
+      "fats": 13.8,
+      "carbs": 54.1
+    },
+    "flavor_molecules": [
+      "lauric acid",
+      "delta-decalactone",
+      "vanillin",
+      "hexanal",
+      "nonalactone"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      6.5,
+      3.5,
+      3.5,
+      4.5,
+      3.5
+    ]
+  },
+  "Flour (rice)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 6.0,
+      "fats": 1.4,
+      "carbs": 80.1
+    },
+    "flavor_molecules": [
+      "2-acetyl-1-pyrroline",
+      "hexanal",
+      "nonanal",
+      "2-pentylfuran",
+      "pentanal"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      6.0,
+      2.5,
+      3.0,
+      0.5,
+      3.5
+    ]
+  },
+  "Cornmeal": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 8.1,
+      "fats": 3.6,
+      "carbs": 76.9
+    },
+    "flavor_molecules": [
+      "2-acetyl-1-pyrroline",
+      "hexanal",
+      "dimethyl sulfide",
+      "nonanal",
+      "indole"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      7.0,
+      3.0,
+      3.5,
+      1.5,
+      3.5
+    ]
+  },
+  "Sugar (white)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 99.9
+    },
+    "flavor_molecules": [
+      "sucrose",
+      "glucose",
+      "fructose",
+      "caramelone",
+      "maltol"
+    ],
+    "culinary_role": "sweetener",
+    "texture_profile": [
+      8.0,
+      1.0,
+      1.0,
+      0.0,
+      1.0
+    ]
+  },
+  "Sugar (brown)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.1,
+      "fats": 0.0,
+      "carbs": 98.1
+    },
+    "flavor_molecules": [
+      "sucrose",
+      "molasses",
+      "furfural",
+      "5-HMF",
+      "caramelone"
+    ],
+    "culinary_role": "sweetener",
+    "texture_profile": [
+      6.5,
+      2.5,
+      3.5,
+      0.2,
+      1.5
+    ]
+  },
+  "Sugar (powdered)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 99.8
+    },
+    "flavor_molecules": [
+      "sucrose",
+      "glucose",
+      "fructose",
+      "corn starch",
+      "maltol"
+    ],
+    "culinary_role": "sweetener",
+    "texture_profile": [
+      7.0,
+      1.5,
+      1.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Agave nectar": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.1,
+      "carbs": 75.6
+    },
+    "flavor_molecules": [
+      "fructooligosaccharides",
+      "inulin",
+      "saponins",
+      "fructose",
+      "glucose"
+    ],
+    "culinary_role": "sweetener",
+    "texture_profile": [
+      1.0,
+      5.5,
+      4.5,
+      0.2,
+      5.0
+    ]
+  },
+  "Molasses": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.1,
+      "carbs": 74.7
+    },
+    "flavor_molecules": [
+      "furfural",
+      "5-HMF",
+      "caramelone",
+      "treacle sulfides",
+      "acetic acid"
+    ],
+    "culinary_role": "sweetener",
+    "texture_profile": [
+      1.0,
+      8.0,
+      4.5,
+      0.3,
+      7.5
+    ]
+  },
+  "Corn syrup": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 76.5
+    },
+    "flavor_molecules": [
+      "glucose",
+      "maltose",
+      "dextrins",
+      "fructose",
+      "hydroxymethylfurfural"
+    ],
+    "culinary_role": "sweetener",
+    "texture_profile": [
+      1.0,
+      9.0,
+      4.0,
+      0.3,
+      9.0
+    ]
+  },
+  "Stevia": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "stevioside",
+      "rebaudioside A",
+      "rebaudioside C",
+      "dulcoside",
+      "steviolbioside"
+    ],
+    "culinary_role": "sweetener",
+    "texture_profile": [
+      7.0,
+      1.0,
+      2.0,
+      0.0,
+      1.0
+    ]
+  },
+  "Monk fruit": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "mogrosides",
+      "mogroside V",
+      "siamenoside",
+      "11-oxo-mogroside V",
+      "cucurbitacin"
+    ],
+    "culinary_role": "sweetener",
+    "texture_profile": [
+      7.0,
+      1.0,
+      2.0,
+      0.0,
+      1.0
+    ]
+  },
+  "Chocolate (dark)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 5.5,
+      "fats": 32.4,
+      "carbs": 45.8
+    },
+    "flavor_molecules": [
+      "theobromine",
+      "pyrazines",
+      "phenylethylamine",
+      "epicatechin",
+      "vanillin"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      7.0,
+      4.5,
+      2.5,
+      8.5,
+      3.0
+    ]
+  },
+  "Chocolate (milk)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 7.6,
+      "fats": 29.7,
+      "carbs": 59.4
+    },
+    "flavor_molecules": [
+      "theobromine",
+      "vanillin",
+      "diacetyl",
+      "pyrazines",
+      "lactose"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      6.0,
+      4.0,
+      3.0,
+      8.5,
+      3.0
+    ]
+  },
+  "Chocolate (white)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 5.9,
+      "fats": 32.1,
+      "carbs": 59.2
+    },
+    "flavor_molecules": [
+      "vanillin",
+      "diacetyl",
+      "delta-decalactone",
+      "lactose",
+      "butyric acid"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      5.5,
+      4.0,
+      3.5,
+      9.0,
+      3.5
+    ]
+  },
+  "Cocoa butter": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "theobromine",
+      "pyrazines",
+      "delta-decalactone",
+      "linalool",
+      "epicatechin"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      4.5,
+      2.0,
+      2.5,
+      9.5,
+      2.0
+    ]
+  },
+  "Vanilla (extract)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.1,
+      "fats": 0.1,
+      "carbs": 12.7
+    },
+    "flavor_molecules": [
+      "vanillin",
+      "4-hydroxybenzaldehyde",
+      "ethanol",
+      "guaiacol",
+      "acetic acid"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      8.5,
+      0.1,
+      1.0
+    ]
+  },
+  "Vanilla (bean)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.5,
+      "fats": 0.1,
+      "carbs": 12.7
+    },
+    "flavor_molecules": [
+      "vanillin",
+      "4-hydroxybenzaldehyde",
+      "heliotropin",
+      "vanillic acid",
+      "guaiacol"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      4.0,
+      3.5,
+      4.0,
+      0.2,
+      2.5
+    ]
+  },
+  "Almond (extract)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "benzaldehyde",
+      "ethanol",
+      "amygdalin",
+      "linalool",
+      "vanillin"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      8.0,
+      0.0,
+      1.0
+    ]
+  },
+  "Peppermint (extract)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "menthol",
+      "menthone",
+      "1,8-cineole",
+      "isomenthone",
+      "ethanol"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      8.0,
+      0.0,
+      1.0
+    ]
+  },
+  "Lemon (extract)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "limonene",
+      "citral",
+      "linalool",
+      "ethanol",
+      "gamma-terpinene"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      8.0,
+      0.0,
+      1.0
+    ]
+  },
+  "Orange (extract)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "limonene",
+      "decanal",
+      "linalool",
+      "ethanol",
+      "octanal"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      8.0,
+      0.0,
+      1.0
+    ]
+  },
+  "Yeast": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 43.3,
+      "fats": 7.6,
+      "carbs": 38.3
+    },
+    "flavor_molecules": [
+      "glutamic acid",
+      "inosine monophosphate",
+      "ethanol",
+      "acetaldehyde",
+      "diacetyl"
+    ],
+    "culinary_role": "binding_agent",
+    "texture_profile": [
+      5.5,
+      2.0,
+      4.5,
+      0.5,
+      2.5
+    ]
+  },
+  "Cream of tartar": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 75.3
+    },
+    "flavor_molecules": [
+      "potassium bitartrate",
+      "tartaric acid",
+      "potassium",
+      "cream of tartar"
+    ],
+    "culinary_role": "binding_agent",
+    "texture_profile": [
+      8.0,
+      1.0,
+      2.0,
+      0.0,
+      1.0
+    ]
+  },
+  "Gelatin": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 85.6,
+      "fats": 0.1,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "glycine",
+      "proline",
+      "hydroxyproline",
+      "alanine",
+      "glutamic acid"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      3.0,
+      7.5,
+      5.0,
+      0.5,
+      9.5
+    ]
+  },
+  "Agar agar": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.5,
+      "fats": 0.0,
+      "carbs": 80.9
+    },
+    "flavor_molecules": [
+      "agarose",
+      "polysaccharides",
+      "agaropectin",
+      "uronic acids",
+      "galactose"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      3.5,
+      4.0,
+      5.5,
+      0.1,
+      8.5
+    ]
+  },
+  "Pectin": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 90.0
+    },
+    "flavor_molecules": [
+      "galacturonic acid",
+      "methyl esters",
+      "rhamnose",
+      "arabinose",
+      "galactose"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      3.0,
+      7.0,
+      5.5,
+      0.1,
+      8.0
+    ]
+  },
+  "Arrowroot": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.3,
+      "fats": 0.1,
+      "carbs": 88.2
+    },
+    "flavor_molecules": [
+      "amylose",
+      "amylopectin",
+      "starch glucans",
+      "dextrins"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      6.5,
+      3.0,
+      3.0,
+      0.1,
+      5.0
+    ]
+  },
+  "Tapioca": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.2,
+      "fats": 0.0,
+      "carbs": 88.7
+    },
+    "flavor_molecules": [
+      "amylose",
+      "amylopectin",
+      "starch dextrins",
+      "glucose",
+      "maltose"
+    ],
+    "culinary_role": "thickener",
+    "texture_profile": [
+      6.0,
+      7.5,
+      4.5,
+      0.2,
+      8.5
+    ]
+  },
+  "Butter (unsalted)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 0.9,
+      "fats": 81.0,
+      "carbs": 0.1
+    },
+    "flavor_molecules": [
+      "diacetyl",
+      "butyric acid",
+      "delta-decalactone",
+      "acetoin",
+      "methyl ketones"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      5.0,
+      2.5,
+      3.0,
+      9.0,
+      3.5
+    ]
+  },
+  "Butter (salted)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 0.9,
+      "fats": 81.0,
+      "carbs": 0.1
+    },
+    "flavor_molecules": [
+      "diacetyl",
+      "butyric acid",
+      "sodium chloride",
+      "delta-decalactone",
+      "acetoin"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      5.0,
+      2.5,
+      3.0,
+      9.0,
+      3.5
+    ]
+  },
+  "Margarine": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.2,
+      "fats": 80.4,
+      "carbs": 0.7
+    },
+    "flavor_molecules": [
+      "diacetyl",
+      "acetoin",
+      "butyric acid esters",
+      "oleic acid",
+      "linoleic acid"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      4.5,
+      2.5,
+      3.5,
+      8.5,
+      3.0
+    ]
+  },
+  "Shortening": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "palmitic acid",
+      "stearic acid",
+      "oleic acid",
+      "linoleic acid",
+      "trans fatty acids"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      4.0,
+      2.0,
+      2.5,
+      9.0,
+      2.5
+    ]
+  },
+  "Lard": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 99.5,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "oleic acid",
+      "palmitic acid",
+      "stearic acid",
+      "arachidonic acid",
+      "skatole"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      4.5,
+      2.5,
+      2.5,
+      9.5,
+      2.5
+    ]
+  },
+  "Oil (olive)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "oleocanthal",
+      "hexanal",
+      "squalene",
+      "beta-sitosterol",
+      "oleic acid"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.0,
+      9.5,
+      1.0
+    ]
+  },
+  "Oil (vegetable)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "linoleic acid",
+      "oleic acid",
+      "hexanal",
+      "nonanal",
+      "2-pentylfuran"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.0,
+      9.0,
+      1.0
+    ]
+  },
+  "Oil (canola)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "oleic acid",
+      "linoleic acid",
+      "alpha-linolenic acid",
+      "hexanal",
+      "nonanal"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.0,
+      9.0,
+      1.0
+    ]
+  },
+  "Oil (peanut)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "oleic acid",
+      "linoleic acid",
+      "pyrazines",
+      "2-methylbutanal",
+      "hexanal"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.0,
+      9.0,
+      1.0
+    ]
+  },
+  "Oil (sesame)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "sesamol",
+      "sesamin",
+      "pyrazines",
+      "furans",
+      "thiophenes"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.5,
+      9.0,
+      1.0
+    ]
+  },
+  "Oil (coconut)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "lauric acid",
+      "caprylic acid",
+      "delta-decalactone",
+      "methyl hexanoate",
+      "nonalactone"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      4.5,
+      2.0,
+      2.5,
+      9.5,
+      1.5
+    ]
+  },
+  "Oil (avocado)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "oleic acid",
+      "linoleic acid",
+      "beta-sitosterol",
+      "tocopherols",
+      "hexanal"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.0,
+      9.5,
+      1.0
+    ]
+  },
+  "Oil (grapeseed)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "linoleic acid",
+      "oleic acid",
+      "proanthocyanidins",
+      "resveratrol",
+      "hexanal"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.0,
+      8.5,
+      1.0
+    ]
+  },
+  "Oil (sunflower)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "linoleic acid",
+      "oleic acid",
+      "tocopherols",
+      "hexanal",
+      "nonanal"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.0,
+      8.5,
+      1.0
+    ]
+  },
+  "Oil (safflower)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "linoleic acid",
+      "oleic acid",
+      "hexanal",
+      "nonanal",
+      "pentanal"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.0,
+      8.5,
+      1.0
+    ]
+  },
+  "Oil (corn)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 100.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "linoleic acid",
+      "oleic acid",
+      "phytosterols",
+      "hexanal",
+      "trans-2-decenal"
+    ],
+    "culinary_role": "fat_source",
+    "texture_profile": [
+      1.0,
+      1.0,
+      2.0,
+      8.5,
+      1.0
+    ]
+  },
+  "Vinegar (white)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "acetic acid",
+      "ethyl acetate",
+      "water",
+      "acetaldehyde"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Vinegar (apple cider)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.9
+    },
+    "flavor_molecules": [
+      "acetic acid",
+      "malic acid",
+      "ethyl acetate",
+      "acetaldehyde",
+      "lactic acid"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Vinegar (balsamic)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.5,
+      "fats": 0.0,
+      "carbs": 17.0
+    },
+    "flavor_molecules": [
+      "acetic acid",
+      "5-acetoxymethyl-2-furaldehyde",
+      "5-HMF",
+      "phenylacetic acid",
+      "vanillin"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      3.5,
+      6.5,
+      0.1,
+      2.5
+    ]
+  },
+  "Vinegar (red wine)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.3
+    },
+    "flavor_molecules": [
+      "acetic acid",
+      "ethyl acetate",
+      "lactic acid",
+      "anthocyanins",
+      "tartaric acid"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Vinegar (white wine)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.3
+    },
+    "flavor_molecules": [
+      "acetic acid",
+      "ethyl acetate",
+      "linalool",
+      "tartaric acid",
+      "acetaldehyde"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Vinegar (rice)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.3
+    },
+    "flavor_molecules": [
+      "acetic acid",
+      "pyruvic acid",
+      "citric acid",
+      "ethyl acetate",
+      "2-acetyl-1-pyrroline"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Wine (red)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.1,
+      "fats": 0.0,
+      "carbs": 2.6
+    },
+    "flavor_molecules": [
+      "ethanol",
+      "anthocyanins",
+      "resveratrol",
+      "tannins",
+      "ethyl acetate"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.0,
+      0.1,
+      1.0
+    ]
+  },
+  "Wine (white)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.1,
+      "fats": 0.0,
+      "carbs": 2.6
+    },
+    "flavor_molecules": [
+      "ethanol",
+      "linalool",
+      "isoamyl acetate",
+      "2-phenylethanol",
+      "ethyl hexanoate"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.0,
+      0.1,
+      1.0
+    ]
+  },
+  "Beer": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.5,
+      "fats": 0.0,
+      "carbs": 3.6
+    },
+    "flavor_molecules": [
+      "ethanol",
+      "isoamyl acetate",
+      "diacetyl",
+      "linalool",
+      "humulone"
+    ],
+    "culinary_role": "acid",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.0,
+      0.1,
+      1.0
+    ]
+  },
+  "Rum": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.1
+    },
+    "flavor_molecules": [
+      "ethanol",
+      "ethyl acetate",
+      "isoamyl alcohol",
+      "vanillin",
+      "furfural"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      8.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Bourbon": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.1
+    },
+    "flavor_molecules": [
+      "ethanol",
+      "vanillin",
+      "guaiacol",
+      "furfural",
+      "isoamyl alcohol"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      8.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Vodka": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "ethanol",
+      "water",
+      "acetaldehyde",
+      "methanol",
+      "ethyl acetate"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      8.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Gin": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "alpha-pinene",
+      "ethanol",
+      "linalool",
+      "limonene",
+      "juniper oil"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      8.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Tequila": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "ethanol",
+      "isoamyl acetate",
+      "methanol",
+      "geraniol",
+      "linalool"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      8.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Liqueur": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.0,
+      "fats": 0.1,
+      "carbs": 20.0
+    },
+    "flavor_molecules": [
+      "ethanol",
+      "sucrose",
+      "vanillin",
+      "linalool",
+      "terpenes"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      2.5,
+      7.5,
+      0.1,
+      2.0
+    ]
+  },
+  "Coffee": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.3,
+      "fats": 0.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "caffeine",
+      "chlorogenic acid",
+      "cafestol",
+      "kahweol",
+      "2-furfurylthiol"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      0.1,
+      1.0
+    ]
+  },
+  "Tea": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.1,
+      "fats": 0.0,
+      "carbs": 0.3
+    },
+    "flavor_molecules": [
+      "catechins",
+      "theanine",
+      "caffeine",
+      "terpenes",
+      "linalool"
+    ],
+    "culinary_role": "flavor_enhancer",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      0.0,
+      1.0
+    ]
+  },
+  "Milk (whole)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 3.4,
+      "fats": 3.7,
+      "carbs": 4.8
+    },
+    "flavor_molecules": [
+      "lactose",
+      "casein",
+      "diacetyl",
+      "dimethyl sulfide",
+      "methyl ketones"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.0,
+      4.5,
+      1.5
+    ]
+  },
+  "Milk (skim)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 3.4,
+      "fats": 0.1,
+      "carbs": 5.0
+    },
+    "flavor_molecules": [
+      "lactose",
+      "casein",
+      "dimethyl sulfide",
+      "diacetyl",
+      "acetaldehyde"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.5,
+      0.5,
+      1.0
+    ]
+  },
+  "Milk (almond)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 0.4,
+      "fats": 1.1,
+      "carbs": 3.4
+    },
+    "flavor_molecules": [
+      "benzaldehyde",
+      "vanillin",
+      "linalool",
+      "tocopherols",
+      "amygdalin"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.0,
+      1.5,
+      1.0
+    ]
+  },
+  "Milk (soy)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 3.3,
+      "fats": 1.9,
+      "carbs": 3.6
+    },
+    "flavor_molecules": [
+      "genistein",
+      "daidzein",
+      "hexanal",
+      "2-pentylfuran",
+      "acetaldehyde"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      1.0,
+      9.0,
+      2.5,
+      1.0
+    ]
+  },
+  "Milk (oat)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 1.0,
+      "fats": 1.5,
+      "carbs": 9.0
+    },
+    "flavor_molecules": [
+      "avenanthramides",
+      "hexanal",
+      "nonanal",
+      "beta-glucan",
+      "furaneol"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      2.0,
+      9.0,
+      2.5,
+      1.5
+    ]
+  },
+  "Milk (coconut)": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 2.3,
+      "fats": 21.3,
+      "carbs": 5.5
+    },
+    "flavor_molecules": [
+      "lauric acid",
+      "delta-decalactone",
+      "nonalactone",
+      "2-nonanone",
+      "methyl hexanoate"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      2.5,
+      6.5,
+      8.5,
+      2.0
+    ]
+  },
+  "Cream (heavy)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 2.1,
+      "fats": 37.0,
+      "carbs": 2.8
+    },
+    "flavor_molecules": [
+      "diacetyl",
+      "delta-decalactone",
+      "methyl ketones",
+      "butyric acid",
+      "acetoin"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      2.0,
+      7.0,
+      9.5,
+      2.0
+    ]
+  },
+  "Cream (light)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 2.7,
+      "fats": 19.3,
+      "carbs": 3.7
+    },
+    "flavor_molecules": [
+      "diacetyl",
+      "delta-decalactone",
+      "acetoin",
+      "butyric acid",
+      "dimethyl sulfide"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      1.5,
+      8.0,
+      7.5,
+      1.5
+    ]
+  },
+  "Half and half": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 3.0,
+      "fats": 11.7,
+      "carbs": 4.3
+    },
+    "flavor_molecules": [
+      "diacetyl",
+      "dimethyl sulfide",
+      "acetaldehyde",
+      "butyric acid",
+      "lactose"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      1.5,
+      8.5,
+      6.0,
+      1.5
+    ]
+  },
+  "Yogurt (plain)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 3.5,
+      "fats": 3.3,
+      "carbs": 4.7
+    },
+    "flavor_molecules": [
+      "lactic acid",
+      "acetaldehyde",
+      "diacetyl",
+      "butyric acid",
+      "acetic acid"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      4.0,
+      7.5,
+      4.5,
+      4.0
+    ]
+  },
+  "Yogurt (Greek)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 9.0,
+      "fats": 0.4,
+      "carbs": 3.6
+    },
+    "flavor_molecules": [
+      "lactic acid",
+      "acetaldehyde",
+      "diacetyl",
+      "acetic acid",
+      "propionic acid"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      2.0,
+      5.5,
+      6.5,
+      2.0,
+      5.0
+    ]
+  },
+  "Buttermilk": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 3.3,
+      "fats": 0.9,
+      "carbs": 4.8
+    },
+    "flavor_molecules": [
+      "lactic acid",
+      "diacetyl",
+      "acetic acid",
+      "acetaldehyde",
+      "carbon dioxide"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      1.0,
+      1.5,
+      9.0,
+      2.0,
+      1.5
+    ]
+  },
+  "Cheese (cheddar)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 24.9,
+      "fats": 33.1,
+      "carbs": 1.3
+    },
+    "flavor_molecules": [
+      "butyric acid",
+      "isovaleric acid",
+      "diacetyl",
+      "delta-decalactone",
+      "methyl ketones"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      7.5,
+      5.5,
+      3.5,
+      8.5,
+      4.5
+    ]
+  },
+  "Cheese (mozzarella)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 22.2,
+      "fats": 22.4,
+      "carbs": 2.2
+    },
+    "flavor_molecules": [
+      "diacetyl",
+      "acetaldehyde",
+      "lactic acid",
+      "butyric acid",
+      "acetic acid"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      5.0,
+      7.5,
+      5.5,
+      7.5,
+      8.5
+    ]
+  },
+  "Cheese (parmesan)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 35.7,
+      "fats": 25.8,
+      "carbs": 4.1
+    },
+    "flavor_molecules": [
+      "butyric acid",
+      "propionic acid",
+      "glutamic acid",
+      "isovaleric acid",
+      "delta-decalactone"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      9.0,
+      4.5,
+      2.0,
+      7.0,
+      2.0
+    ]
+  },
+  "Cheese (Swiss)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 26.9,
+      "fats": 27.8,
+      "carbs": 5.4
+    },
+    "flavor_molecules": [
+      "propionic acid",
+      "acetic acid",
+      "carbon dioxide",
+      "butyric acid",
+      "diacetyl"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      7.0,
+      6.5,
+      4.0,
+      7.5,
+      5.5
+    ]
+  },
+  "Cheese (provolone)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 25.6,
+      "fats": 26.6,
+      "carbs": 2.1
+    },
+    "flavor_molecules": [
+      "propionic acid",
+      "butyric acid",
+      "acetic acid",
+      "diacetyl",
+      "isovaleric acid"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      7.5,
+      6.5,
+      4.0,
+      7.5,
+      5.5
+    ]
+  },
+  "Cheese (Monterey Jack)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 24.5,
+      "fats": 30.0,
+      "carbs": 0.7
+    },
+    "flavor_molecules": [
+      "butyric acid",
+      "diacetyl",
+      "lactic acid",
+      "acetic acid",
+      "acetaldehyde"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      6.0,
+      6.5,
+      5.0,
+      8.0,
+      6.5
+    ]
+  },
+  "Cheese (feta)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 14.2,
+      "fats": 21.3,
+      "carbs": 4.1
+    },
+    "flavor_molecules": [
+      "butyric acid",
+      "caproic acid",
+      "lactic acid",
+      "2-heptanone",
+      "acetic acid"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      5.5,
+      3.5,
+      5.5,
+      7.0,
+      2.5
+    ]
+  },
+  "Cheese (goat)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 18.5,
+      "fats": 19.5,
+      "carbs": 0.6
+    },
+    "flavor_molecules": [
+      "caprylic acid",
+      "capric acid",
+      "caproic acid",
+      "diacetyl",
+      "2-heptanone"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      3.5,
+      4.5,
+      5.5,
+      7.0,
+      3.5
+    ]
+  },
+  "Cheese (blue)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 21.4,
+      "fats": 28.7,
+      "carbs": 2.3
+    },
+    "flavor_molecules": [
+      "2-heptanone",
+      "2-nonanone",
+      "2-pentanone",
+      "isovaleric acid",
+      "methylketones"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      5.5,
+      4.0,
+      5.0,
+      8.0,
+      3.5
+    ]
+  },
+  "Cheese (brie)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 20.8,
+      "fats": 27.7,
+      "carbs": 0.5
+    },
+    "flavor_molecules": [
+      "isovaleric acid",
+      "2-heptanone",
+      "diacetyl",
+      "methyl ketones",
+      "ammonia"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      2.5,
+      5.5,
+      6.0,
+      8.5,
+      4.5
+    ]
+  },
+  "Cheese (camembert)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 19.8,
+      "fats": 24.3,
+      "carbs": 0.5
+    },
+    "flavor_molecules": [
+      "isovaleric acid",
+      "1-octen-3-ol",
+      "2-heptanone",
+      "methyl ketones",
+      "ammonia"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      2.5,
+      5.5,
+      6.5,
+      8.5,
+      4.5
+    ]
+  },
+  "Cheese (gouda)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 25.0,
+      "fats": 27.4,
+      "carbs": 2.2
+    },
+    "flavor_molecules": [
+      "butyric acid",
+      "propionic acid",
+      "diacetyl",
+      "isovaleric acid",
+      "acetoin"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      7.0,
+      6.0,
+      4.5,
+      8.0,
+      5.0
+    ]
+  },
+  "Cheese (gruyere)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 29.8,
+      "fats": 32.3,
+      "carbs": 0.4
+    },
+    "flavor_molecules": [
+      "propionic acid",
+      "butyric acid",
+      "isovaleric acid",
+      "acetic acid",
+      "diacetyl"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      8.0,
+      5.5,
+      4.0,
+      7.5,
+      4.5
+    ]
+  },
+  "Cheese (ricotta)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 11.3,
+      "fats": 12.5,
+      "carbs": 3.0
+    },
+    "flavor_molecules": [
+      "lactic acid",
+      "diacetyl",
+      "acetaldehyde",
+      "acetic acid",
+      "butyric acid"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      2.0,
+      4.0,
+      7.0,
+      6.5,
+      4.0
+    ]
+  },
+  "Cheese (cottage)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 11.1,
+      "fats": 4.3,
+      "carbs": 3.4
+    },
+    "flavor_molecules": [
+      "lactic acid",
+      "diacetyl",
+      "acetaldehyde",
+      "acetic acid",
+      "dimethyl sulfide"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      2.0,
+      3.5,
+      7.5,
+      4.5,
+      3.5
+    ]
+  },
+  "Cheese (cream)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 5.9,
+      "fats": 34.4,
+      "carbs": 2.7
+    },
+    "flavor_molecules": [
+      "diacetyl",
+      "lactic acid",
+      "acetaldehyde",
+      "butyric acid",
+      "acetic acid"
+    ],
+    "culinary_role": "dairy",
+    "texture_profile": [
+      2.5,
+      5.0,
+      5.0,
+      9.5,
+      5.5
+    ]
+  },
+  "Egg (whole)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 13.0,
+      "fats": 10.6,
+      "carbs": 0.7
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "hydrogen sulfide",
+      "acetaldehyde",
+      "dimethyl sulfide",
+      "diacetyl"
+    ],
+    "culinary_role": "binding_agent",
+    "texture_profile": [
+      4.5,
+      4.0,
+      6.5,
+      5.5,
+      7.5
+    ]
+  },
+  "Egg (yolk)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 16.4,
+      "fats": 27.0,
+      "carbs": 3.6
+    },
+    "flavor_molecules": [
+      "lecithin",
+      "carotenoids",
+      "dimethyl sulfide",
+      "trimethylamine",
+      "diacetyl"
+    ],
+    "culinary_role": "binding_agent",
+    "texture_profile": [
+      3.5,
+      5.5,
+      5.5,
+      8.5,
+      5.5
+    ]
+  },
+  "Egg (white)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 10.9,
+      "fats": 0.2,
+      "carbs": 0.7
+    },
+    "flavor_molecules": [
+      "ovalbumin",
+      "ovotransferrin",
+      "dimethyl sulfide",
+      "hydrogen sulfide",
+      "acetaldehyde"
+    ],
+    "culinary_role": "binding_agent",
+    "texture_profile": [
+      3.5,
+      5.0,
+      8.0,
+      0.5,
+      8.5
+    ]
+  },
+  "Meat (beef)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 26.1,
+      "fats": 17.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "heptanal",
+      "hexanal",
+      "2-undecenal",
+      "methional",
+      "2-methyl-3-furanthiol"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      6.0,
+      7.5,
+      5.5,
+      7.0,
+      6.0
+    ]
+  },
+  "Meat (pork)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 27.3,
+      "fats": 14.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "2-methylbutanal",
+      "3-methylbutanal",
+      "methional",
+      "skatole"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.5,
+      7.0,
+      5.5,
+      6.0,
+      5.5
+    ]
+  },
+  "Meat (lamb)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 25.0,
+      "fats": 21.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "4-methyloctanoic acid",
+      "4-ethyloctanoic acid",
+      "hexanal",
+      "branched fatty acids",
+      "methional"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.5,
+      7.5,
+      5.5,
+      7.5,
+      6.0
+    ]
+  },
+  "Meat (veal)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 28.0,
+      "fats": 8.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "heptanal",
+      "nonanal",
+      "methional",
+      "2-methyl-3-furanthiol"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.0,
+      6.5,
+      6.0,
+      5.0,
+      5.5
+    ]
+  },
+  "Meat (venison)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 30.2,
+      "fats": 3.2,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "hexanal",
+      "heptanal",
+      "2-methylbutanal",
+      "androstenone",
+      "methional"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      6.5,
+      7.5,
+      5.5,
+      4.0,
+      6.5
+    ]
+  },
+  "Poultry (chicken)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 27.3,
+      "fats": 14.0,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "inosine monophosphate",
+      "2-methyl-3-furanthiol",
+      "methional",
+      "dimethyl trisulfide",
+      "heptanal"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.5,
+      7.0,
+      5.5,
+      5.5,
+      6.0
+    ]
+  },
+  "Poultry (turkey)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 29.0,
+      "fats": 7.4,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "inosine monophosphate",
+      "2-methyl-3-furanthiol",
+      "heptanal",
+      "dimethyl trisulfide",
+      "nonanal"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.5,
+      7.5,
+      5.5,
+      4.5,
+      6.5
+    ]
+  },
+  "Poultry (duck)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 18.3,
+      "fats": 28.4,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "heptanal",
+      "hexanal",
+      "2-undecenal",
+      "branched fatty acids",
+      "methional"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.5,
+      7.0,
+      5.5,
+      8.0,
+      6.0
+    ]
+  },
+  "Poultry (goose)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 22.8,
+      "fats": 33.6,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "heptanal",
+      "hexanal",
+      "branched fatty acids",
+      "methional",
+      "nonanal"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      6.0,
+      7.5,
+      5.0,
+      8.5,
+      6.0
+    ]
+  },
+  "Seafood (salmon)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 20.4,
+      "fats": 13.4,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "dimethyl sulfide",
+      "hexanal",
+      "DHA",
+      "omega-3 fatty acids"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      4.5,
+      6.0,
+      6.5,
+      7.5,
+      5.5
+    ]
+  },
+  "Seafood (tuna)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 29.9,
+      "fats": 0.5,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "dimethyl sulfide",
+      "inosine monophosphate",
+      "histidine",
+      "DHA"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.5,
+      6.5,
+      5.5,
+      2.5,
+      5.0
+    ]
+  },
+  "Seafood (cod)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 20.1,
+      "fats": 0.7,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "dimethyl sulfide",
+      "inosine monophosphate",
+      "glutamic acid",
+      "hexanal"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.0,
+      5.5,
+      6.5,
+      1.5,
+      4.5
+    ]
+  },
+  "Seafood (halibut)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 22.5,
+      "fats": 2.3,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "inosine monophosphate",
+      "glutamic acid",
+      "hexanal",
+      "2-nonenal"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.5,
+      6.0,
+      6.5,
+      2.0,
+      5.5
+    ]
+  },
+  "Seafood (shrimp)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 24.0,
+      "fats": 0.9,
+      "carbs": 0.2
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "dimethyl sulfide",
+      "pyrazines",
+      "inosine monophosphate",
+      "betaine"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      6.0,
+      7.5,
+      6.5,
+      1.5,
+      5.5
+    ]
+  },
+  "Seafood (crab)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 19.4,
+      "fats": 1.1,
+      "carbs": 0.0
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "dimethyl sulfide",
+      "betaine",
+      "glycine",
+      "adenosine monophosphate"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.5,
+      7.0,
+      6.0,
+      1.5,
+      5.5
+    ]
+  },
+  "Seafood (lobster)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 20.5,
+      "fats": 1.2,
+      "carbs": 0.5
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "betaine",
+      "glycine",
+      "adenosine monophosphate",
+      "dimethyl sulfide"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      6.0,
+      7.5,
+      6.0,
+      2.0,
+      6.0
+    ]
+  },
+  "Seafood (scallops)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 17.3,
+      "fats": 0.5,
+      "carbs": 0.1
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "glycine",
+      "adenosine monophosphate",
+      "dimethyl sulfide",
+      "betaine"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.0,
+      7.0,
+      6.5,
+      1.5,
+      6.5
+    ]
+  },
+  "Seafood (clams)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 25.5,
+      "fats": 1.9,
+      "carbs": 2.7
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "dimethyl sulfide",
+      "glutamic acid",
+      "inosine monophosphate",
+      "betaine"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      6.0,
+      7.0,
+      6.5,
+      1.5,
+      5.5
+    ]
+  },
+  "Seafood (mussels)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 11.9,
+      "fats": 2.2,
+      "carbs": 3.7
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "dimethyl sulfide",
+      "inosine monophosphate",
+      "glutamic acid",
+      "1-octen-3-ol"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      5.5,
+      7.0,
+      6.5,
+      2.5,
+      5.5
+    ]
+  },
+  "Seafood (oysters)": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 9.0,
+      "fats": 2.5,
+      "carbs": 4.5
+    },
+    "flavor_molecules": [
+      "trimethylamine",
+      "dimethyl sulfide",
+      "glutamic acid",
+      "inosine monophosphate",
+      "1-octen-3-ol"
+    ],
+    "culinary_role": "base_protein",
+    "texture_profile": [
+      3.5,
+      4.5,
+      8.0,
+      3.5,
+      4.0
+    ]
   }
 }

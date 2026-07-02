@@ -606,23 +606,23 @@ async def get_indian_recipes(style: str = "", limit: int = 12, skip: int = 0):
     return {"status": "success", "total": total, "skip": skip, "limit": limit, "recipes": recipes}
 
 def bootstrap_ingredient_profile(ingredient_name):
-    """Query Serverless Llama 3.3 70B to generate a physical-chemical JSON profile for an unseen ingredient."""
+    \"\"\"Query Serverless Llama 3.3 70B to generate a physical-chemical JSON profile for an unseen ingredient.\"\"\"
     messages = [
         {"role": "system", "content": "You are a food chemistry and culinary database. Output only valid JSON. No explanations."},
         {"role": "user", "content": (
             f"Generate a chemical and physical profile for the ingredient '{ingredient_name}' matching the specified JSON format.\n"
             f"Determine if it is vegan (true/false).\n"
-            f"Specify macros (fat, protein, carb, water as ratios summing to 1.0).\n"
-            f"Rate its texture on a 1-5 scale: [hardness, chewiness, fibrousness(0-5), moisture, elasticity, granularity].\n"
-            f"List 3-5 primary flavor volatile compounds (e.g. aldehydes, pyrazines, esters, terpenes, or specific molecules like hexanal, diacetyl, cinnamaldehyde).\n"
-            f"Assign a culinary role: [bulk_protein, fat_source, binder, creamy_liquid, sweetener, seasoning, veggie].\n\n"
+            f"Specify macros (proteins, fats, carbs in grams per 100g, summing up to at most 100).\n"
+            f"Rate its texture on a 1.0-10.0 scale: [hardness, chewiness, moisture, fat_mouthfeel, elasticity].\n"
+            f"List 3-5 primary flavor volatile compounds (e.g. aldehydes, pyrazines, esters, terpenes, or specific molecules).\n"
+            f"Assign a culinary role: [base_protein, fat_source, flavor_enhancer, thickener, sweetener, aromatic, dairy, binding_agent].\n\n"
             f"Return ONLY valid JSON matching this exact structure:\n"
             f"{{\n"
             f"  \"is_vegan\": false,\n"
-            f"  \"macros\": {{\"fat\": 0.20, \"protein\": 0.22, \"carb\": 0.0, \"water\": 0.58}},\n"
-            f"  \"texture\": [4, 4, 4, 2, 2, 2],\n"
-            f"  \"flavor_molecules\": [\"methanethiol\", \"dimethyl_sulfide\", \"pyrazines\"],\n"
-            f"  \"role\": \"bulk_protein\"\n"
+            f"  \"macros\": {{\"proteins\": 22.0, \"fats\": 20.0, \"carbs\": 0.0}},\n"
+            f"  \"texture_profile\": [4.5, 4.0, 4.0, 6.0, 2.0],\n"
+            f"  \"flavor_molecules\": [\"methanethiol\", \"dimethyl sulfide\", \"pyrazines\"],\n"
+            f"  \"culinary_role\": \"base_protein\"\n"
             f"}}\n"
         )}
     ]
@@ -634,17 +634,17 @@ def bootstrap_ingredient_profile(ingredient_name):
         prompt = (
             f"<|begin_of_text|>You are a food chemistry and culinary database. Generate a chemical and physical profile for the ingredient '{ingredient_name}' matching the specified JSON format.\n"
             f"Determine if it is vegan (true/false).\n"
-            f"Specify macros (fat, protein, carb, water as ratios summing to 1.0).\n"
-            f"Rate its texture on a 1-5 scale: [hardness, chewiness, fibrousness(0-5), moisture, elasticity, granularity].\n"
-            f"List 3-5 primary flavor volatile compounds (e.g. aldehydes, pyrazines, esters, terpenes, or specific molecules like hexanal, diacetyl, cinnamaldehyde).\n"
-            f"Assign a culinary role: [bulk_protein, fat_source, binder, creamy_liquid, sweetener, seasoning, veggie].\n\n"
+            f"Specify macros (proteins, fats, carbs in grams per 100g, summing up to at most 100).\n"
+            f"Rate its texture on a 1.0-10.0 scale: [hardness, chewiness, moisture, fat_mouthfeel, elasticity].\n"
+            f"List 3-5 primary flavor volatile compounds (e.g. aldehydes, pyrazines, esters, terpenes, or specific molecules).\n"
+            f"Assign a culinary role: [base_protein, fat_source, flavor_enhancer, thickener, sweetener, aromatic, dairy, binding_agent].\n\n"
             f"Return ONLY valid JSON matching this example:\n"
             f"{{\n"
             f"  \"is_vegan\": false,\n"
-            f"  \"macros\": {{\"fat\": 0.20, \"protein\": 0.22, \"carb\": 0.0, \"water\": 0.58}},\n"
-            f"  \"texture\": [4, 4, 4, 2, 2, 2],\n"
-            f"  \"flavor_molecules\": [\"methanethiol\", \"dimethyl_sulfide\", \"pyrazines\"],\n"
-            f"  \"role\": \"bulk_protein\"\n"
+            f"  \"macros\": {{\"proteins\": 22.0, \"fats\": 20.0, \"carbs\": 0.0}},\n"
+            f"  \"texture_profile\": [4.5, 4.0, 4.0, 6.0, 2.0],\n"
+            f"  \"flavor_molecules\": [\"methanethiol\", \"dimethyl sulfide\", \"pyrazines\"],\n"
+            f"  \"culinary_role\": \"base_protein\"\n"
             f"}}\n\n"
             f"### INGREDIENT: {ingredient_name}\n"
             f"### JSON:\n"
@@ -658,8 +658,8 @@ def bootstrap_ingredient_profile(ingredient_name):
 
     try:
         profile = extract_json_from_llm(raw_text)
-        if profile and isinstance(profile, dict) and "is_vegan" in profile and "macros" in profile and "texture" in profile:
-            if len(profile["texture"]) == 6 and all(isinstance(v, (int, float)) for v in profile["texture"]):
+        if profile and isinstance(profile, dict) and "is_vegan" in profile and "macros" in profile and "texture_profile" in profile:
+            if len(profile["texture_profile"]) == 5 and all(isinstance(v, (int, float)) for v in profile["texture_profile"]):
                 return profile
     except Exception as e:
         print(f"[WARN] Error parsing bootstrapped profile JSON: {e}")
