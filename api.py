@@ -221,12 +221,19 @@ current_mandi['Price_per_Gram'] = current_mandi['Modal_Price'] / 100000
 bounds_response = requests.get(bounds_url, headers=headers)
 bounds_dict = bounds_response.json() if bounds_response.status_code == 200 else {}
 
-pantry_response = requests.get(pantry_url, headers=headers)
-pantry_prices = pantry_response.json() if pantry_response.status_code == 200 else {
+pantry_prices = {
     "vanilla extract": 4.50, "dark chocolate": 1.20, "soy sauce": 0.40,
     "olive oil": 0.80, "macaroni": 0.30, "vegan cashew mozzarella": 2.50,
-    "sugar": 0.05, "salt": 0.02
+    "sugar": 0.05, "salt": 0.02, "egg": 0.12, "chicken": 0.25, "milk": 0.06,
+    "mutton": 0.80, "fish": 0.30, "paneer": 0.40, "pork": 0.30, "beef": 0.30,
+    "cheese": 0.50, "butter": 0.60, "yogurt": 0.10, "curd": 0.10
 }
+pantry_response = requests.get(pantry_url, headers=headers)
+if pantry_response.status_code == 200:
+    try:
+        pantry_prices.update(pantry_response.json())
+    except Exception:
+        pass
 print("[OK] Market Data Loaded.")
 
 # ============================================================
