@@ -226,6 +226,82 @@ pantry_prices = pantry_response.json() if pantry_response.status_code == 200 els
 print("[OK] Market Data Loaded.")
 
 # ============================================================
+# CANONICAL INGREDIENT NORMALIZATION MAP  (Priority 1)
+# Maps variant names → canonical base so "chicken breast",
+# "chicken thigh" etc. all hit the same MongoDB/engine entry
+# as "chicken". Safe to extend — just add more lines.
+# ============================================================
+CANONICAL_MAP: dict[str, str] = {
+    # ── Poultry ─────────────────────────────────────────────
+    "chicken breast": "chicken",   "chicken thigh": "chicken",
+    "chicken thighs": "chicken",   "chicken wing": "chicken",
+    "chicken wings": "chicken",    "chicken leg": "chicken",
+    "chicken legs": "chicken",     "chicken tikka": "chicken",
+    "minced chicken": "chicken",   "ground chicken": "chicken",
+    "chicken mince": "chicken",    "boneless chicken": "chicken",
+    "chicken pieces": "chicken",   "chicken fillet": "chicken",
+    "chicken fillets": "chicken",  "chicken strips": "chicken",
+    "shredded chicken": "chicken", "chicken cubes": "chicken",
+    # ── Egg ────────────────────────────────────────────────
+    "eggs": "egg",         "egg yolk": "egg",   "egg yolks": "egg",
+    "egg white": "egg",    "egg whites": "egg",
+    "whole egg": "egg",    "whole eggs": "egg",
+    "large egg": "egg",    "large eggs": "egg",
+    # ── Beef ─────────────────────────────────────────────
+    "ground beef": "beef",  "beef mince": "beef",
+    "minced beef": "beef",  "beef steak": "beef",
+    "beef strips": "beef",  "beef cubes": "beef",
+    "chuck steak": "beef",  "sirloin": "beef",
+    "ribeye": "beef",       "beef tenderloin": "beef",
+    "stewing beef": "beef",
+    # ── Mutton / Lamb ──────────────────────────────────────
+    "lamb chop": "mutton",  "lamb chops": "mutton",
+    "lamb mince": "mutton", "minced lamb": "mutton",
+    "ground lamb": "mutton","lamb leg": "mutton",
+    "rack of lamb": "mutton","mutton chop": "mutton",
+    "mutton pieces": "mutton","goat meat": "mutton",
+    # ── Pork ──────────────────────────────────────────────
+    "pork belly": "pork",   "pork chop": "pork",
+    "pork chops": "pork",   "pork ribs": "pork",
+    "pork mince": "pork",   "ground pork": "pork",
+    "pork loin": "pork",    "pork shoulder": "pork",
+    # ── Fish ──────────────────────────────────────────────
+    "salmon fillet": "fish", "salmon fillets": "fish",
+    "tuna steak": "fish",    "cod fillet": "fish",
+    "fish fillet": "fish",   "fish fillets": "fish",
+    "tilapia": "fish",  "basa": "fish",  "rohu": "fish",
+    "catla": "fish",    "pomfret": "fish","hilsa": "fish",
+    # ── Shrimp / Prawn ──────────────────────────────────────
+    "king prawn": "shrimp",  "king prawns": "shrimp",
+    "tiger prawn": "shrimp", "tiger prawns": "shrimp",
+    "jumbo shrimp": "shrimp",
+    # ── Dairy fat ──────────────────────────────────────────
+    "clarified butter": "ghee",
+    "unsalted butter": "butter",  "salted butter": "butter",
+    # ── Dairy liquid ───────────────────────────────────────
+    "whole milk": "milk",    "skim milk": "milk",
+    "skimmed milk": "milk",  "full fat milk": "milk",
+    "low fat milk": "milk",  "evaporated milk": "milk",
+    "buttermilk": "milk",
+    "heavy cream": "cream",  "heavy whipping cream": "cream",
+    "double cream": "cream", "whipping cream": "cream",
+    "single cream": "cream", "fresh cream": "cream",
+    "cooking cream": "cream",
+    "sour cream": "yogurt",  "creme fraiche": "yogurt",
+    "cottage cheese": "paneer",
+    # ── Cheese ────────────────────────────────────────────
+    "mozzarella": "cheese",  "cheddar": "cheese",
+    "parmesan": "cheese",    "processed cheese": "cheese",
+}
+
+def canonicalize_ingredient(name_lower: str) -> str:
+    """Return canonical base ingredient name for a variant.
+    e.g. 'chicken breast' -> 'chicken', 'egg yolk' -> 'egg'.
+    Falls back to the original string if no mapping exists."""
+    return CANONICAL_MAP.get(name_lower, name_lower)
+
+
+# ============================================================
 # INGREDIENT / PRICE LOGIC  (unchanged from V10)
 # ============================================================
 def extract_json_from_llm(text):
@@ -689,21 +765,26 @@ def get_vegan_blueprint(request: VeganRequest):
             
     results = []
     for ing in ingredients_to_process:
+        # ── STEP 0: Canonical normalization (Priority 1) ──────────────────
+        canonical = canonicalize_ingredient(ing)
+        if canonical != ing:
+            print(f"[CANON] '{ing}' → '{canonical}'")
+
         # 1. Check if it's already in the database
         try:
             features = vegan_engine.load_features()
         except Exception:
             features = {}
-            
-        if ing not in features:
+
+        if canonical not in features:
             # 2. Try to bootstrap using LLM
-            profile = bootstrap_ingredient_profile(ing)
+            profile = bootstrap_ingredient_profile(canonical)
             if profile:
                 # 3. Save it to cache JSON database
-                vegan_engine.save_new_feature(ing, profile)
-                print(f"[OK] Dynamically bootstrapped and cached ingredient: {ing}")
-                
-        blueprint = vegan_engine.generate_vegan_blueprint(ing, archetype=request.archetype)
+                vegan_engine.save_new_feature(canonical, profile)
+                print(f"[OK] Dynamically bootstrapped and cached ingredient: {canonical}")
+
+        blueprint = vegan_engine.generate_vegan_blueprint(canonical, archetype=request.archetype)
         results.append(blueprint)
         
     return {
@@ -722,16 +803,21 @@ def generate_recipe(request: RecipeRequest):
         import vegan_engine
         archetype_fast = _classify_archetype_fast([parse_ingredient_input(i)[1] for i in clean_ingredients])
         veganized_ingredients = []
-
         for raw_ing in clean_ingredients:
             qty, name = parse_ingredient_input(raw_ing)
             name_lower = name.lower().strip()
+            # ── STEP 0: Canonical normalization (Priority 1) ──────────────────
+            # "chicken breast" → "chicken", "egg yolk" → "egg", etc.
+            # This means your 20 MongoDB entries now cover 80+ variant names.
+            canonical_name = canonicalize_ingredient(name_lower)
+            if canonical_name != name_lower:
+                print(f"[CANON] '{name_lower}' → '{canonical_name}'")
             blueprint = None
 
-            # ── STEP 1: Check pre-built MongoDB match table (fast, ~1ms) ──────────
+            # ── STEP 1: Check pre-built MongoDB match table (fast, ~1ms) ──────
             if vegan_alternatives_sync is not None:
                 try:
-                    db_doc = vegan_alternatives_sync.find_one({"_id": name_lower})
+                    db_doc = vegan_alternatives_sync.find_one({"_id": canonical_name})
                     if db_doc and db_doc.get("best_vegan_substitute"):
                         blueprint = {
                             "status": "success",
@@ -744,28 +830,27 @@ def generate_recipe(request: RecipeRequest):
                                 "spice_bridge": []
                             })
                         }
-                        print(f"[DB HIT] '{name}' → '{db_doc['best_vegan_substitute']}' (score: {db_doc.get('match_score', '?')})")
+                        print(f"[DB HIT] '{canonical_name}' → '{db_doc['best_vegan_substitute']}' (score: {db_doc.get('match_score', '?')})")
                 except Exception as e:
-                    print(f"[DB WARN] vegan_alternatives lookup failed for '{name}': {e}")
+                    print(f"[DB WARN] vegan_alternatives lookup failed for '{canonical_name}': {e}")
 
-            # ── STEP 2: Fallback to local vegan_engine (no LLM bootstrapping) ────
+            # ── STEP 2: Fallback to local vegan_engine (no LLM bootstrapping) ──
             # Only runs if ingredient was NOT found in the MongoDB match table.
             # We skip bootstrap_ingredient_profile() — it spends 1-60s per ingredient
             # calling an LLM. If profile exists locally → instant math. If unknown → keep as-is.
             if blueprint is None:
                 try:
                     features = vegan_engine.load_features()
-                    # Proceed if it's explicitly in DB OR if it matches a static fallback (e.g. shrimp, chicken, milk)
-                    if name in features or vegan_engine.classify_by_keyword(name) is not None:
-                        # Profile exists locally or mathematically covered — run matching math instantly (~10ms)
-                        blueprint = vegan_engine.generate_vegan_blueprint(name, archetype=archetype_fast)
-                        print(f"[LOCAL HIT] '{name}' → '{blueprint.get('best_vegan_substitute', 'N/A')}'")
+                    # Proceed if it's explicitly in DB OR if it matches a static fallback
+                    if canonical_name in features or vegan_engine.classify_by_keyword(canonical_name) is not None:
+                        blueprint = vegan_engine.generate_vegan_blueprint(canonical_name, archetype=archetype_fast)
+                        print(f"[LOCAL HIT] '{canonical_name}' → '{blueprint.get('best_vegan_substitute', 'N/A')}'")
                     else:
                         # Truly unknown ingredient — keep as-is, no LLM call
-                        print(f"[SKIP] '{name}' not in DB and no static fallback — keeping as-is")
+                        print(f"[SKIP] '{canonical_name}' not in DB and no static fallback — keeping as-is")
                         blueprint = {"status": "unknown"}
                 except Exception as e:
-                    print(f"[ENGINE ERROR] vegan_engine failed for '{name}': {e}")
+                    print(f"[ENGINE ERROR] vegan_engine failed for '{canonical_name}': {e}")
                     blueprint = {"status": "error"}
 
 

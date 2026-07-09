@@ -336,6 +336,16 @@ STATIC_FALLBACKS = {
         "texture_profile": [8.0, 1.0, 1.0, 0.0, 1.0],
         "flavor_molecules": ["sucrose", "glucose", "fructose", "caramelone", "maltol"],
         "culinary_role": "sweetener"
+    },
+    # Priority 2: egg added as a dedicated fallback
+    # culinary_role=binding_agent ensures the engine scores it against
+    # aquafaba, flax egg, chia egg etc. — not against bulk proteins.
+    "egg": {
+        "is_vegan": False,
+        "macros": { "proteins": 13.0, "fats": 10.0, "carbs": 1.1 },
+        "texture_profile": [2.0, 3.0, 7.5, 3.5, 5.0],
+        "flavor_molecules": ["acetaldehyde", "dimethyl sulfide", "hydrogen sulfide", "diacetyl", "trimethylamine"],
+        "culinary_role": "binding_agent"
     }
 }
 
@@ -348,7 +358,10 @@ def classify_by_keyword(name):
     dairy_fat_kws = ["butter", "ghee", "lard"]
     dairy_liquid_kws = ["milk", "cream", "yogurt", "curd", "cheese", "paneer", "whey"]
     sweetener_kws = ["honey"]
-    
+    # Priority 2: egg keywords — use substring match but exclude "eggplant"
+    # which is a vegan ingredient ("egg" is a substring of "eggplant")
+    egg_kws = ["egg", "eggs"]
+
     if any(kw in clean_name for kw in red_meat_kws):
         return STATIC_FALLBACKS["red_meat"]
     if any(kw in clean_name for kw in poultry_kws):
@@ -361,7 +374,9 @@ def classify_by_keyword(name):
         return STATIC_FALLBACKS["dairy_liquid"]
     if any(kw in clean_name for kw in sweetener_kws):
         return STATIC_FALLBACKS["sweetener"]
-        
+    if any(kw in clean_name for kw in egg_kws) and "eggplant" not in clean_name:
+        return STATIC_FALLBACKS["egg"]
+
     return None
 
 def save_new_feature(name, data):
