@@ -7,6 +7,7 @@ import io
 import pandas as pd
 import numpy as np
 from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import nltk
@@ -63,15 +64,18 @@ if MONGO_URI:
         _sync_mongo = _pymongo.MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
         _sync_mongo.server_info()  # validate connection
         vegan_alternatives_sync = _sync_mongo.ratatouille.vegan_alternatives
-        print("[OK] Sync MongoDB client ready for vegan lookups.")
+        generation_logs_sync = _sync_mongo.ratatouille.generation_logs
+        print("[OK] Sync MongoDB client ready for vegan lookups and generation logs.")
     except Exception as _e:
         vegan_alternatives_sync = None
+        generation_logs_sync = None
         print(f"[WARN] Sync MongoDB client failed: {_e}")
 else:
     recipes_collection             = None
     vegan_alternatives_collection  = None
     indian_recipes_collection      = None
     vegan_alternatives_sync        = None
+    generation_logs_sync           = None
     print("[!] MONGO_URI not found. Database features will be disabled.")
 
 # ============================================================
@@ -794,144 +798,191 @@ def get_vegan_blueprint(request: VeganRequest):
 
 @app.post("/generate-recipe")
 def generate_recipe(request: RecipeRequest):
-    # Automatically split by comma in case the user sends one giant string
-    clean_ingredients = []
-    for item in request.ingredients:
-        clean_ingredients.extend([i.strip() for i in item.split(',') if i.strip()])
-
-    if request.is_vegan:
-        import vegan_engine
-        archetype_fast = _classify_archetype_fast([parse_ingredient_input(i)[1] for i in clean_ingredients])
-        veganized_ingredients = []
-        for raw_ing in clean_ingredients:
-            qty, name = parse_ingredient_input(raw_ing)
-            name_lower = name.lower().strip()
-            # ── STEP 0: Canonical normalization (Priority 1) ──────────────────
-            # "chicken breast" → "chicken", "egg yolk" → "egg", etc.
-            # This means your 20 MongoDB entries now cover 80+ variant names.
-            canonical_name = canonicalize_ingredient(name_lower)
-            if canonical_name != name_lower:
-                print(f"[CANON] '{name_lower}' → '{canonical_name}'")
-            blueprint = None
-
-            # ── STEP 1: Check pre-built MongoDB match table (fast, ~1ms) ──────
-            if vegan_alternatives_sync is not None:
-                try:
-                    db_doc = vegan_alternatives_sync.find_one({"_id": canonical_name})
-                    if db_doc and db_doc.get("best_vegan_substitute"):
-                        blueprint = {
-                            "status": "success",
-                            "original_ingredient": name,
-                            "best_vegan_substitute": db_doc["best_vegan_substitute"],
-                            "match_score": db_doc.get("match_score", 0),
-                            "compensation_blueprint": db_doc.get("compensation_blueprint", {
-                                "auxiliary_additions": [],
-                                "techniques": [],
-                                "spice_bridge": []
-                            })
-                        }
-                        print(f"[DB HIT] '{canonical_name}' → '{db_doc['best_vegan_substitute']}' (score: {db_doc.get('match_score', '?')})")
-                except Exception as e:
-                    print(f"[DB WARN] vegan_alternatives lookup failed for '{canonical_name}': {e}")
-
-            # ── STEP 2: Fallback to local vegan_engine (no LLM bootstrapping) ──
-            # Only runs if ingredient was NOT found in the MongoDB match table.
-            # We skip bootstrap_ingredient_profile() — it spends 1-60s per ingredient
-            # calling an LLM. If profile exists locally → instant math. If unknown → keep as-is.
-            if blueprint is None:
-                try:
-                    features = vegan_engine.load_features()
-                    # Proceed if it's explicitly in DB OR if it matches a static fallback
-                    if canonical_name in features or vegan_engine.classify_by_keyword(canonical_name) is not None:
-                        blueprint = vegan_engine.generate_vegan_blueprint(canonical_name, archetype=archetype_fast)
-                        print(f"[LOCAL HIT] '{canonical_name}' → '{blueprint.get('best_vegan_substitute', 'N/A')}'")
-                    else:
-                        # Truly unknown ingredient — keep as-is, no LLM call
-                        print(f"[SKIP] '{canonical_name}' not in DB and no static fallback — keeping as-is")
-                        blueprint = {"status": "unknown"}
-                except Exception as e:
-                    print(f"[ENGINE ERROR] vegan_engine failed for '{canonical_name}': {e}")
-                    blueprint = {"status": "error"}
-
-
-            # ── STEP 3: Apply substitution + compensation ──────────────────────────
-            if blueprint and blueprint.get("status") == "success" and \
-               blueprint.get("original_ingredient") != blueprint.get("best_vegan_substitute"):
-                substitute = blueprint["best_vegan_substitute"]
-                veganized_ingredients.append(f"{qty}g {substitute}" if qty is not None else substitute)
-                for add in blueprint.get("compensation_blueprint", {}).get("auxiliary_additions", []):
-                    veganized_ingredients.append(f"{add['amount']} {add['name']}")
-                for spice in blueprint.get("compensation_blueprint", {}).get("spice_bridge", []):
-                    veganized_ingredients.append(spice["spice"])
-            else:
-                veganized_ingredients.append(raw_ing)
-
-        # Override the ingredients list with the newly veganized list
-        clean_ingredients = veganized_ingredients
- 
-    print(f"[] Running Cost Constraint Optimization for Budget: INR {request.budget}...")
-    calculated_ingredients, archetype = optimize_recipe_v2(clean_ingredients, request.budget, request.servings, request.state)
-
-    if not calculated_ingredients:
-        return {"status": "error", "message": "The provided budget is mathematically impossible for these ingredients at current market prices."}
-
-    ingr_text = "\n".join(f"- {i}" for i in calculated_ingredients)
-
-    # EXACT V10 PROMPT STRUCTURE
-    prompt = (
-        f"### INGREDIENTS:\n"
-        f"{ingr_text}\n"
-        f"### TITLE:\n"
-    )
-    print(f"[AI] Generating final recipe for archetype: {archetype} using model_version={request.model_version}")
-
-    chosen_client = _clients.get(request.model_version, _clients["v8"])()
-    ai_text = query_hf_model(
-        prompt,
-        max_new_tokens=500,
-        temperature=0.6,
-        top_p=0.9,
-        repetition_penalty=1.05,
-        client=chosen_client,
-    )
-
-    print(f"DEBUG RAW AI_TEXT: {repr(ai_text)}")
-
-    # Post-process to remove Llama 3 hallucinations/rambling
-    stop_tokens = ['<|eot_id|>', '<|end_of_text|>', '<|begin_of_text|>', '\n### INGREDIENTS:']
-    for t in stop_tokens:
-        if t in ai_text:
-            ai_text = ai_text.split(t)[0].strip()
-
-    # Sometimes it doesn't emit eot_id and just loops back to Step 1 or adds another Title block
-    if "### TITLE:\n" in ai_text:
-        ai_text = ai_text.split("### TITLE:\n")[1].strip()
+    def event_stream():
+        yield f"data: {json.dumps({'step': 'starting', 'message': 'Initializing...'})}\n\n"
         
-    # Cut off standard looping signatures and Notes
-    cut_phrases = [
-        "\nEnjoy!", "\nServe hot", "\nBon Apetit", "\nChef's Note:", 
-        "\nVariations:", "\nServing suggestion:", "\nNote:"
-    ]
-    for phrase in cut_phrases:
-        if phrase in ai_text:
-            ai_text = ai_text.split(phrase)[0].strip()
+        start_time = time.time()
+        times = {}
 
-    # If the AI tries to start a new section with "###" (like "### Serving suggestion:" or "### Note:"), cut it off.
-    # The only valid "###" in the AI output is "### DIRECTIONS:"
-    if "### DIRECTIONS:\n" in ai_text:
-        parts = ai_text.split("### DIRECTIONS:\n")
-        title_part = parts[0]
-        directions_part = parts[1]
-        
-        # If there's another "### " in the directions, cut it
-        if "\n### " in directions_part:
-            directions_part = directions_part.split("\n### ")[0]
+        # Automatically split by comma in case the user sends one giant string
+        clean_ingredients = []
+        for item in request.ingredients:
+            clean_ingredients.extend([i.strip() for i in item.split(',') if i.strip()])
+
+        if request.is_vegan:
+            yield f"data: {json.dumps({'step': 'veganizing', 'message': 'Running Vegan Substitution Engine...'})}\n\n"
+            step_start = time.time()
             
-        ai_text = f"{title_part}### DIRECTIONS:\n{directions_part}".strip()
+            import vegan_engine
+            archetype_fast = _classify_archetype_fast([parse_ingredient_input(i)[1] for i in clean_ingredients])
+            veganized_ingredients = []
+            for raw_ing in clean_ingredients:
+                qty, name = parse_ingredient_input(raw_ing)
+                name_lower = name.lower().strip()
+                # ── STEP 0: Canonical normalization (Priority 1) ──────────────────
+                # "chicken breast" → "chicken", "egg yolk" → "egg", etc.
+                # This means your 20 MongoDB entries now cover 80+ variant names.
+                canonical_name = canonicalize_ingredient(name_lower)
+                if canonical_name != name_lower:
+                    print(f"[CANON] '{name_lower}' → '{canonical_name}'")
+                blueprint = None
+
+                # ── STEP 1: Check pre-built MongoDB match table (fast, ~1ms) ──────
+                if vegan_alternatives_sync is not None:
+                    try:
+                        db_doc = vegan_alternatives_sync.find_one({"_id": canonical_name})
+                        if db_doc and db_doc.get("best_vegan_substitute"):
+                            blueprint = {
+                                "status": "success",
+                                "original_ingredient": name,
+                                "best_vegan_substitute": db_doc["best_vegan_substitute"],
+                                "match_score": db_doc.get("match_score", 0),
+                                "compensation_blueprint": db_doc.get("compensation_blueprint", {
+                                    "auxiliary_additions": [],
+                                    "techniques": [],
+                                    "spice_bridge": []
+                                })
+                            }
+                            print(f"[DB HIT] '{canonical_name}' → '{db_doc['best_vegan_substitute']}' (score: {db_doc.get('match_score', '?')})")
+                    except Exception as e:
+                        print(f"[DB WARN] vegan_alternatives lookup failed for '{canonical_name}': {e}")
+
+                # ── STEP 2: Fallback to local vegan_engine (no LLM bootstrapping) ──
+                # Only runs if ingredient was NOT found in the MongoDB match table.
+                # We skip bootstrap_ingredient_profile() — it spends 1-60s per ingredient
+                # calling an LLM. If profile exists locally → instant math. If unknown → keep as-is.
+                if blueprint is None:
+                    try:
+                        features = vegan_engine.load_features()
+                        # Proceed if it's explicitly in DB OR if it matches a static fallback
+                        if canonical_name in features or vegan_engine.classify_by_keyword(canonical_name) is not None:
+                            blueprint = vegan_engine.generate_vegan_blueprint(canonical_name, archetype=archetype_fast)
+                            print(f"[LOCAL HIT] '{canonical_name}' → '{blueprint.get('best_vegan_substitute', 'N/A')}'")
+                        else:
+                            # Truly unknown ingredient — keep as-is, no LLM call
+                            print(f"[SKIP] '{canonical_name}' not in DB and no static fallback — keeping as-is")
+                            blueprint = {"status": "unknown"}
+                    except Exception as e:
+                        print(f"[ENGINE ERROR] vegan_engine failed for '{canonical_name}': {e}")
+                        blueprint = {"status": "error"}
+
+
+                # ── STEP 3: Apply substitution + compensation ──────────────────────────
+                if blueprint and blueprint.get("status") == "success" and \
+                   blueprint.get("original_ingredient") != blueprint.get("best_vegan_substitute"):
+                    substitute = blueprint["best_vegan_substitute"]
+                    veganized_ingredients.append(f"{qty}g {substitute}" if qty is not None else substitute)
+                    for add in blueprint.get("compensation_blueprint", {}).get("auxiliary_additions", []):
+                        veganized_ingredients.append(f"{add['amount']} {add['name']}")
+                    for spice in blueprint.get("compensation_blueprint", {}).get("spice_bridge", []):
+                        veganized_ingredients.append(spice["spice"])
+                else:
+                    veganized_ingredients.append(raw_ing)
+
+            # Override the ingredients list with the newly veganized list
+            clean_ingredients = veganized_ingredients
+            times['veganization_sec'] = time.time() - step_start
+
+        yield f"data: {json.dumps({'step': 'optimizing', 'message': f'Running Cost Constraint Optimization (Budget: ₹{request.budget})...'})}\n\n"
+        step_start = time.time()
+        print(f"[] Running Cost Constraint Optimization for Budget: INR {request.budget}...")
+        calculated_ingredients, archetype = optimize_recipe_v2(clean_ingredients, request.budget, request.servings, request.state)
+
+        if not calculated_ingredients:
+            yield f"data: {json.dumps({'step': 'error', 'message': 'The provided budget is mathematically impossible for these ingredients at current market prices.'})}\n\n"
+            return
+
+        times['optimization_sec'] = time.time() - step_start
+
+        ingr_text = "\n".join(f"- {i}" for i in calculated_ingredients)
+
+        # EXACT V10 PROMPT STRUCTURE
+        prompt = (
+            f"### INGREDIENTS:\n"
+            f"{ingr_text}\n"
+            f"### TITLE:\n"
+        )
+        print(f"[AI] Generating final recipe for archetype: {archetype} using model_version={request.model_version}")
+
+        yield f"data: {json.dumps({'step': 'generating', 'message': f'Generating AI Recipe (Model: {request.model_version})...'})}\n\n"
+        step_start = time.time()
+
+        chosen_client = _clients.get(request.model_version, _clients["v8"])()
+        ai_text = query_hf_model(
+            prompt,
+            max_new_tokens=500,
+            temperature=0.6,
+            top_p=0.9,
+            repetition_penalty=1.05,
+            client=chosen_client,
+        )
         
-    return {
-        "status": "success",
-        "archetype": archetype,
-        "calculated_ingredients": calculated_ingredients,
-        "recipe": ai_text
+        times['generation_sec'] = time.time() - step_start
+
+        print(f"DEBUG RAW AI_TEXT: {repr(ai_text)}")
+
+        # Post-process to remove Llama 3 hallucinations/rambling
+        stop_tokens = ['<|eot_id|>', '<|end_of_text|>', '<|begin_of_text|>', '\n### INGREDIENTS:']
+        for t in stop_tokens:
+            if t in ai_text:
+                ai_text = ai_text.split(t)[0].strip()
+
+        # Sometimes it doesn't emit eot_id and just loops back to Step 1 or adds another Title block
+        if "### TITLE:\n" in ai_text:
+            ai_text = ai_text.split("### TITLE:\n")[1].strip()
+            
+        # Cut off standard looping signatures and Notes
+        cut_phrases = [
+            "\nEnjoy!", "\nServe hot", "\nBon Apetit", "\nChef's Note:", 
+            "\nVariations:", "\nServing suggestion:", "\nNote:"
+        ]
+        for phrase in cut_phrases:
+            if phrase in ai_text:
+                ai_text = ai_text.split(phrase)[0].strip()
+
+        # If the AI tries to start a new section with "###" (like "### Serving suggestion:" or "### Note:"), cut it off.
+        # The only valid "###" in the AI output is "### DIRECTIONS:"
+        if "### DIRECTIONS:\n" in ai_text:
+            parts = ai_text.split("### DIRECTIONS:\n")
+            title_part = parts[0]
+            directions_part = parts[1]
+            
+            # If there's another "### " in the directions, cut it
+            if "\n### " in directions_part:
+                directions_part = directions_part.split("\n### ")[0]
+                
+            ai_text = f"{title_part}### DIRECTIONS:\n{directions_part}".strip()
+            
+        total_time = time.time() - start_time
+        
+        # Log to MongoDB
+        if generation_logs_sync is not None:
+            try:
+                log_entry = {
+                    "timestamp": time.time(),
+                    "model_version": request.model_version,
+                    "is_vegan": request.is_vegan,
+                    "archetype": archetype,
+                    "budget": request.budget,
+                    "servings": request.servings,
+                    "state": request.state,
+                    "times_sec": times,
+                    "total_time_sec": total_time,
+                    "ingredient_count": len(clean_ingredients)
+                }
+                generation_logs_sync.insert_one(log_entry)
+                print(f"[OK] Generation log saved to DB. Total time: {total_time:.2f}s")
+            except Exception as e:
+                print(f"[WARN] Failed to save generation log: {e}")
+
+        final_result = {
+            "status": "success",
+            "archetype": archetype,
+            "calculated_ingredients": calculated_ingredients,
+            "recipe": ai_text
+        }
+        yield f"data: {json.dumps({'step': 'complete', 'result': final_result})}\n\n"
+
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
+
     }

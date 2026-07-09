@@ -7511,5 +7511,31 @@
       3.5,
       4.0
     ]
+  },
+  "chickpea flour": {
+    "is_vegan": true,
+    "macros": {
+      "proteins": 20.5,
+      "fats": 3.5,
+      "carbs": 58.0
+    },
+    "texture_profile": [
+      6.0,
+      5.0,
+      3.0,
+      2.0,
+      8.0
+    ],
+    "flavor_molecules": [
+      "2-methyl-1-propanol",
+      "hexanal",
+      "furfural",
+      "pyrazines"
+    ],
+    "culinary_role": [
+      "base_protein",
+      "thickener",
+      "binding_agent"
+    ]
   }
 }

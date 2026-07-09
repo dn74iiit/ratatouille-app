@@ -17,6 +17,7 @@ function App() {
   
   // Response State
   const [loading, setLoading] = useState(false);
+  const [stepMessage, setStepMessage] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [saveMessage, setSaveMessage] = useState('');
@@ -66,6 +67,7 @@ function App() {
     setError('');
     setResult(null);
     setSaveMessage('');
+    setStepMessage('Initializing...');
 
     const ingList = ingredients.split(',').map(i => i.trim()).filter(i => i);
 
@@ -83,13 +85,37 @@ function App() {
         })
       });
 
-      const data = await response.json();
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
 
-      if (data.status === 'success') {
-        setResult(data);
-      } else {
-        setError(data.message || 'Failed to generate recipe.');
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        
+        const lines = chunk.split('\n\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const dataStr = line.slice(6);
+            if (!dataStr.trim()) continue;
+            try {
+              const data = JSON.parse(dataStr);
+              if (data.step === 'complete') {
+                setResult(data.result);
+                setStepMessage('');
+              } else if (data.step === 'error') {
+                setError(data.message);
+                setStepMessage('');
+              } else {
+                setStepMessage(data.message);
+              }
+            } catch (e) {
+              console.warn("Failed to parse chunk:", dataStr);
+            }
+          }
+        }
       }
+
     } catch (err) {
       setError('Connection to backend failed. Please try again.');
     } finally {
@@ -789,7 +815,7 @@ function App() {
         <div className="floating-timer-tab">
           <span className="loader" style={{width:'16px',height:'16px',borderWidth:'2px',borderColor:'#fff',borderBottomColor:'transparent',display:'inline-block',boxSizing:'border-box',animation:'rotation 1s linear infinite',borderRadius:'50%'}}></span>
           <span className="timer-text">
-            {loading ? "Generating Recipe..." : 
+            {loading ? (stepMessage || "Generating Recipe...") : 
              veganLoading ? "Calculating Vegan Match..." : 
              dbAltLoading || indianLoading ? "Loading Data..." : "Working..."}
             <span style={{marginLeft:'8px',color:'#818cf8',fontWeight:'600'}}>({elapsedSeconds}s)</span>
