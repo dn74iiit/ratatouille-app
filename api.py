@@ -65,10 +65,12 @@ if MONGO_URI:
         _sync_mongo.server_info()  # validate connection
         vegan_alternatives_sync = _sync_mongo.ratatouille.vegan_alternatives
         generation_logs_sync = _sync_mongo.ratatouille.generation_logs
-        print("[OK] Sync MongoDB client ready for vegan lookups and generation logs.")
+        llm_cache_sync = _sync_mongo.ratatouille.llm_cache
+        print("[OK] Sync MongoDB client ready for vegan lookups, logs, and LLM cache.")
     except Exception as _e:
         vegan_alternatives_sync = None
         generation_logs_sync = None
+        llm_cache_sync = None
         print(f"[WARN] Sync MongoDB client failed: {_e}")
 else:
     recipes_collection             = None
@@ -76,6 +78,7 @@ else:
     indian_recipes_collection      = None
     vegan_alternatives_sync        = None
     generation_logs_sync           = None
+    llm_cache_sync                 = None
     print("[!] MONGO_URI not found. Database features will be disabled.")
 
 # ============================================================
@@ -324,6 +327,16 @@ def extract_json_from_llm(text):
 
 def deconstruct_ingredient(ingredient):
     """Use Serverless Llama 3.3 70B to break a processed ingredient into raw crops."""
+    cache_id = f"deconstruct_{ingredient.strip().lower()}"
+    if llm_cache_sync is not None:
+        try:
+            cached = llm_cache_sync.find_one({"_id": cache_id})
+            if cached and "result" in cached:
+                print(f"[CACHE HIT] deconstruct_ingredient('{ingredient}') -> {cached['result']}")
+                return cached["result"]
+        except Exception as e:
+            print(f"[WARN] Cache lookup failed: {e}")
+
     messages = [
         {"role": "system", "content": "You are a food chemistry and agricultural database. Output only valid JSON. Do not write any explanations or conversational text outside the JSON."},
         {"role": "user", "content": f"Deconstruct the processed culinary ingredient '{ingredient}' into its primary raw agricultural crops with approximate weight percentages (total summing to 1.0).\nExample: for 'tomato ketchup', return exactly: {{\"tomato\": 0.8, \"sugar\": 0.1, \"onion\": 0.1}}"}
@@ -339,11 +352,37 @@ def deconstruct_ingredient(ingredient):
             f"### INGREDIENT:\n{ingredient}\n### JSON:\n"
         )
         text = query_hf_model(prompt, max_new_tokens=50, temperature=0.0, do_sample=False)
-    return extract_json_from_llm(text)
+        
+    result = extract_json_from_llm(text)
+    
+    if result and llm_cache_sync is not None:
+        try:
+            llm_cache_sync.update_one(
+                {"_id": cache_id},
+                {"$set": {"result": result, "timestamp": time.time()}},
+                upsert=True
+            )
+            print(f"[CACHE SET] Saved deconstruction for '{ingredient}'.")
+        except Exception as e:
+            print(f"[WARN] Cache save failed: {e}")
+            
+    return result
 
 def get_recipe_archetype(ingredients_list):
     """Classify the dish archetype using Serverless Llama 3.3 70B."""
     ingr_str = ", ".join(ingredients_list)
+    sorted_ingrs = ",".join(sorted([i.strip().lower() for i in ingredients_list]))
+    cache_id = f"archetype_{sorted_ingrs}"
+    
+    if llm_cache_sync is not None:
+        try:
+            cached = llm_cache_sync.find_one({"_id": cache_id})
+            if cached and "result" in cached:
+                print(f"[CACHE HIT] get_recipe_archetype -> {cached['result']}")
+                return cached["result"]
+        except Exception as e:
+            print(f"[WARN] Cache lookup failed: {e}")
+
     messages = [
         {"role": "system", "content": "You are a recipe classification assistant. Output ONLY a single word classification from the permitted list. No explanation."},
         {"role": "user", "content": f"Classify the dish structure based on these ingredients: [{ingr_str}].\nChoose exactly ONE from this list: [Curry, Dry_Sabzi, Salad, Dessert, Bread, Soup, Rice_Dish]."}
@@ -362,10 +401,25 @@ def get_recipe_archetype(ingredients_list):
         text = query_hf_model(prompt, max_new_tokens=10, temperature=0.0, do_sample=False)
 
     valid_archetypes = ["Curry", "Dry_Sabzi", "Salad", "Dessert", "Bread", "Soup", "Rice_Dish"]
-    for v in valid_archetypes:
-        if v.lower() in text.lower():
-            return v
-    return "Curry"
+    result = "Curry"
+    if text:
+        for v in valid_archetypes:
+            if v.lower() in text.lower():
+                result = v
+                break
+                
+    if llm_cache_sync is not None:
+        try:
+            llm_cache_sync.update_one(
+                {"_id": cache_id},
+                {"$set": {"result": result, "timestamp": time.time(), "original_ingredients": ingredients_list}},
+                upsert=True
+            )
+            print(f"[CACHE SET] Saved archetype '{result}' for {ingredients_list}.")
+        except Exception as e:
+            print(f"[WARN] Cache save failed: {e}")
+            
+    return result
 
 def parse_ingredient_input(raw_string):
     match = re.match(r"^([\d\.]+)\s*(g|kg|ml)?\s+(.*)$", raw_string.strip().lower())
