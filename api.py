@@ -984,5 +984,3 @@ def generate_recipe(request: RecipeRequest):
         yield f"data: {json.dumps({'step': 'complete', 'result': final_result})}\n\n"
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")
-
-    }
