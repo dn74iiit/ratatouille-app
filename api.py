@@ -511,7 +511,7 @@ def optimize_recipe_v2(raw_user_ingredients, total_budget, servings, user_state,
             lower, upper = bounds_dict.get(lemmatizer.lemmatize(clean_name.split()[-1]), (10, 400))
             if clean_name not in ['garlic', 'ginger', 'chili', 'salt', 'pepper']: lower = max(lower, 15.0)
             else: lower = max(lower, 2.0)
-            upper = min(upper, 800.0) # Allow up to 800g per ingredient if budget permits
+            upper = min(upper, 250.0) # Allow up to 250g per ingredient per serving max
             if lower > upper: lower = upper
             bounds.append((lower, upper))
 
@@ -564,8 +564,8 @@ def optimize_recipe_v2(raw_user_ingredients, total_budget, servings, user_state,
 
     # Nuclear Fallback: If it fails due to some impossible matrix constraint, remove ALL limits.
     if not result.success:
-        print(f"[*] Nuclear Fallback activated: Overriding all bounds to (1g, 1000g)...")
-        nuclear_bounds = [(1.0, 1000.0) for _ in bounds]
+        print(f"[*] Nuclear Fallback activated: Overriding all bounds to (1g, 300g)...")
+        nuclear_bounds = [(1.0, 300.0) for _ in bounds]
         result = linprog(c, A_ub=A_ub_fallback, b_ub=b_ub_fallback, bounds=nuclear_bounds, method='highs')
 
     if result.success:
