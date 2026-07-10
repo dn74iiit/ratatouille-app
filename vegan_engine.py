@@ -89,7 +89,14 @@ def get_spice_bridge(original_mols, substitute_mols, all_features, top_k=3):
         return []
         
     bridge_scores = []
+    
+    # Safety guard: prevent LLM tagging hallucinations where bulky sulfur veggies get tagged as aromatics
+    bulky_veggies = ["cabbage", "cauliflower", "turnip", "brussels sprouts", "broccoli", "potato", "carrot"]
+    
     for name, data in all_features.items():
+        if name.lower() in bulky_veggies:
+            continue
+            
         if data.get("culinary_role") in ["flavor_enhancer", "aromatic"] and data.get("is_vegan"):
             spice_mols = set(data.get("flavor_molecules", []))
             gap_covered = len(spice_mols & flavor_gap)
