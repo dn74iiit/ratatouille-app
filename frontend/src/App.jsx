@@ -27,8 +27,11 @@ const UNSPLASH_CACHE = {
     "Dry_Sabzi": ["1546833999-b9f581a1996d", "1565557623262-b51c2513a641", "1604152135912-04a022e23696"]
 };
 
-const getRandomBanner = (archetype) => {
-    const arch = UNSPLASH_CACHE[archetype] ? archetype : "Curry";
+const getRandomBanner = (archetype, isVegan = false) => {
+    let arch = UNSPLASH_CACHE[archetype] ? archetype : "Curry";
+    if (isVegan && arch === "Rice_Dish") {
+        arch = "Dry_Sabzi";
+    }
     const photos = UNSPLASH_CACHE[arch];
     const photoId = photos[Math.floor(Math.random() * photos.length)];
     return `https://images.unsplash.com/photo-${photoId}?q=80&w=1632&auto=format&fit=crop`;
@@ -513,7 +516,7 @@ function App() {
                      const title = doc.recipe.recipe.split('\n')[0].replace('### TITLE:', '').trim();
                      return (
                        <div key={`a-${idx}`} className="chip" onClick={() => {
-                         const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype);
+                         const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype, doc.recipe.is_vegan);
                          setResult({...doc.recipe, image_url: imgUrl, isSurprise: true});
                        }} style={{ flexShrink: 0 }}>
                          {title}
@@ -525,7 +528,7 @@ function App() {
                      const title = doc.recipe.recipe.split('\n')[0].replace('### TITLE:', '').trim();
                      return (
                        <div key={`b-${idx}`} className="chip" onClick={() => {
-                         const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype);
+                         const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype, doc.recipe.is_vegan);
                          setResult({...doc.recipe, image_url: imgUrl, isSurprise: true});
                        }} style={{ flexShrink: 0 }}>
                          {title}
@@ -549,7 +552,7 @@ function App() {
                 
                 {(result.image_url || result.isSurprise || result.archetype) ? (
                   <div className="modal-image-container">
-                    <img src={result.image_url || getRandomBanner(result.archetype)} alt="Recipe" className="modal-image" />
+                    <img src={result.image_url || getRandomBanner(result.archetype, result.is_vegan)} alt="Recipe" className="modal-image" />
                   </div>
                 ) : (
                   <div style={{ marginTop: '70px' }}></div>
@@ -810,7 +813,7 @@ function App() {
                    <details key={idx} className="history-card">
                      <summary className="history-summary">
                        <div style={{display: 'flex', gap: '1.25rem', alignItems: 'center'}}>
-                         <img src={rec.image_url || getRandomBanner(rec.archetype)} alt="Thumbnail" style={{width: '70px', height: '70px', objectFit: 'cover', borderRadius: '12px'}} />
+                         <img src={rec.image_url || getRandomBanner(rec.archetype, rec.is_vegan)} alt="Thumbnail" style={{width: '70px', height: '70px', objectFit: 'cover', borderRadius: '12px'}} />
                          <div>
                            <h4>{rec.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h4>
                            <span className="badge">{rec.archetype}</span>
@@ -868,7 +871,7 @@ function App() {
                    <details key={idx} className="history-card" style={{border: rec.is_vegan ? '2px solid #4ade80' : 'none', position: 'relative'}}>
                      <summary className="history-summary">
                        <div style={{display: 'flex', gap: '1.25rem', alignItems: 'center'}}>
-                         <img src={rec.image_url || getRandomBanner(rec.archetype)} alt="Thumbnail" style={{width: '70px', height: '70px', objectFit: 'cover', borderRadius: '12px'}} />
+                         <img src={rec.image_url || getRandomBanner(rec.archetype, rec.is_vegan)} alt="Thumbnail" style={{width: '70px', height: '70px', objectFit: 'cover', borderRadius: '12px'}} />
                          <div>
                            <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
                              <h4>{rec.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h4>
