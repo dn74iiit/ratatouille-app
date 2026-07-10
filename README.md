@@ -1,10 +1,8 @@
 # Ratatouille 🍲🤖
 
-Welcome to **Ratatouille**, an intelligent, AI-powered recipe generation and ingredient substitution engine! 
+Welcome to **Ratatouille**, an intelligent, AI-powered recipe generation and ingredient substitution engine.
 
 This project explores computational gastronomy by combining Large Language Models (via Groq), Hugging Face spaces, and deterministic computational pipelines to generate context-aware, vegan-friendly, and cost-constrained recipes.
-
-Whether you're a Computer Science student interested in AI integrations, full-stack web development, or complex systems, this repository offers a great sandbox to explore and learn.
 
 ## 🚀 Features
 
@@ -34,7 +32,7 @@ Whether you're a Computer Science student interested in AI integrations, full-st
 
 ## 🛠️ Getting Started (Local Development)
 
-If you're a student looking to run this locally, hack on the features, or understand how the components tie together, follow these steps:
+To run this project locally and explore the architecture, follow these steps:
 
 ### 1. Prerequisites
 - **Python 3.9+**
@@ -80,15 +78,13 @@ npm run dev
 ```
 *The React app will typically be available at `http://localhost:5173`.*
 
-## 🧠 Areas to Explore for CS Students
+## 🧠 Core Architecture Highlights
 
-If you want to contribute or just study the code, here are some interesting areas:
-1. **The AI Pipeline**: Check out `api.py` to see how we stream responses from Groq and handle Gradio client requests to Hugging Face.
-2. **Computational Gastronomy**: Look into `vegan_engine.py` and `deconstruction_map.json` to understand how ingredients are mathematically and chemically substituted.
+For a deeper dive into the codebase, explore the following areas:
+1. **The AI Pipeline**: `api.py` demonstrates how responses from Groq are streamed and how Gradio client requests to Hugging Face are handled asynchronously.
+2. **Computational Gastronomy**: `vegan_engine.py` and `deconstruction_map.json` illustrate how ingredients are mathematically and chemically substituted.
 3. **Asynchronous Python**: The backend heavily relies on `async/await` patterns with FastAPI and Motor (MongoDB).
-4. **Server Deployment**: Read through the `MIGRATION_GUIDE.md` to understand how this system is deployed to academic research servers (e.g., CoSyLab).
+4. **Server Deployment**: The `MIGRATION_GUIDE.md` details how this system is deployed to academic research servers and other Linux environments.
 
 ## 🤝 Contributing
-Feel free to fork this repository, submit Pull Requests, or open Issues if you find bugs or have feature ideas. 
-
-Happy coding! 👨‍🍳💻
+Contributions are welcome. Feel free to fork this repository, submit Pull Requests, or open Issues if you find bugs or have feature ideas. 
