@@ -26,7 +26,8 @@ NON_INDIAN_BLACKLIST = [
     "agave nectar", "maple syrup", "monk fruit",
     "chipotle", "habanero", "poblano", "serrano", "gochugaru",
     "balsamic vinegar", "red wine vinegar", "white wine vinegar",
-    "pine nuts", "macadamia"
+    "pine nuts", "macadamia",
+    "seaweed", "cabbage (napa)", "bok choy", "edamame"
 ]
 
 def load_features():
