@@ -1,25 +1,36 @@
-# Ratatouille 🍲🤖
+# Ratatouille: AI-Powered Recipe Generation and Substitution Engine
 
-Welcome to **Ratatouille**, an intelligent, AI-powered recipe generation and ingredient substitution engine.
+Welcome to Ratatouille, an intelligent application designed to bridge computational gastronomy with Large Language Models. 
 
-This project explores computational gastronomy by combining Large Language Models (via Groq), Hugging Face spaces, and deterministic computational pipelines to generate context-aware, vegan-friendly, and cost-constrained recipes.
+This project leverages advanced natural language processing via the Groq API and customized Hugging Face spaces, alongside deterministic computational pipelines, to generate context-aware, vegan-friendly, and cost-constrained recipes.
 
-## 🚀 Features
+## Core Features and System Workflow
 
-- **Vegan Recipe Engine (`vegan_engine.py`)**: Automatically converts traditional recipes into vegan alternatives using chemical feature mapping and a customized substitution database.
-- **Cost Constraints Integration**: Uses advanced prompting and data structures to formulate recipes that fit within a specified budget.
-- **Modern Tech Stack**:
-  - **Backend**: FastAPI (Python) for blazing-fast asynchronous endpoints.
-  - **Frontend**: React + Vite for a snappy, modern User Interface.
-  - **AI Integration**: Groq API for rapid LLM inference, paired with custom models hosted on Hugging Face Spaces.
-  - **Database**: MongoDB (motor_asyncio) for non-blocking database queries.
-- **Deconstruction Mapping**: Maps complex ingredients into atomic chemical features to find the most accurate vegan substitutes.
+The Ratatouille system is built on a modular architecture that separates recipe generation, ingredient deconstruction, and constraint optimization. Below is a detailed walkthrough of the internal workflows and the intricacies of each subsystem.
 
-## 📁 Repository Structure
+### 1. The Generation Pipeline (api.py)
+The generation pipeline acts as the primary orchestrator for user requests, ensuring low-latency responses by streaming data directly to the client.
+- **Asynchronous Processing**: Built on FastAPI, the backend handles concurrent requests without blocking.
+- **LLM Integration**: The system interfaces with the Groq API for rapid natural language processing. It constructs dense, context-heavy prompts based on user dietary restrictions and preferences.
+- **Hugging Face Delegation**: For specific domain tasks (like specialized vegan recipe modeling), the API seamlessly hands off requests to custom inference endpoints hosted on Hugging Face Spaces via the Gradio client.
+- **Data Persistence**: Asynchronous MongoDB operations (via Motor) log generated recipes and user interactions, allowing the system to maintain a conversational context without slowing down the primary generation loop.
+
+### 2. The Vegan Conversion Engine (vegan_engine.py)
+The Vegan Engine is a deterministic subsystem that applies computational gastronomy principles to convert traditional recipes into fully vegan alternatives while maintaining flavor profiles and structural integrity.
+- **Ingredient Deconstruction**: When a non-vegan recipe is detected, the engine parses the ingredient list and maps complex animal-based products to their fundamental components using `deconstruction_map.json`.
+- **Chemical Feature Mapping**: Each deconstructed component is analyzed for its chemical properties (e.g., binding capabilities, fat content, moisture) using `chemical_features.json`.
+- **Intelligent Substitution**: The engine queries the `vegan_alternatives_db` to find plant-based ingredients that match the exact chemical and functional profile of the original ingredient. For example, it understands whether an egg is being used for binding, leavening, or moisture, and selects the optimal substitute accordingly.
+
+### 3. Cost-Constraint Optimization
+A defining feature of Ratatouille is its ability to formulate recipes that strictly adhere to a user-defined budget.
+- **Pricing Data Structures**: The system cross-references generated ingredients against a localized pricing matrix.
+- **Iterative Refinement**: If a generated recipe exceeds the budget, the system utilizes linear programming and iterative LLM prompting to swap out high-cost ingredients for cheaper, nutritionally equivalent alternatives without compromising the dish's core identity.
+
+## Repository Structure
 
 ```text
 ├── frontend/                     # React/Vite Single Page Application
-├── api.py                        # FastAPI backend server
+├── api.py                        # FastAPI backend server and orchestrator
 ├── vegan_engine.py               # Core logic for recipe processing and conversion
 ├── requirements.txt              # Python dependencies
 ├── .env.example                  # Template for required environment variables
@@ -28,63 +39,10 @@ This project explores computational gastronomy by combining Large Language Model
 └── docs/                         # Additional architectural documentation
 ```
 
-*(Note: Large datasets and Jupyter notebooks used for training the underlying models are managed separately or documented within `MIGRATION_GUIDE.md`.)*
+*(Note: Large datasets and Jupyter notebooks used for training the underlying models are managed separately or documented within MIGRATION_GUIDE.md.)*
 
-## 🛠️ Getting Started (Local Development)
+## Deployment and Administration
+For instructions regarding deploying this system to academic research servers or production environments, please refer to the MIGRATION_GUIDE.md included in this repository.
 
-To run this project locally and explore the architecture, follow these steps:
-
-### 1. Prerequisites
-- **Python 3.9+**
-- **Node.js 18+**
-- **API Keys**: You will need a Groq API Key and a MongoDB URI to fully test the backend.
-
-### 2. Backend Setup
-Clone the repository and set up your Python environment:
-```bash
-git clone https://github.com/dn74iiit/ratatouille-app.git
-cd ratatouille-app
-
-# Create and activate a virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-Set up your environment variables by copying the example file:
-```bash
-cp .env.example .env
-```
-Open `.env` and fill in your keys (e.g., `GROQ_API_KEY`, `MONGO_URI`, etc.).
-
-Start the FastAPI server:
-```bash
-uvicorn api:app --reload
-```
-*The API will be available at `http://localhost:8000`. You can view the interactive Swagger documentation at `http://localhost:8000/docs`.*
-
-### 3. Frontend Setup
-Open a new terminal window, and navigate to the frontend directory:
-```bash
-cd frontend
-
-# Install Node dependencies
-npm install
-
-# Start the Vite development server
-npm run dev
-```
-*The React app will typically be available at `http://localhost:5173`.*
-
-## 🧠 Core Architecture Highlights
-
-For a deeper dive into the codebase, explore the following areas:
-1. **The AI Pipeline**: `api.py` demonstrates how responses from Groq are streamed and how Gradio client requests to Hugging Face are handled asynchronously.
-2. **Computational Gastronomy**: `vegan_engine.py` and `deconstruction_map.json` illustrate how ingredients are mathematically and chemically substituted.
-3. **Asynchronous Python**: The backend heavily relies on `async/await` patterns with FastAPI and Motor (MongoDB).
-4. **Server Deployment**: The `MIGRATION_GUIDE.md` details how this system is deployed to academic research servers and other Linux environments.
-
-## 🤝 Contributing
-Contributions are welcome. Feel free to fork this repository, submit Pull Requests, or open Issues if you find bugs or have feature ideas. 
+## Contributing
+Contributions and architectural reviews are welcome. Please submit Pull Requests or open Issues for any bugs or feature proposals.
