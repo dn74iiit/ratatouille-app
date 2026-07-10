@@ -96,7 +96,7 @@ cd ratatouille-cost
 
 ---
 
-## 4. Notes for the Administrator (PhD Student)
+## 4. Notes for the Administrator 
 - **CORS Configuration**: Depending on how the frontend is served (same port vs different port), ensure `api.py` has the correct origins configured in `CORSMiddleware`.
 - **Database**: Ensure the CoSyLab server's firewall allows outbound connections to the MongoDB cluster URI provided in the `.env` file.
 - **Port Forwarding**: Expose port `8000` (or whichever port you choose to run the backend on) and the frontend port (e.g., `80` or `3000`) so they can be accessed externally.
