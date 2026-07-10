@@ -7537,5 +7537,54 @@
       "thickener",
       "binding_agent"
     ]
+  },
+  "paneer": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 18.0,
+      "fats": 20.0,
+      "carbs": 2.0
+    },
+    "texture_profile": [
+      7.0,
+      6.0,
+      3.0,
+      8.0,
+      1.0
+    ],
+    "flavor_molecules": [
+      "acetic acid",
+      "butyric acid",
+      "delta-decalactone"
+    ],
+    "culinary_role": [
+      "base_protein",
+      "dairy"
+    ]
+  },
+  "chicken": {
+    "is_vegan": false,
+    "macros": {
+      "proteins": 26.0,
+      "fats": 13.0,
+      "carbs": 0.0
+    },
+    "texture_profile": [
+      6.0,
+      7.0,
+      5.0,
+      4.0,
+      3.0
+    ],
+    "flavor_molecules": [
+      "2-methyl-3-furanthiol",
+      "methanethiol",
+      "2,5-dimethylpyrazine",
+      "dimethyl sulfide"
+    ],
+    "culinary_role": [
+      "base_protein",
+      "flavor_enhancer"
+    ]
   }
 }

@@ -1,14 +1,136 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
+import { Search, X, ShoppingBasket, QrCode, Link as LinkIcon } from 'lucide-react';
 
 const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8000' : 'https://ratatouille-backend.onrender.com';
+
+const INDIAN_STATES = [
+  "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar",
+  "Chandigarh", "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Goa",
+  "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka",
+  "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya",
+  "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim",
+  "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
+];
+
+const COMMON_INGREDIENTS = [
+  "Salt", "Olive oil", "Butter", "Garlic", "Onion", "Black pepper", "Sugar", "Water", "Lemon juice", "Tomato", "Egg", "Flour", "Milk", "Vegetable oil", "Parmesan cheese", "Parsley", "Soy sauce", "Chicken breast", "Brown sugar", "Vanilla extract", "Cumin", "Mayonnaise", "Paprika", "Oregano", "Cilantro", "Cinnamon", "Cheddar cheese", "Carrot", "Heavy cream", "Red pepper flakes", "Bell pepper", "Lemon", "Lime", "Chili powder", "Baking powder", "Basil", "Scallions", "Garlic powder", "Honey", "Balsamic vinegar", "Ginger", "Mozzarella cheese", "Red onion", "Baking soda", "Bacon", "White wine", "Chicken broth", "Thyme", "Cornstarch", "Sour cream", "Mustard", "Vinegar", "Celery", "Cayenne pepper", "Ground beef", "Nutmeg", "Coriander", "Almonds", "Apple cider vinegar", "Avocado", "Sesame oil", "Rosemary", "Soy", "Green onion", "Red wine vinegar", "Peanut butter", "Jalapeno", "Maple syrup", "Tomato paste", "Bread crumbs", "Lime juice", "Shrimp", "Dijon mustard", "Spinach", "Bay leaf", "White sugar", "Mint", "Sriracha", "Mushroom", "Walnut", "Chocolate chips", "Cream cheese", "Zucchini", "Beef broth", "Canola oil", "Coconut oil", "Potato", "Peanuts", "Cocoa powder", "Cucumber", "Clove", "Orange juice", "White pepper", "Apple", "Cabbage", "Oats", "Coconut milk", "Salmon", "Feta cheese", "Pork", "Blueberries", "Corn", "Sesame seeds", "Prosciutto", "Ketchup", "Yogurt", "Mustard powder", "Vegetable broth", "Strawberries", "Asparagus", "Pineapple", "Cauliflower", "Fish sauce", "Broccoli", "Allspice", "Avocado oil", "Black beans", "Almond milk", "Green beans", "Turmeric", "Chicken", "Ghee", "Bread", "Red wine", "Rice", "Pasta", "Chickpeas", "Beef", "Orange", "Sausage", "Maple", "Lime zest", "Lemon zest", "Dill", "Fennel", "Cardamom", "Anise", "Tarragon", "Chives", "Marjoram", "Sage", "Lemongrass", "Saffron", "Star anise", "Curry powder", "Garam masala", "Five spice", "Chili flakes", "Chipotle", "Habanero", "Poblano", "Serrano", "Gochugaru", "Anchovy", "Capers", "Olives", "Sun-dried tomatoes", "Artichoke", "Eggplant", "Butternut squash", "Sweet potato", "Pumpkin", "Radish", "Turnip", "Parsnip", "Beetroot", "Leek", "Shallot", "Watercress", "Arugula", "Kale", "Romaine", "Iceberg", "Radicchio", "Endive", "Brussels sprouts", "Bok choy", "Swiss chard", "Collard greens", "Mustard greens", "Cabbage (red)", "Cabbage (Napa)", "Seaweed", "Tofu", "Tempeh", "Seitan", "Edamame", "Lentils (red)", "Lentils (green)", "Lentils (brown)", "Beans (kidney)", "Beans (pinto)", "Beans (navy)", "Beans (cannellini)", "Peas", "Snow peas", "Snap peas", "Corn (sweet)", "Rice (white)", "Rice (brown)"
+];
+
+const UNSPLASH_CACHE = {
+    "Curry": ["1585937421612-70a008356fbe", "1603894584373-5ac82b2ae398", "1565557623262-b51c2513a641", "1618160702438-9b02ab6515c9", "1631452180519-c014fe946bc7"],
+    "Salad": ["1512621776951-a57141f2eefd", "1490645935967-10de6ba17061", "1546069901-ba9599a7e63c"],
+    "Dessert": ["1488477181946-6428a0291777", "1550617931-e17a7b70dce2", "1551024506-0cb4a1cb3689"],
+    "Bread": ["1509440159596-0249088772ff", "1608198093002-ad4e005484ec"],
+    "Soup": ["1547592166-23ac45744acd", "1604152135912-04a022e23696", "1578020190125-f4f7c18bc9cb"],
+    "Rice_Dish": ["1512058564366-18510be2db19", "1596797038530-2c107229654b"],
+    "Dry_Sabzi": ["1546833999-b9f581a1996d", "1565557623262-b51c2513a641", "1604152135912-04a022e23696"]
+};
+
+const getRandomBanner = (archetype) => {
+    const arch = UNSPLASH_CACHE[archetype] ? archetype : "Curry";
+    const photos = UNSPLASH_CACHE[arch];
+    const photoId = photos[Math.floor(Math.random() * photos.length)];
+    return `https://images.unsplash.com/photo-${photoId}?q=80&w=1632&auto=format&fit=crop`;
+};
+
+function MultiSelectIngredient({ selected, setSelected }) {
+  const [inputValue, setInputValue] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = React.useRef(null);
+
+  const filtered = COMMON_INGREDIENTS.filter(
+    ing => ing.toLowerCase().includes(inputValue.toLowerCase()) && !selected.includes(ing)
+  ).slice(0, 8); // top 8 suggestions
+
+  const addIngredient = (ing) => {
+    const trimmed = ing.trim();
+    if (trimmed && !selected.includes(trimmed)) {
+      setSelected([...selected, trimmed]);
+    }
+    setInputValue('');
+    // Keep suggestions open so user can pick another ingredient immediately
+    inputRef.current?.focus();
+  };
+
+  const removeIngredient = (ing) => {
+    setSelected(selected.filter(i => i !== ing));
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addIngredient(inputValue);
+    } else if (e.key === 'Backspace' && inputValue === '' && selected.length > 0) {
+      removeIngredient(selected[selected.length - 1]);
+    }
+  };
+
+  return (
+    <div className="multi-select-container" style={{position: 'relative', width: '100%'}}>
+      <div className="multi-select-input-wrapper" style={{
+        display: 'flex', flexWrap: 'wrap', gap: '0.5rem', padding: '0.75rem 1rem',
+        border: '1px solid #e5e7eb', borderRadius: '8px', background: '#fff', minHeight: '52px', alignItems: 'center'
+      }}>
+        {selected.map((ing, idx) => (
+          <span key={idx} style={{
+            background: '#fee2e2', color: '#b91c1c', padding: '0.2rem 0.6rem',
+            borderRadius: '16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.3rem'
+          }}>
+            {ing}
+            <span style={{cursor: 'pointer', opacity: 0.6}} onClick={() => removeIngredient(ing)}>×</span>
+          </span>
+        ))}
+        <input
+          ref={inputRef}
+          type="text"
+          value={inputValue}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            setShowSuggestions(true);
+          }}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setShowSuggestions(true)}
+          onBlur={() => setShowSuggestions(false)}
+          placeholder={selected.length === 0 ? "Type an ingredient and press Enter..." : ""}
+          style={{
+            flex: 1, border: 'none', outline: 'none', minWidth: '150px', fontSize: '1rem', background: 'transparent'
+          }}
+        />
+      </div>
+      {showSuggestions && (inputValue || filtered.length > 0) && (
+        <ul style={{
+          position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff',
+          border: '1px solid #e5e7eb', borderRadius: '8px', marginTop: '0.25rem',
+          maxHeight: '200px', overflowY: 'auto', zIndex: 50, listStyle: 'none', padding: '0.5rem 0',
+          boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'
+        }}>
+          {filtered.map((sug, idx) => (
+            <li key={idx} onMouseDown={(e) => { e.preventDefault(); addIngredient(sug); }} style={{
+              padding: '0.5rem 1rem', cursor: 'pointer', transition: 'background 0.2s'
+            }} onMouseOver={(e) => e.target.style.background = '#f3f4f6'} onMouseOut={(e) => e.target.style.background = 'transparent'}>
+              {sug}
+            </li>
+          ))}
+          {inputValue && !filtered.includes(inputValue) && (
+             <li onMouseDown={(e) => { e.preventDefault(); addIngredient(inputValue); }} style={{
+              padding: '0.5rem 1rem', cursor: 'pointer', color: '#ef4444', fontStyle: 'italic'
+            }} onMouseOver={(e) => e.target.style.background = '#f3f4f6'} onMouseOut={(e) => e.target.style.background = 'transparent'}>
+              Add custom "{inputValue}"
+            </li>
+          )}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 function App() {
   const [viewMode, setViewMode] = useState('generate'); // 'generate' | 'vegan' | 'history'
   const [username, setUsername] = useState('');
   
   // Form State
-  const [ingredients, setIngredients] = useState('rice, egg, potato, tomato, onion');
+  const [ingredients, setIngredients] = useState(['Rice', 'Egg', 'Potato', 'Tomato', 'Onion']);
   const [budget, setBudget] = useState(150);
   const [servings, setServings] = useState(1);
   const [stateName, setStateName] = useState('Delhi');
@@ -32,7 +154,11 @@ function App() {
   const [veganLoading, setVeganLoading] = useState(false);
   const [veganError, setVeganError] = useState('');
 
-  // Vegan DB State
+  // Community State
+  const [globalRecipes, setGlobalRecipes] = useState([]);
+  const [globalLoading, setGlobalLoading] = useState(false);
+
+  // Vegan DB State (Kept for reference but not rendered)
   const [dbIngredient, setDbIngredient] = useState('');
   const [dbAlternatives, setDbAlternatives] = useState(null);
   const [dbAltLoading, setDbAltLoading] = useState(false);
@@ -60,6 +186,21 @@ function App() {
     return () => clearInterval(interval);
   }, [loading, veganLoading, dbAltLoading, indianLoading]);
 
+  // Pre-fetch community recipes on mount for the Surprise Me features
+  useEffect(() => {
+    const loadCommunityData = async () => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/all-recipes`);
+        const data = await response.json();
+        if (data.status === 'success') {
+          setGlobalRecipes(data.recipes);
+        }
+      } catch (err) {
+        console.error("Failed to load global recipes", err);
+      }
+    };
+    loadCommunityData();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,7 +210,7 @@ function App() {
     setSaveMessage('');
     setStepMessage('Initializing...');
 
-    const ingList = ingredients.split(',').map(i => i.trim()).filter(i => i);
+    const ingList = Array.isArray(ingredients) ? ingredients : ingredients.split(',').map(i => i.trim()).filter(i => i);
 
     try {
       const response = await fetch(`${BACKEND_URL}/generate-recipe`, {
@@ -125,7 +266,7 @@ function App() {
 
   const handleSaveRecipe = async () => {
     if (!username) {
-      alert("Please enter a username at the top right to save recipes!");
+      alert("Please enter a username to save this recipe!");
       return;
     }
     
@@ -175,6 +316,26 @@ function App() {
     }
   };
 
+  const fetchGlobalRecipes = async () => {
+    setGlobalLoading(true);
+    setViewMode('community');
+    
+    try {
+      const response = await fetch(`${BACKEND_URL}/all-recipes`);
+      const data = await response.json();
+      
+      if (data.status === 'success') {
+        setGlobalRecipes(data.recipes);
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      alert("Failed to fetch community recipes.");
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
+
   const handleVeganConvert = async (e) => {
     e.preventDefault();
     setVeganLoading(true);
@@ -207,172 +368,242 @@ function App() {
     }
   };
 
+  const handleSurpriseMe = () => {
+    if (globalRecipes.length === 0) {
+      alert("Community recipes are still loading. Please try again in a moment.");
+      return;
+    }
+    const randomDoc = globalRecipes[Math.floor(Math.random() * globalRecipes.length)];
+    setResult({
+      ...randomDoc.recipe,
+      isSurprise: true
+    });
+  };
+
   return (
     <div className="app-container">
-      {/* Top Navigation Bar */}
-      <nav className="top-nav glass-panel fade-in">
-        <div className="nav-left">
-          <button className={`nav-tab ${viewMode === 'generate' ? 'active' : ''}`} onClick={() => setViewMode('generate')}>
-            Cook
-          </button>
-          <button className={`nav-tab ${viewMode === 'vegan' ? 'active' : ''}`} onClick={() => setViewMode('vegan')}>
-            Vegan Converter 🌿
-          </button>
-          <button className={`nav-tab ${viewMode === 'history' ? 'active' : ''}`} onClick={fetchHistory}>
-            My Recipes
-          </button>
-          <button className={`nav-tab ${viewMode === 'vegandb' ? 'active' : ''}`} onClick={() => setViewMode('vegandb')}>
-            Vegan DB 🥦
-          </button>
-        </div>
-        <div className="nav-right">
-          <input 
-            type="text" 
-            placeholder="Enter Username to Save..." 
-            value={username} 
-            onChange={(e) => setUsername(e.target.value)} 
-            className="username-input"
-          />
-        </div>
-      </nav>
-
-      {viewMode === 'generate' && (
-        <>
-          <div className="glass-panel main-panel fade-in">
-            <header>
-              <h1 className="title">Ratatouille 👨‍🍳</h1>
-              <p className="subtitle">AI-Powered Cost-Aware Recipe Generator</p>
-            </header>
-
-            <form onSubmit={handleSubmit} className="recipe-form">
-              <div className="input-group">
-                <label>Ingredients (comma separated)</label>
-                <input 
-                  type="text" 
-                  value={ingredients} 
-                  onChange={(e) => setIngredients(e.target.value)} 
-                  required 
-                  placeholder="e.g. paneer, tomato, onion"
-                />
-              </div>
-              
-              <div className="input-row">
-                <div className="input-group">
-                  <label>Budget (₹)</label>
-                  <input 
-                    type="number" 
-                    value={budget} 
-                    onChange={(e) => setBudget(e.target.value)} 
-                    required 
-                    min="10"
-                  />
-                </div>
-                <div className="input-group">
-                  <label>Servings</label>
-                  <input 
-                    type="number" 
-                    value={servings} 
-                    onChange={(e) => setServings(e.target.value)} 
-                    required 
-                    min="1"
-                  />
-                </div>
-              </div>
-
-              <div className="input-group">
-                <label>Geographic State</label>
-                <input 
-                  type="text" 
-                  value={stateName} 
-                  onChange={(e) => setStateName(e.target.value)} 
-                  required 
-                  placeholder="e.g. Delhi, Maharashtra"
-                />
-              </div>
-
-              {/* Vegan Toggle */}
-              <div className="input-group" style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '1.2rem', color: '#10b981', fontWeight: 'bold' }}>
-                  <input 
-                    type="checkbox" 
-                    checked={isVegan} 
-                    onChange={(e) => setIsVegan(e.target.checked)} 
-                    style={{ width: '24px', height: '24px', cursor: 'pointer', accentColor: '#10b981' }}
-                  />
-                  🌿 Make it Vegan
-                </label>
-              </div>
-
-              {/* Model Version Toggle */}
-              <div className="input-group">
-                <label>AI Model</label>
-                <div className="model-toggle">
-                  <button
-                    type="button"
-                    className={`model-btn ${modelVersion === 'v8' ? 'active' : ''}`}
-                    onClick={() => setModelVersion('v8')}
-                  >
-                    V8 <span className="model-tag">Original</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`model-btn ${modelVersion === 'v10' ? 'active' : ''}`}
-                    onClick={() => setModelVersion('v10')}
-                  >
-                    V10 <span className="model-tag">RecipeDB Retrained ✨</span>
-                  </button>
-                </div>
-              </div>
-
-              <button type="submit" disabled={loading} className="generate-btn">
-                {loading ? <span className="loader"></span> : 'Generate Recipe'}
+      <div className="hero-bg">
+        <nav className="top-nav">
+          <div className="nav-left">
+            <div className="logo-section" onClick={() => setViewMode('generate')}>
+              <img src="/lab-logo.png" alt="Cosyslab Logo" style={{ width: '32px', height: '32px' }} />
+              Ratatouille
+            </div>
+            
+            <div className="nav-links" style={{ marginLeft: '2rem' }}>
+              <button 
+                className={`nav-tab ${viewMode === 'generate' ? 'active' : ''}`}
+                onClick={() => setViewMode('generate')}
+              >
+                Cook
               </button>
-            </form>
+              <button 
+                className={`nav-tab ${viewMode === 'history' ? 'active' : ''}`}
+                onClick={() => {
+                  setViewMode('history');
+                  fetchHistory();
+                }}
+              >
+                My Recipes
+              </button>
+              <button 
+                className={`nav-tab ${viewMode === 'community' ? 'active' : ''}`}
+                onClick={() => fetchGlobalRecipes()}
+              >
+                Community
+              </button>
+            </div>
           </div>
 
-          {(result || error) && (
-            <div className="glass-panel result-panel fade-in">
-              {error ? (
-                <div className="error-message">⚠️ {error}</div>
-              ) : (
-                <div className="recipe-content">
-                  <div className="recipe-header">
-                    <h2>{result.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h2>
-                    <span className="badge">{result.archetype}</span>
+          <div className="nav-right">
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1DA1F2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="social-icon" style={{cursor: 'pointer'}}><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1877F2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="social-icon" style={{cursor: 'pointer'}}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A66C2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="social-icon" style={{cursor: 'pointer'}}><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+              <LinkIcon className="social-icon" style={{ color: '#ef4444', cursor: 'pointer' }} size={22} />
+            </div>
+          </div>
+        </nav>
+
+        {viewMode === 'generate' && (
+          <div className="hero-content fade-in">
+            <h1 className="title">Create Novel Recipes</h1>
+            <p className="subtitle">
+              Stuck in a dinner dilemma?<br />
+              Generate novel recipes with ingredients of your choice.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {viewMode === 'generate' && (
+        <div className="main-panel fade-in" style={{ marginTop: 0 }}>
+          <div className="search-container">
+            <div className="search-bar-wrapper">
+              <MultiSelectIngredient selected={ingredients} setSelected={setIngredients} />
+            </div>
+
+            <div className="controls-row">
+              <div className="control-item">
+                <label>Budget (₹)</label>
+                <input 
+                  type="number" 
+                  value={budget} 
+                  onChange={(e) => setBudget(e.target.value)} 
+                  min="10"
+                />
+              </div>
+              <div className="control-item">
+                <label>Servings</label>
+                <input 
+                  type="number" 
+                  value={servings} 
+                  onChange={(e) => setServings(e.target.value)} 
+                  min="1"
+                />
+              </div>
+              <div className="control-item">
+                <label>Region</label>
+                <select 
+                  value={stateName} 
+                  onChange={(e) => setStateName(e.target.value)}
+                  style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: '1rem', color: 'var(--text-main)', cursor: 'pointer' }}
+                >
+                  {INDIAN_STATES.map(state => (
+                    <option key={state} value={state}>{state}</option>
+                  ))}
+                </select>
+              </div>
+              <label className="vegan-toggle">
+                <input 
+                  type="checkbox" 
+                  checked={isVegan} 
+                  onChange={(e) => setIsVegan(e.target.checked)} 
+                />
+                Make it Vegan
+              </label>
+              <div className="model-toggle">
+                <button type="button" className={modelVersion === 'v8' ? 'active' : ''} onClick={() => setModelVersion('v8')}>V8</button>
+                <button type="button" className={modelVersion === 'v10' ? 'active' : ''} onClick={() => setModelVersion('v10')}>V10</button>
+              </div>
+            </div>
+
+            <div className="action-buttons">
+              <button onClick={handleSubmit} disabled={loading} className="btn-primary">
+                {loading ? <span className="loader"></span> : 'Generate Recipe'}
+              </button>
+              <button onClick={handleSurpriseMe} className="btn-secondary">
+                Surprise me!!
+              </button>
+            </div>
+
+            <div className="chips-outer-container" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '2.5rem', maxWidth: '800px', width: '100%' }}>
+              <div className="chip highlight" onClick={handleSurpriseMe} style={{ flexShrink: 0, zIndex: 10, boxShadow: '0 4px 6px -1px rgba(250, 204, 21, 0.4)' }}>✨ Random</div>
+              <div className="marquee-wrapper" style={{ marginTop: 0, flex: 1 }}>
+                <div className="chips-container marquee-content">
+                  {globalRecipes.slice(0, 10).map((doc, idx) => {
+                     const title = doc.recipe.recipe.split('\n')[0].replace('### TITLE:', '').trim();
+                     return (
+                       <div key={`a-${idx}`} className="chip" onClick={() => {
+                         const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype);
+                         setResult({...doc.recipe, image_url: imgUrl, isSurprise: true});
+                       }} style={{ flexShrink: 0 }}>
+                         {title}
+                       </div>
+                     );
+                  })}
+                  {/* Duplicated for infinite scrolling effect */}
+                  {globalRecipes.slice(0, 10).map((doc, idx) => {
+                     const title = doc.recipe.recipe.split('\n')[0].replace('### TITLE:', '').trim();
+                     return (
+                       <div key={`b-${idx}`} className="chip" onClick={() => {
+                         const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype);
+                         setResult({...doc.recipe, image_url: imgUrl, isSurprise: true});
+                       }} style={{ flexShrink: 0 }}>
+                         {title}
+                       </div>
+                     );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {error && <div style={{ color: 'red', marginTop: '1rem' }}>⚠️ {error}</div>}
+
+          {result && (
+            <div className="modal-overlay">
+              <div className="modal-content fade-in">
+                <div className="modal-header">
+                  <h2 className="modal-title">{result.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h2>
+                  <button className="close-btn" onClick={() => setResult(null)}><X size={24} /></button>
+                </div>
+                
+                {(result.image_url || result.isSurprise || result.archetype) ? (
+                  <div className="modal-image-container">
+                    <img src={result.image_url || getRandomBanner(result.archetype)} alt="Recipe" className="modal-image" />
                   </div>
-                  
-                  <div className="ingredients-box">
-                    <h3>Calculated Market Ingredients</h3>
-                    <ul>
+                ) : (
+                  <div style={{ marginTop: '70px' }}></div>
+                )}
+                
+                <div className="modal-body">
+                  <div className="ingredients-col">
+                    <h3>Ingredients</h3>
+                    <ul className="ingredients-list">
                       {result.calculated_ingredients.map((ing, idx) => (
-                        <li key={idx}>✓ {ing}</li>
+                        <li key={idx} className="ingredient-item">
+                          <ShoppingBasket className="basket-icon" size={20} />
+                          <span>{ing}</span>
+                        </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="directions-box">
-                    <h3>Cooking Directions</h3>
-                    <div className="recipe-text">
+                  <div className="instructions-col">
+                    <h3>Instructions</h3>
+                    <ul className="instructions-list">
                       {result.recipe.includes('### DIRECTIONS:') 
-                        ? result.recipe.split('### DIRECTIONS:')[1].trim().split('\n').map((step, idx) => (
-                            <p key={idx} className="step-text">{step}</p>
-                          ))
-                        : <p className="step-text">{result.recipe}</p>}
-                    </div>
-                  </div>
-                  
-                  <div className="save-section">
-                     {saveMessage ? (
-                       <p className="save-success">{saveMessage}</p>
-                     ) : (
-                       <button className="save-btn" onClick={handleSaveRecipe}>💾 Save to My Account</button>
-                     )}
+                        ? result.recipe.split('### DIRECTIONS:')[1].trim().split('\n').map((step, idx) => {
+                            const match = step.match(/^(\d+)\.\s+(.*)/);
+                            if (match) {
+                              return <li key={idx}><strong>{match[1]}.</strong> <span>{match[2]}</span></li>;
+                            }
+                            return <li key={idx}><span>{step}</span></li>;
+                          })
+                        : <li><span>{result.recipe}</span></li>}
+                    </ul>
                   </div>
                 </div>
-              )}
+
+                <div className="modal-footer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                  <button className="btn-regenerate" onClick={() => { setResult(null); setSaveMessage(''); }}>Regenerate Recipe</button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    {saveMessage ? (
+                      <span style={{ color: '#10b981', fontWeight: 'bold' }}>{saveMessage}</span>
+                    ) : (
+                      <>
+                        <input 
+                          type="text" 
+                          placeholder="Enter your username..." 
+                          value={username} 
+                          onChange={(e) => setUsername(e.target.value)} 
+                          style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #e5e7eb', outline: 'none', fontSize: '0.95rem' }}
+                        />
+                        <button 
+                          style={{ background: '#3b82f6', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }} 
+                          onClick={handleSaveRecipe}
+                        >
+                          Save Recipe
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
-        </>
+        </div>
       )}
 
       {viewMode === 'vegan' && (
@@ -543,7 +774,20 @@ function App() {
         <div className="glass-panel main-panel fade-in">
           <header>
             <h1 className="title">My Recipes 📖</h1>
-            <p className="subtitle">History for user: {username}</p>
+            <p className="subtitle">View saved recipes for your profile</p>
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginBottom: '2rem' }}>
+              <input 
+                type="text" 
+                placeholder="Enter username..." 
+                value={username} 
+                onChange={(e) => setUsername(e.target.value)} 
+                onKeyDown={(e) => e.key === 'Enter' && fetchHistory()}
+                style={{ padding: '0.6rem 1rem', borderRadius: '20px', border: '1px solid #ccc', outline: 'none', width: '250px' }}
+              />
+              <button onClick={fetchHistory} style={{ padding: '0.6rem 1.5rem', borderRadius: '20px', background: '#7a1d41', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+                Load History
+              </button>
+            </div>
           </header>
           
           {loading ? (
@@ -557,10 +801,13 @@ function App() {
                  return (
                    <details key={idx} className="history-card">
                      <summary className="history-summary">
-                       <div>
-                         <h4>{rec.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h4>
-                         <span className="badge">{rec.archetype}</span>
-                         <p className="date-text">Saved: {new Date(doc.created_at * 1000).toLocaleString()}</p>
+                       <div style={{display: 'flex', gap: '1.25rem', alignItems: 'center'}}>
+                         <img src={rec.image_url || getRandomBanner(rec.archetype)} alt="Thumbnail" style={{width: '70px', height: '70px', objectFit: 'cover', borderRadius: '12px'}} />
+                         <div>
+                           <h4>{rec.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h4>
+                           <span className="badge">{rec.archetype}</span>
+                           <p className="date-text">Saved: {new Date(doc.created_at * 1000).toLocaleString()}</p>
+                         </div>
                        </div>
                        <div className="expand-hint">Click to view ▾</div>
                      </summary>
@@ -594,230 +841,81 @@ function App() {
         </div>
       )}
 
-      {/* ── Vegan DB Panel ────────────────────────────────────────────────────── */}
-      {viewMode === 'vegandb' && (
+      {viewMode === 'community' && (
         <div className="glass-panel main-panel fade-in">
           <header>
-            <h1 className="title">Vegan Database 🥦</h1>
-            <p className="subtitle">GPU-generated vegan alternatives &amp; Indian budget recipes</p>
+            <h1 className="title">Community Recipes 🌍</h1>
+            <p className="subtitle">Explore all user-generated recipes</p>
           </header>
-
-          {/* ── Panel A: Ingredient Lookup ── */}
-          <section style={{marginBottom:'2rem'}}>
-            <h2 style={{color:'var(--accent)',marginBottom:'0.75rem'}}>🔍 Ingredient Lookup</h2>
-            <p style={{color:'var(--text-muted)',marginBottom:'1rem',fontSize:'0.9rem'}}>
-              Type any non-veg ingredient to see its top-5 vegan substitutes with chemical scores &amp; spice bridges.
-            </p>
-            <div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap'}}>
-              <input
-                type="text"
-                value={dbIngredient}
-                onChange={e => setDbIngredient(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    if (!dbIngredient.trim()) return;
-                    setDbAltLoading(true); setDbAltError(''); setDbAlternatives(null); setDbAltSource('');
-                    fetch(`${BACKEND_URL}/vegan-alternatives/${encodeURIComponent(dbIngredient.trim().toLowerCase())}`)
-                      .then(r => r.json())
-                      .then(d => {
-                        if (d.status === 'success') { setDbAlternatives(d.alternatives); setDbAltSource(d.source); }
-                        else if (d.status === 'already_vegan') setDbAltError('✅ ' + d.message);
-                        else setDbAltError(d.message || 'Not found.');
-                      })
-                      .catch(() => setDbAltError('Connection failed.'))
-                      .finally(() => setDbAltLoading(false));
-                  }
-                }}
-                placeholder="e.g. chicken, mutton, egg, shrimp…"
-                style={{flex:'1',minWidth:'200px'}}
-              />
-              <button
-                className="btn-primary"
-                disabled={dbAltLoading || !dbIngredient.trim()}
-                onClick={() => {
-                  if (!dbIngredient.trim()) return;
-                  setDbAltLoading(true); setDbAltError(''); setDbAlternatives(null); setDbAltSource('');
-                  fetch(`${BACKEND_URL}/vegan-alternatives/${encodeURIComponent(dbIngredient.trim().toLowerCase())}`)
-                    .then(r => r.json())
-                    .then(d => {
-                      if (d.status === 'success') { setDbAlternatives(d.alternatives); setDbAltSource(d.source); }
-                      else if (d.status === 'already_vegan') setDbAltError('✅ ' + d.message);
-                      else setDbAltError(d.message || 'Not found.');
-                    })
-                    .catch(() => setDbAltError('Connection failed.'))
-                    .finally(() => setDbAltLoading(false));
-                }}
-              >{dbAltLoading ? 'Searching…' : 'Search'}</button>
+          
+          {globalLoading ? (
+             <div className="loader" style={{margin: '0 auto'}}></div>
+          ) : globalRecipes.length === 0 ? (
+             <p style={{textAlign: 'center', color: '#ccc'}}>No recipes found in the community.</p>
+          ) : (
+            <div className="history-list">
+              {globalRecipes.map((doc, idx) => {
+                 const rec = doc.recipe;
+                 return (
+                   <details key={idx} className="history-card" style={{border: rec.is_vegan ? '2px solid #4ade80' : 'none', position: 'relative'}}>
+                     <summary className="history-summary">
+                       <div style={{display: 'flex', gap: '1.25rem', alignItems: 'center'}}>
+                         <img src={rec.image_url || getRandomBanner(rec.archetype)} alt="Thumbnail" style={{width: '70px', height: '70px', objectFit: 'cover', borderRadius: '12px'}} />
+                         <div>
+                           <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+                             <h4>{rec.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h4>
+                             {rec.is_vegan && (
+                               <span style={{background: '#4ade80', color: '#064e3b', padding: '2px 8px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold'}}>
+                                 🌱 VEGAN
+                               </span>
+                             )}
+                           </div>
+                           <span className="badge">{rec.archetype}</span>
+                           <span style={{marginLeft: '10px', fontSize: '0.85rem', color: '#9ca3af'}}>
+                             by <strong>{doc.username}</strong>
+                           </span>
+                           <p className="date-text">Saved: {new Date(doc.created_at * 1000).toLocaleString()}</p>
+                         </div>
+                       </div>
+                       <div className="expand-hint">Click to view ▾</div>
+                     </summary>
+                     
+                     <div className="history-expanded-content">
+                        <div className="ingredients-box" style={{marginTop: '1rem'}}>
+                          <h4>Ingredients</h4>
+                          <ul>
+                            {rec.calculated_ingredients.map((ing, i) => (
+                              <li key={i}>✓ {ing}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        
+                        <div className="directions-box" style={{marginTop: '1rem'}}>
+                          <h4>Directions</h4>
+                          <div className="recipe-text" style={{fontSize: '0.95rem'}}>
+                            {rec.recipe.includes('### DIRECTIONS:') 
+                              ? rec.recipe.split('### DIRECTIONS:')[1].trim().split('\n').map((step, i) => (
+                                  <p key={i} className="step-text" style={{padding: '0.8rem', marginBottom: '0.5rem'}}>{step}</p>
+                                ))
+                              : <p className="step-text">{rec.recipe}</p>}
+                          </div>
+                        </div>
+                     </div>
+                   </details>
+                 )
+              })}
             </div>
-
-            {dbAltError && <p style={{color:'#f97316',marginTop:'0.75rem'}}>{dbAltError}</p>}
-
-            {dbAlternatives && (
-              <div style={{marginTop:'1rem'}}>
-                <div style={{display:'flex',alignItems:'center',gap:'0.5rem',marginBottom:'0.75rem'}}>
-                  <span style={{fontSize:'0.85rem',color:'var(--text-muted)'}}>Source:</span>
-                  <span style={{
-                    background: dbAltSource === 'db' ? 'rgba(34,197,94,0.15)' : 'rgba(249,115,22,0.15)',
-                    color: dbAltSource === 'db' ? '#22c55e' : '#f97316',
-                    borderRadius:'999px', padding:'2px 10px', fontSize:'0.78rem', fontWeight:600
-                  }}>
-                    {dbAltSource === 'db' ? '⚡ GPU-generated DB' : '🔄 Live Engine'}
-                  </span>
-                </div>
-                {dbAlternatives.map((alt, idx) => (
-                  <div key={idx} className="glass-panel" style={{padding:'1rem',marginBottom:'0.75rem',borderLeft:'3px solid var(--accent)'}}>
-                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.5rem'}}>
-                      <div style={{display:'flex',alignItems:'center',gap:'0.6rem'}}>
-                        <span style={{fontWeight:700,fontSize:'1.05rem',color:'var(--text-primary)'}}>
-                          #{alt.rank} {alt.substitute}
-                        </span>
-                      </div>
-                      <span style={{
-                        background:'rgba(99,102,241,0.15)',color:'#818cf8',
-                        borderRadius:'999px',padding:'3px 12px',fontWeight:700,fontSize:'0.85rem'
-                      }}>
-                        Score: {(alt.composite_score * 100).toFixed(1)}%
-                      </span>
-                    </div>
-                    {alt.score_breakdown && (
-                      <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap',marginTop:'0.5rem'}}>
-                        {Object.entries(alt.score_breakdown).map(([k,v]) => (
-                          <span key={k} style={{
-                            background:'rgba(255,255,255,0.06)',borderRadius:'6px',
-                            padding:'2px 8px',fontSize:'0.78rem',color:'var(--text-muted)'
-                          }}>{k.replace('_',' ')}: {(v*100).toFixed(0)}%</span>
-                        ))}
-                      </div>
-                    )}
-                    {alt.spice_bridge && alt.spice_bridge.length > 0 && (
-                      <div style={{marginTop:'0.6rem'}}>
-                        <span style={{fontSize:'0.8rem',color:'var(--text-muted)'}}>🌶 Spice Bridge: </span>
-                        {alt.spice_bridge.map((s,si) => (
-                          <span key={si} style={{
-                            background:'rgba(251,191,36,0.12)',color:'#fbbf24',
-                            borderRadius:'999px',padding:'2px 8px',fontSize:'0.78rem',
-                            marginLeft:'4px',display:'inline-block'
-                          }}>{s.spice || s}</span>
-                        ))}
-                      </div>
-                    )}
-                    {alt.culinary_notes && (
-                      <p style={{marginTop:'0.5rem',fontSize:'0.84rem',color:'var(--text-muted)',fontStyle:'italic'}}>
-                        💡 {alt.culinary_notes}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-
-          <hr style={{border:'none',borderTop:'1px solid rgba(255,255,255,0.08)',marginBottom:'2rem'}}/>
-
-          {/* ── Panel B: Browse Indian Recipes ── */}
-          <section>
-            <h2 style={{color:'var(--accent)',marginBottom:'0.75rem'}}>🇮🇳 Browse Indian Budget Vegan Recipes</h2>
-            <p style={{color:'var(--text-muted)',marginBottom:'1rem',fontSize:'0.9rem'}}>
-              GPU-generated recipes under ₹150/serving using your V10 model.
-            </p>
-            <div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap',alignItems:'center',marginBottom:'1rem'}}>
-              <select
-                value={indianStyle}
-                onChange={e => setIndianStyle(e.target.value)}
-                style={{padding:'0.5rem 0.75rem',background:'rgba(255,255,255,0.05)',
-                  border:'1px solid rgba(255,255,255,0.1)',borderRadius:'8px',color:'var(--text-primary)'}}
-              >
-                <option value="">All Styles</option>
-                <option value="Curry">Curry</option>
-                <option value="Dry_Sabzi">Dry Sabzi</option>
-                <option value="Rice_Dish">Rice Dish</option>
-                <option value="Soup">Soup (Dal)</option>
-              </select>
-              <button
-                className="btn-primary"
-                disabled={indianLoading}
-                onClick={() => {
-                  setIndianLoading(true);
-                  const q = indianStyle ? `?style=${encodeURIComponent(indianStyle)}&limit=12` : '?limit=12';
-                  fetch(`${BACKEND_URL}/indian-recipes${q}`)
-                    .then(r => r.json())
-                    .then(d => {
-                      if (d.status === 'success') { setIndianRecipes(d.recipes); setIndianTotal(d.total); }
-                    })
-                    .catch(() => {})
-                    .finally(() => setIndianLoading(false));
-                }}
-              >{indianLoading ? 'Loading…' : 'Load Recipes'}</button>
-              {indianTotal > 0 && <span style={{color:'var(--text-muted)',fontSize:'0.85rem'}}>{indianTotal} recipes total</span>}
-            </div>
-
-            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:'1rem'}}>
-              {indianRecipes.map((r, i) => (
-                <div key={r._id || i} className="glass-panel" style={{padding:'1.1rem',display:'flex',flexDirection:'column',gap:'0.5rem'}}>
-                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'0.5rem'}}>
-                    <h3 style={{margin:0,fontSize:'1rem',color:'var(--text-primary)',flex:1}}>{r.dish_name}</h3>
-                    <span style={{
-                      background:'rgba(34,197,94,0.15)',color:'#22c55e',
-                      borderRadius:'999px',padding:'2px 10px',fontSize:'0.75rem',fontWeight:700,whiteSpace:'nowrap'
-                    }}>₹{r.budget_inr}</span>
-                  </div>
-                  <div style={{display:'flex',gap:'0.4rem',flexWrap:'wrap'}}>
-                    <span style={{
-                      background:'rgba(99,102,241,0.15)',color:'#818cf8',
-                      borderRadius:'6px',padding:'1px 8px',fontSize:'0.75rem'
-                    }}>{r.style}</span>
-                    {r.original_non_veg && r.original_non_veg !== 'vegan' && (
-                      <span style={{
-                        background:'rgba(249,115,22,0.12)',color:'#f97316',
-                        borderRadius:'6px',padding:'1px 8px',fontSize:'0.75rem'
-                      }}>was: {r.original_non_veg}</span>
-                    )}
-                    <span style={{
-                      background:'rgba(34,197,94,0.1)',color:'#4ade80',
-                      borderRadius:'6px',padding:'1px 8px',fontSize:'0.75rem'
-                    }}>🌿 {r.vegan_substitute}</span>
-                  </div>
-                  {r.ingredients_list && (
-                    <p style={{margin:0,fontSize:'0.78rem',color:'var(--text-muted)',lineHeight:1.4}}>
-                      {(Array.isArray(r.ingredients_list) ? r.ingredients_list : [r.ingredients_list]).slice(0,6).join(', ')}
-                      {(Array.isArray(r.ingredients_list) ? r.ingredients_list.length : 0) > 6 ? '…' : ''}
-                    </p>
-                  )}
-                  <button
-                    style={{
-                      marginTop:'auto',padding:'0.35rem 0.75rem',
-                      background:'rgba(99,102,241,0.15)',border:'1px solid rgba(99,102,241,0.3)',
-                      borderRadius:'8px',color:'#818cf8',cursor:'pointer',fontSize:'0.82rem'
-                    }}
-                    onClick={() => setExpandedRecipe(expandedRecipe === (r._id||i) ? null : (r._id||i))}
-                  >{expandedRecipe === (r._id||i) ? 'Hide Recipe ▲' : 'View Recipe ▼'}</button>
-                  {expandedRecipe === (r._id||i) && (
-                    <pre style={{
-                      marginTop:'0.5rem',background:'rgba(0,0,0,0.3)',borderRadius:'8px',
-                      padding:'0.75rem',fontSize:'0.78rem',color:'var(--text-muted)',
-                      whiteSpace:'pre-wrap',wordBreak:'break-word',maxHeight:'300px',overflowY:'auto'
-                    }}>{r.generated_recipe}</pre>
-                  )}
-                </div>
-              ))}
-              {indianRecipes.length === 0 && !indianLoading && (
-                <p style={{color:'var(--text-muted)',gridColumn:'1/-1',textAlign:'center',paddingTop:'2rem'}}>
-                  Click "Load Recipes" to fetch from the database.
-                </p>
-              )}
-            </div>
-          </section>
+          )}
         </div>
       )}
 
-      {(loading || veganLoading || dbAltLoading || indianLoading) && (
+      {(loading || globalLoading || veganLoading || dbAltLoading || indianLoading) && (
         <div className="floating-timer-tab">
           <span className="loader" style={{width:'16px',height:'16px',borderWidth:'2px',borderColor:'#fff',borderBottomColor:'transparent',display:'inline-block',boxSizing:'border-box',animation:'rotation 1s linear infinite',borderRadius:'50%'}}></span>
           <span className="timer-text">
             {loading ? (stepMessage || "Generating Recipe...") : 
              veganLoading ? "Calculating Vegan Match..." : 
-             dbAltLoading || indianLoading ? "Loading Data..." : "Working..."}
+             dbAltLoading || indianLoading || globalLoading ? "Loading Data..." : "Working..."}
             <span style={{marginLeft:'8px',color:'#818cf8',fontWeight:'600'}}>({elapsedSeconds}s)</span>
           </span>
         </div>

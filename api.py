@@ -240,6 +240,53 @@ if pantry_response.status_code == 200:
 print("[OK] Market Data Loaded.")
 
 # ============================================================
+# UNSPLASH IMAGE CACHE (By Archetype)
+# ============================================================
+import random
+UNSPLASH_CACHE = {
+    "Curry": [
+        "1585937421612-70a008356fbe",
+        "1603894584373-5ac82b2ae398",
+        "1565557623262-b51c2513a641",
+        "1618160702438-9b02ab6515c9",
+        "1631452180519-c014fe946bc7"
+    ],
+    "Salad": [
+        "1512621776951-a57141f2eefd",
+        "1490645935967-10de6ba17061",
+        "1546069901-ba9599a7e63c"
+    ],
+    "Dessert": [
+        "1488477181946-6428a0291777",
+        "1550617931-e17a7b70dce2",
+        "1551024506-0cb4a1cb3689"
+    ],
+    "Bread": [
+        "1509440159596-0249088772ff",
+        "1608198093002-ad4e005484ec"
+    ],
+    "Soup": [
+        "1547592166-23ac45744acd",
+        "1604152135912-04a022e23696",
+        "1578020190125-f4f7c18bc9cb"
+    ],
+    "Rice_Dish": [
+        "1512058564366-18510be2db19",
+        "1596797038530-2c107229654b"
+    ],
+    "Dry_Sabzi": [
+        "1546833999-b9f581a1996d",
+        "1565557623262-b51c2513a641",
+        "1604152135912-04a022e23696"
+    ]
+}
+
+def get_random_banner(archetype):
+    arch = archetype if archetype in UNSPLASH_CACHE else "Curry"
+    photo_id = random.choice(UNSPLASH_CACHE[arch])
+    return f"https://images.unsplash.com/photo-{photo_id}?q=80&w=1632&auto=format&fit=crop"
+
+# ============================================================
 # CANONICAL INGREDIENT NORMALIZATION MAP  (Priority 1)
 # Maps variant names → canonical base so "chicken breast",
 # "chicken thigh" etc. all hit the same MongoDB/engine entry
@@ -668,6 +715,20 @@ async def get_my_recipes(username: str):
         
     return {"status": "success", "recipes": recipes}
 
+@app.get("/all-recipes")
+async def get_all_recipes():
+    if recipes_collection is None:
+        return {"status": "error", "message": "Database not connected on the server."}
+    
+    # Fetch top 100 most recent saved recipes globally
+    cursor = recipes_collection.find({}).sort("created_at", -1)
+    recipes = await cursor.to_list(length=100)
+    
+    for r in recipes:
+        r["_id"] = str(r["_id"])
+        
+    return {"status": "success", "recipes": recipes}
+
 
 # ============================================================
 # VEGAN DATABASE ENDPOINTS  (serve GPU-generated MongoDB data)
@@ -918,10 +979,10 @@ def generate_recipe(request: RecipeRequest):
                         # Proceed if it's explicitly in DB OR if it matches a static fallback
                         if canonical_name in features or vegan_engine.classify_by_keyword(canonical_name) is not None:
                             blueprint = vegan_engine.generate_vegan_blueprint(canonical_name, archetype=archetype_fast)
-                            print(f"[LOCAL HIT] '{canonical_name}' → '{blueprint.get('best_vegan_substitute', 'N/A')}'")
+                            print(f"[LOCAL HIT] '{canonical_name}' -> '{blueprint.get('best_vegan_substitute', 'N/A')}'")
                         else:
                             # Truly unknown ingredient — keep as-is, no LLM call
-                            print(f"[SKIP] '{canonical_name}' not in DB and no static fallback — keeping as-is")
+                            print(f"[SKIP] '{canonical_name}' not in DB and no static fallback - keeping as-is")
                             blueprint = {"status": "unknown"}
                     except Exception as e:
                         print(f"[ENGINE ERROR] vegan_engine failed for '{canonical_name}': {e}")
@@ -957,8 +1018,9 @@ def generate_recipe(request: RecipeRequest):
 
         ingr_text = "\n".join(f"- {i}" for i in calculated_ingredients)
 
-        # EXACT V10 PROMPT STRUCTURE
+        # EXACT V10 PROMPT STRUCTURE (With Anti-Hallucination Instruction)
         prompt = (
+            f"<|begin_of_text|>System: You are a strict chef. You MUST explicitly use EVERY single ingredient provided in the list below in your recipe directions.\n\n"
             f"### INGREDIENTS:\n"
             f"{ingr_text}\n"
             f"### TITLE:\n"
@@ -1040,7 +1102,9 @@ def generate_recipe(request: RecipeRequest):
             "status": "success",
             "archetype": archetype,
             "calculated_ingredients": calculated_ingredients,
-            "recipe": ai_text
+            "recipe": ai_text,
+            "image_url": get_random_banner(archetype),
+            "is_vegan": request.is_vegan
         }
         yield f"data: {json.dumps({'step': 'complete', 'result': final_result})}\n\n"
 

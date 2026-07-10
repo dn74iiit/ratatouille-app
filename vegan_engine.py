@@ -20,6 +20,15 @@ except Exception as e:
 # Local fallback
 DB_PATH = os.path.join(os.path.dirname(__file__), "chemical_features.json")
 
+NON_INDIAN_BLACKLIST = [
+    "asparagus", "sun-dried tomatoes", "artichoke", "capers", 
+    "seitan", "couscous", "bulgur", "farro", "polenta",
+    "agave nectar", "maple syrup", "monk fruit",
+    "chipotle", "habanero", "poblano", "serrano", "gochugaru",
+    "balsamic vinegar", "red wine vinegar", "white wine vinegar",
+    "pine nuts", "macadamia"
+]
+
 def load_features():
     if chemical_features_collection is not None:
         try:
@@ -94,7 +103,7 @@ def get_spice_bridge(original_mols, substitute_mols, all_features, top_k=3):
     bulky_veggies = ["cabbage", "cauliflower", "turnip", "brussels sprouts", "broccoli", "potato", "carrot"]
     
     for name, data in all_features.items():
-        if name.lower() in bulky_veggies:
+        if name.lower() in bulky_veggies or name.lower() in NON_INDIAN_BLACKLIST:
             continue
             
         if data.get("culinary_role") in ["flavor_enhancer", "aromatic"] and data.get("is_vegan"):
@@ -245,7 +254,8 @@ def generate_vegan_blueprint(ingredient_name, archetype="Curry"):
     candidates = []
     for name, data in features.items():
         if data.get("is_vegan") and data.get("culinary_role") not in ["flavor_enhancer", "aromatic"]:
-            candidates.append((name, data))
+            if name.lower() not in NON_INDIAN_BLACKLIST:
+                candidates.append((name, data))
             
     if not candidates:
         return {
