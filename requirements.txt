@@ -10,3 +10,4 @@ pydantic
 gradio_client
 motor
 groq
+networkx

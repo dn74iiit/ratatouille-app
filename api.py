@@ -18,6 +18,10 @@ from gradio_client import Client
 from groq import Groq
 from motor.motor_asyncio import AsyncIOMotorClient
 
+# Agentic Modules
+from graph_retriever import GraphRetriever
+from llm_judge import RecipeJudge
+
 nltk.download('wordnet', quiet=True)
 nltk.download('omw-1.4', quiet=True)
 
@@ -143,12 +147,12 @@ def get_inference_client():
     return inference_client
 
 def query_serverless_llm(messages: list, max_tokens: int = 250, temperature: float = 0.1) -> str:
-    """Queries Groq API (llama-3.3-70b-versatile) for instantaneous serverless inference."""
+    """Queries Groq API (qwen/qwen3.8-27b) for instantaneous serverless inference."""
     try:
         client = get_inference_client()
         res = client.chat.completions.create(
             messages=messages,
-            model="llama-3.3-70b-versatile",
+            model="qwen/qwen3.8-27b",
             max_completion_tokens=max_tokens,
             temperature=temperature
         )
@@ -192,9 +196,19 @@ def query_hf_model(prompt: str, max_new_tokens: int = 350,
     return ""
 
 # ============================================================
-# NLP TOOLS
+# NLP TOOLS & AGENTIC GLOBALS
 # ============================================================
 lemmatizer = WordNetLemmatizer()
+
+try:
+    print("[*] Initializing Agentic Pipeline (Retriever & Judge)...")
+    graph_retriever = GraphRetriever()
+    recipe_judge = RecipeJudge()
+    print("[OK] Agentic Pipeline Ready.")
+except Exception as e:
+    print(f"[WARN] Failed to initialize Agentic Pipeline: {e}")
+    graph_retriever = None
+    recipe_judge = None
 
 # ============================================================
 # LOAD MARKET DATA (from GitHub)
@@ -1018,29 +1032,78 @@ def generate_recipe(request: RecipeRequest):
 
         ingr_text = "\n".join(f"- {i}" for i in calculated_ingredients)
 
-        # EXACT V10 PROMPT STRUCTURE (With Anti-Hallucination Instruction)
-        prompt = (
-            f"<|begin_of_text|>System: You are a strict chef. You MUST explicitly use EVERY single ingredient provided in the list below in your recipe directions.\n\n"
+        # ==========================================
+        # AGENTIC PIPELINE: Phase 2 Context Injection
+        # ==========================================
+        # Retrieve Graph Context
+        if graph_retriever is not None:
+            yield f"data: {json.dumps({'step': 'retrieving_context', 'message': 'Retrieving Context from Hybrid Graph...'})}\n\n"
+            step_start = time.time()
+            # Extract just the ingredient names for retrieval, ignoring quantities
+            retrieval_ings = [parse_ingredient_input(r)[1] for r in clean_ingredients]
+            graph_context = graph_retriever.retrieve_context(retrieval_ings)
+            injected_context = graph_retriever.generate_prompt_injection(graph_context)
+            times['retrieval_sec'] = time.time() - step_start
+        else:
+            injected_context = ""
+            graph_context = {}
+
+        # EXACT V10 PROMPT STRUCTURE (With Agentic Context)
+        base_prompt = (
+            f"<|begin_of_text|>System: You are a strict chef. You MUST explicitly use EVERY single ingredient provided in the list below in your recipe directions.\n"
+            f"{injected_context}\n\n"
             f"### INGREDIENTS:\n"
             f"{ingr_text}\n"
             f"### TITLE:\n"
         )
         print(f"[AI] Generating final recipe for archetype: {archetype} using model_version={request.model_version}")
 
-        yield f"data: {json.dumps({'step': 'generating', 'message': f'Generating AI Recipe (Model: {request.model_version})...'})}\n\n"
-        step_start = time.time()
-
+        # ==========================================
+        # AGENTIC PIPELINE: Iterative Self-Correction Loop
+        # ==========================================
+        max_retries = 3
+        ai_text = ""
+        current_prompt = base_prompt
         chosen_client = _clients.get(request.model_version, _clients["v8"])()
-        ai_text = query_hf_model(
-            prompt,
-            max_new_tokens=500,
-            temperature=0.6,
-            top_p=0.9,
-            repetition_penalty=1.05,
-            client=chosen_client,
-        )
         
-        times['generation_sec'] = time.time() - step_start
+        for attempt in range(1, max_retries + 1):
+            yield f"data: {json.dumps({'step': 'generating', 'message': f'Generating AI Recipe (Attempt {attempt}/{max_retries})...'})}\n\n"
+            step_start = time.time()
+            
+            ai_text = query_hf_model(
+                current_prompt,
+                max_new_tokens=500,
+                temperature=0.6,
+                top_p=0.9,
+                repetition_penalty=1.05,
+                client=chosen_client,
+            )
+            
+            times[f'generation_sec_attempt_{attempt}'] = time.time() - step_start
+            
+            if recipe_judge is None:
+                break # Fallback if judge is missing
+                
+            yield f"data: {json.dumps({'step': 'judging', 'message': f'Micro-Validation: Judging Recipe...'})}\n\n"
+            judge_start = time.time()
+            judge_result = recipe_judge.evaluate_recipe(ai_text, graph_context)
+            times[f'judge_sec_attempt_{attempt}'] = time.time() - judge_start
+            
+            if judge_result.get("is_valid"):
+                print(f"[JUDGE] Passed on attempt {attempt}: {judge_result.get('critique')}")
+                break
+            else:
+                print(f"[JUDGE] Failed on attempt {attempt}: {judge_result.get('critique')}")
+                if attempt < max_retries:
+                    yield f"data: {json.dumps({'step': 'correcting', 'message': f'Critique received. Regenerating Recipe...'})}\n\n"
+                    # Feed the critique back to the model as an instruction block
+                    current_prompt = (
+                        f"{base_prompt}\n"
+                        f"[PREVIOUS DRAFT REJECTED BY JUDGE]:\n{ai_text}\n"
+                        f"[JUDGE CRITIQUE TO FIX]: {judge_result.get('critique')}\n"
+                        f"Rewrite the recipe, strictly following the critique.\n"
+                        f"### TITLE:\n"
+                    )
 
         print(f"DEBUG RAW AI_TEXT: {repr(ai_text)}")
 
