@@ -219,12 +219,14 @@ bounds_url = "https://raw.githubusercontent.com/dn74iiit/recipe-data-automation/
 pantry_url = "https://raw.githubusercontent.com/dn74iiit/recipe-data-automation/main/pantry_prices.json"
 
 print("[*] Fetching Mandi Market Data...")
-mandi_response = requests.get(mandi_url, headers=headers)
+# Stream directly into Pandas with usecols to eliminate a ~200MB memory spike
 df_mandi = pd.read_csv(
-    io.StringIO(mandi_response.text),
+    mandi_url,
+    storage_options=headers,
     header=None,
     names=['State', 'District', 'Market', 'Commodity', 'Variety', 'Grade',
-           'Arrival_Date', 'Min_Price', 'Max_Price', 'Modal_Price']
+           'Arrival_Date', 'Min_Price', 'Max_Price', 'Modal_Price'],
+    usecols=['Commodity', 'Arrival_Date', 'Modal_Price']
 )
 latest_date = df_mandi['Arrival_Date'].max()
 current_mandi = df_mandi[df_mandi['Arrival_Date'] == latest_date].copy()
@@ -234,6 +236,9 @@ current_mandi['Processed_Ingredient'] = current_mandi['Commodity'].apply(
 current_mandi['Modal_Price'] = pd.to_numeric(current_mandi['Modal_Price'], errors='coerce')
 current_mandi = current_mandi.dropna(subset=['Modal_Price'])
 current_mandi['Price_per_Gram'] = current_mandi['Modal_Price'] / 100000
+
+# Free df_mandi memory
+del df_mandi
 
 bounds_response = requests.get(bounds_url, headers=headers)
 bounds_dict = bounds_response.json() if bounds_response.status_code == 200 else {}
