@@ -6,7 +6,7 @@ class GraphRetriever:
         print(f"Loading knowledge graph from {graph_path}...")
         with open(graph_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        self.G = nx.node_link_graph(data)
+        self.G = nx.node_link_graph(data, edges="links" if "links" in data else "edges")
         print(f"Loaded graph with {self.G.number_of_nodes()} nodes and {self.G.number_of_edges()} edges.")
         
     def retrieve_context(self, ingredients, max_pairs=20, max_techniques=15, max_workflow_steps=15):
