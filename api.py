@@ -226,7 +226,7 @@ df_mandi = pd.read_csv(
     header=None,
     names=['State', 'District', 'Market', 'Commodity', 'Variety', 'Grade',
            'Arrival_Date', 'Min_Price', 'Max_Price', 'Modal_Price'],
-    usecols=['Commodity', 'Arrival_Date', 'Modal_Price']
+    usecols=['State', 'Commodity', 'Arrival_Date', 'Modal_Price']
 )
 latest_date = df_mandi['Arrival_Date'].max()
 current_mandi = df_mandi[df_mandi['Arrival_Date'] == latest_date].copy()
