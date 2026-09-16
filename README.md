@@ -49,6 +49,3 @@ For instructions regarding deploying this system to academic research servers or
 
 ## Contributing
 Contributions and architectural reviews are welcome. Please submit Pull Requests or open Issues for any bugs or feature proposals.
-
----
-*Ratatouille is a web application created by Nindra Dhanush.*

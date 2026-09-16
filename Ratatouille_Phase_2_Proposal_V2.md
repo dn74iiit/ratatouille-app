@@ -13,7 +13,7 @@
 ### Executive Summary
 This project is a continuation of the Ratatouille Capstone Project, which successfully delivered an AI-powered, cost-constrained Indian budget recipe generator with chemically-aware vegan substitution. While the first phase established a robust pipeline for mathematical budget optimization and plant-based substitutions, this new phase focuses on significantly advancing the core recipe generation engine.
 
-I will explore how to enhance Small Language Models (SLMs) using a state-of-the-art Knowledge Graph-Augmented Generation (KG-RAG) pipeline. Building upon baseline KG-RAG concepts, this proposal introduces advanced methodologies including **Hybrid Graph Construction**, **Context-Aware Subgraph Retrieval**, **Advanced Hybrid Graph-RAG**, and **Iterative Self-Correction**. The goal is to construct a system that not only retrieves culinary logic but leverages semantic vector similarity and self-heals its own hallucinations.
+I will explore how to enhance Small Language Models (SLMs) using a state-of-the-art Knowledge Graph-Augmented Generation (KG-RAG) pipeline. Building upon baseline KG-RAG concepts, this proposal introduces advanced methodologies including **Hybrid Graph Construction**, **Context-Aware Subgraph Retrieval**, **Constrained Decoding**, and **Iterative Self-Correction**. The goal is to construct a system that not only retrieves culinary logic but mathematically guarantees constraint adherence and self-heals its own hallucinations.
 
 ### Problem Statement
 In the previous phase, the fine-tuned Llama 3 model demonstrated strong creative capabilities. However, SLMs acting as isolated reasoners frequently suffer from the "Semantic Gap"—producing recipes that are linguistically fluent but culinarily flawed (e.g., hallucinations, procedural errors, ignoring allocated ingredients).
@@ -27,7 +27,7 @@ The upgraded recipe generation pipeline will integrate into the existing archite
 2. **Budget Optimization:** Unchanged from Phase I.
 3. **Hybrid Culinary Knowledge Graph (New):** Combining statistical co-occurrence (PMI) for functional relationships (e.g., `PAIRS_WITH`) with a lightweight taxonomy for hierarchical constraints (e.g., `IS_A`). *Implementation Note: The graph will be hosted In-Memory via NetworkX for sub-millisecond MVP traversal, with a planned migration to Neo4j as the graph scales beyond RAM constraints.*
 4. **Context-Aware Subgraph Retrieval (New):** Expanding outward from the user's ingredients, but weighting the graph traversal based on the **Archetype Classification** from Phase I (e.g., penalizing "baking" nodes if the archetype is "South Indian").
-5. **Advanced Hybrid Graph-RAG (New):** Expanding the KG-RAG pipeline by pairing the logical rules of the NetworkX Graph with a Vector Database. The system will perform semantic similarity searches against the historical recipe database, guided and filtered by the graph constraints, to inject highly relevant few-shot examples into the SLM's context window.
+5. **Constrained KG-RAG Generation (New):** Using libraries like `Outlines` or `Guidance` to enforce constraint-aware decoding, physically preventing the SLM from generating ingredient tokens that are not present in the retrieved subgraph or optimized budget list.
 6. **Iterative Self-Correction (New):** Utilizing the Culinary Validity Score (CVS) and an LLM-as-a-judge inside the generation loop. If the draft recipe fails validation (e.g., serving before cooking), the error is fed back to the generator for autonomous correction before user delivery.
 
 ### Implementation Plan
@@ -46,18 +46,15 @@ The project will run over 12 weeks, requiring an estimated 3 hours of work per w
 *   Implement archetype-weighted graph search algorithms (e.g., personalized PageRank) to ensure retrieved culinary rules match the requested cuisine.
 *   Develop the **Iterative Self-Correction** loop: hook up the LLM-as-a-judge so that it evaluates draft recipes in real-time and passes critique back to the generator if CVS thresholds are not met.
 
-#### Phase 3: Advanced Hybrid Graph-RAG & System Analysis
-**Goal:** Enhance contextual accuracy via Vector Search and comprehensively analyze system performance.
-*   Implement a Vector Database (e.g., Pinecone, FAISS, or MongoDB Vector Search) to encode the 12,000+ recipes from the RecipeDB dataset.
-*   Develop a Hybrid Search algorithm: Use the retrieved subgraph (from Phase 2) to filter the vector search space, ensuring retrieved example recipes logically match the graph's culinary constraints.
-*   Inject the top matching historical recipes into the prompt as "Few-Shot" examples to dynamically guide the SLM's formatting.
-*   **System Analysis & Logging:** Generate a large batch of example recipes to actively track and analyze generation times, Culinary Validity Scores (CVS), and the average number of self-correction attempts required to pass the Judge.
-*   **Reference Database:** Compile these successfully generated and validated recipes into a searchable, user-friendly database catalog for easy academic and public reference.
+#### Phase 3: Constrained Decoding Integration
+**Goal:** Mathematically eliminate ingredient hallucinations.
+*   Integrate structured generation libraries (`Outlines` or `Guidance`) into the Python generation backend.
+*   Dynamically compile token masks based on the retrieved subgraph to restrict the SLM's output vocabulary during ingredient list generation.
+*   Test latency and throughput overhead of constrained decoding vs. standard generation.
 
-#### Phase 4: Vegan Engine Upgrade & Full System Evaluation
-**Goal:** Modernize the core substitution engine and evaluate the final end-to-end architecture.
-*   **Vegan Engine Tech Update:** Upgrade the legacy Phase 1 Vegan Substitution Engine to a more advanced, state-of-the-art methodology (e.g., using dense vector embeddings for ingredient matching or automated graph traversal for finding vegan analogs).
-*   Test setups: Zero-Shot SLM, Standard KG-RAG (Prompt Injection only), and Advanced Hybrid Graph-RAG.
+#### Phase 4: Full System Evaluation
+**Goal:** Evaluate the final system using the domain-specific CVS metric against standard baselines.
+*   Test setups: Zero-Shot SLM, Standard KG-RAG (Prompt Injection only), and Advanced KG-RAG (Constrained + Self-Correction).
 *   Run subgroup analysis to ensure the system performs well across different regional cuisines.
 *   Document results, finalize the CVS metric, and integrate the final pipeline into the React frontend.
 
