@@ -11,5 +11,4 @@ gradio_client
 motor
 groq
 networkx
-sentence-transformers
 faiss-cpu

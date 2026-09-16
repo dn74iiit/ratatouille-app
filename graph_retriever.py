@@ -5,7 +5,6 @@ import networkx as nx
 
 try:
     import faiss
-    from sentence_transformers import SentenceTransformer
     FAISS_AVAILABLE = True
 except ImportError:
     FAISS_AVAILABLE = False
@@ -31,9 +30,7 @@ class GraphRetriever:
             self.faiss_index = faiss.read_index(index_path)
             with open(metadata_path, 'r', encoding='utf-8') as f:
                 self.vector_metadata = json.load(f)
-            print("[*] Loading SentenceTransformer for Hybrid Search...")
-            # Use same model as build_vector_db.py
-            self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+            print("[*] Using HuggingFace Inference API for Hybrid Search (bypassing local RAM).")
             print(f"[OK] FAISS Vector DB loaded with {len(self.vector_metadata)} recipes.")
         else:
             print("[WARN] FAISS Vector DB not found or dependencies missing. Few-shot injection will be disabled.")
@@ -150,18 +147,26 @@ class GraphRetriever:
         We form a natural language query combining the archetype and ingredients,
         and retrieve top-k semantically similar historical recipes to inject as examples.
         """
-        if self.faiss_index is None or self.embedding_model is None:
+        # Encode query using HF API to save RAM
+        import requests
+        api_url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2"
+        hf_token = os.environ.get("HF_TOKEN")
+        
+        if not hf_token:
+            print("[WARN] HF_TOKEN not found in environment, cannot perform vector search.")
             return []
             
-        ingredients = context.get('input_ingredients', [])
-        techniques = context.get('suggested_techniques', [])
-        
-        query_text = f"A {archetype} recipe containing {', '.join(ingredients)}."
-        if techniques:
-            query_text += f" Prepared by {', '.join(techniques[:3])}."
-            
-        # Encode query
-        query_vector = self.embedding_model.encode([query_text]).astype('float32')
+        headers = {"Authorization": f"Bearer {hf_token}"}
+        try:
+            response = requests.post(api_url, headers=headers, json={"inputs": [query_text], "options": {"wait_for_model": True}})
+            response.raise_for_status()
+            query_vector = np.array(response.json()).astype('float32')
+            if len(query_vector.shape) == 1:
+                # Sometimes HF returns a 1D list if only one input
+                query_vector = np.expand_dims(query_vector, axis=0)
+        except Exception as e:
+            print(f"[WARN] Failed to get embedding from HF API: {e}")
+            return []
         
         # Search FAISS
         distances, indices = self.faiss_index.search(query_vector, k)
