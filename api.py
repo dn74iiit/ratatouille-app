@@ -1192,7 +1192,10 @@ def generate_recipe(request: RecipeRequest):
             "calculated_ingredients": calculated_ingredients,
             "recipe": ai_text,
             "image_url": get_random_banner(archetype),
-            "is_vegan": request.is_vegan
+            "is_vegan": request.is_vegan,
+            "initial_cvs_score": initial_cvs_score,
+            "final_cvs_score": final_cvs_score,
+            "self_correction_attempts": attempt
         }
         yield f"data: {json.dumps({'step': 'complete', 'result': final_result})}\n\n"
 
