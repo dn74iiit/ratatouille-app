@@ -1,0 +1,2074 @@
+{
+  "_meta": {
+    "generated_at": "2026-06-30T00:12:05.582238",
+    "scoring_weights": {
+      "alpha_flavor": 0.3,
+      "beta_texture": 0.4,
+      "gamma_role": 0.3
+    },
+    "top_k": 5,
+    "total_non_veg": 20
+  },
+  "alternatives": {
+    "paneer": {
+      "original_role": "bulk_protein",
+      "alternatives": [
+        {
+          "substitute": "tofu",
+          "composite_score": 0.6423,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8557,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.18,
+            "moisture_excess": 0.31
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak tofu in hot water 15 min and squeeze dry.",
+          "rank": 1
+        },
+        {
+          "substitute": "banana blossom",
+          "composite_score": 0.6087,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.7718,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.21,
+            "moisture_excess": 0.35
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak banana blossom in hot water 15 min and squeeze dry.",
+          "rank": 2
+        },
+        {
+          "substitute": "king oyster mushroom",
+          "composite_score": 0.592,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.73,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.21,
+            "moisture_excess": 0.35
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak king oyster mushroom in hot water 15 min and squeeze dry. Score stalks in cross-hatch pattern, saute in oil to mimic shrimp bite.",
+          "rank": 3
+        },
+        {
+          "substitute": "jackfruit",
+          "composite_score": 0.5845,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.7113,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.21,
+            "moisture_excess": 0.2
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Shred with two forks after simmering.",
+          "rank": 4
+        },
+        {
+          "substitute": "tempeh",
+          "composite_score": 0.5709,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.6773,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.11,
+            "moisture_excess": 0.06
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 5
+        }
+      ]
+    },
+    "chicken": {
+      "original_role": "bulk_protein",
+      "alternatives": [
+        {
+          "substitute": "jackfruit",
+          "composite_score": 0.6668,
+          "score_breakdown": {
+            "flavor_similarity": 0.125,
+            "texture_similarity": 0.8232,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.13,
+            "moisture_excess": 0.14
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.2
+            }
+          ],
+          "culinary_notes": "Shred with two forks after simmering.",
+          "rank": 1
+        },
+        {
+          "substitute": "soya granules",
+          "composite_score": 0.6668,
+          "score_breakdown": {
+            "flavor_similarity": 0.125,
+            "texture_similarity": 0.8232,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.13,
+            "moisture_excess": -0.52
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.2
+            }
+          ],
+          "culinary_notes": "Press soya granules 15 min to remove excess moisture.",
+          "rank": 2
+        },
+        {
+          "substitute": "banana blossom",
+          "composite_score": 0.6443,
+          "score_breakdown": {
+            "flavor_similarity": 0.2857,
+            "texture_similarity": 0.6464,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.13,
+            "moisture_excess": 0.29
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.25
+            }
+          ],
+          "culinary_notes": "Soak banana blossom in hot water 15 min and squeeze dry.",
+          "rank": 3
+        },
+        {
+          "substitute": "soya chunks",
+          "composite_score": 0.622,
+          "score_breakdown": {
+            "flavor_similarity": 0.125,
+            "texture_similarity": 0.7113,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.13,
+            "moisture_excess": -0.52
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.2
+            }
+          ],
+          "culinary_notes": "Press soya chunks 15 min to remove excess moisture.",
+          "rank": 4
+        },
+        {
+          "substitute": "king oyster mushroom",
+          "composite_score": 0.6179,
+          "score_breakdown": {
+            "flavor_similarity": 0.1111,
+            "texture_similarity": 0.7113,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.13,
+            "moisture_excess": 0.29
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.2
+            }
+          ],
+          "culinary_notes": "Soak king oyster mushroom in hot water 15 min and squeeze dry. Score stalks in cross-hatch pattern, saute in oil to mimic shrimp bite.",
+          "rank": 5
+        }
+      ]
+    },
+    "beef": {
+      "original_role": "bulk_protein",
+      "alternatives": [
+        {
+          "substitute": "soya chunks",
+          "composite_score": 0.6293,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8232,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.19,
+            "moisture_excess": -0.49
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.25
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.25
+            }
+          ],
+          "culinary_notes": "Press soya chunks 15 min to remove excess moisture.",
+          "rank": 1
+        },
+        {
+          "substitute": "jackfruit",
+          "composite_score": 0.6184,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.7959,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.19,
+            "moisture_excess": 0.17
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.25
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.25
+            }
+          ],
+          "culinary_notes": "Shred with two forks after simmering.",
+          "rank": 2
+        },
+        {
+          "substitute": "soya granules",
+          "composite_score": 0.6184,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.7959,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.19,
+            "moisture_excess": -0.49
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.25
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.25
+            }
+          ],
+          "culinary_notes": "Press soya granules 15 min to remove excess moisture.",
+          "rank": 3
+        },
+        {
+          "substitute": "tempeh",
+          "composite_score": 0.5586,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.6464,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.09,
+            "moisture_excess": 0.03
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.25
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.25
+            }
+          ],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 4
+        },
+        {
+          "substitute": "king oyster mushroom",
+          "composite_score": 0.5528,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.632,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.19,
+            "moisture_excess": 0.32
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.25
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.25
+            }
+          ],
+          "culinary_notes": "Soak king oyster mushroom in hot water 15 min and squeeze dry. Score stalks in cross-hatch pattern, saute in oil to mimic shrimp bite.",
+          "rank": 5
+        }
+      ]
+    },
+    "egg": {
+      "original_role": "binder",
+      "alternatives": [
+        {
+          "substitute": "aquafaba",
+          "composite_score": 0.6184,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.7959,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.1,
+            "moisture_excess": 0.2
+          },
+          "spice_bridge": [
+            {
+              "spice": "coriander",
+              "fills_gap_ratio": 0.333
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 1
+        },
+        {
+          "substitute": "maple syrup",
+          "composite_score": 0.3293,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8232,
+            "functional_fit": 0.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.1,
+            "moisture_excess": -0.43
+          },
+          "spice_bridge": [
+            {
+              "spice": "coriander",
+              "fills_gap_ratio": 0.333
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Press maple syrup 15 min to remove excess moisture.",
+          "rank": 2
+        },
+        {
+          "substitute": "coconut yogurt",
+          "composite_score": 0.3087,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.7718,
+            "functional_fit": 0.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.04,
+            "moisture_excess": 0.09
+          },
+          "spice_bridge": [
+            {
+              "spice": "coriander",
+              "fills_gap_ratio": 0.333
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 3
+        },
+        {
+          "substitute": "tofu",
+          "composite_score": 0.3,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.75,
+            "functional_fit": 0.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.06,
+            "moisture_excess": 0.1
+          },
+          "spice_bridge": [
+            {
+              "spice": "coriander",
+              "fills_gap_ratio": 0.333
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 4
+        },
+        {
+          "substitute": "cashew cream",
+          "composite_score": 0.3,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.75,
+            "functional_fit": 0.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.15,
+            "moisture_excess": -0.2
+          },
+          "spice_bridge": [
+            {
+              "spice": "coriander",
+              "fills_gap_ratio": 0.333
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Press cashew cream 15 min to remove excess moisture.",
+          "rank": 5
+        }
+      ]
+    },
+    "butter": {
+      "original_role": "fat_source",
+      "alternatives": [
+        {
+          "substitute": "coconut oil",
+          "composite_score": 0.6923,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.8557,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.18,
+            "moisture_excess": -0.16
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Press coconut oil 15 min to remove excess moisture.",
+          "rank": 1
+        },
+        {
+          "substitute": "olive oil",
+          "composite_score": 0.6423,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8557,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.18,
+            "moisture_excess": -0.16
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Press olive oil 15 min to remove excess moisture.",
+          "rank": 2
+        },
+        {
+          "substitute": "coconut yogurt",
+          "composite_score": 0.3684,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.7959,
+            "functional_fit": 0.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.75,
+            "moisture_excess": 0.68
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak coconut yogurt in hot water 15 min and squeeze dry.",
+          "rank": 3
+        },
+        {
+          "substitute": "maple syrup",
+          "composite_score": 0.3423,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8557,
+            "functional_fit": 0.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.81,
+            "moisture_excess": 0.16
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 4
+        },
+        {
+          "substitute": "coconut milk",
+          "composite_score": 0.3209,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.6773,
+            "functional_fit": 0.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.6,
+            "moisture_excess": 0.54
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak coconut milk in hot water 15 min and squeeze dry.",
+          "rank": 5
+        }
+      ]
+    },
+    "ghee": {
+      "original_role": "fat_source",
+      "alternatives": [
+        {
+          "substitute": "coconut oil",
+          "composite_score": 0.7,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 1.0,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.0,
+            "moisture_excess": 0.0
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 1
+        },
+        {
+          "substitute": "olive oil",
+          "composite_score": 0.7,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 1.0,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.0,
+            "moisture_excess": 0.0
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 2
+        },
+        {
+          "substitute": "maple syrup",
+          "composite_score": 0.3,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.75,
+            "functional_fit": 0.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.99,
+            "moisture_excess": 0.32
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak maple syrup in hot water 15 min and squeeze dry.",
+          "rank": 3
+        },
+        {
+          "substitute": "cashew cream",
+          "composite_score": 0.2775,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.6938,
+            "functional_fit": 0.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.74,
+            "moisture_excess": 0.55
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak cashew cream in hot water 15 min and squeeze dry.",
+          "rank": 4
+        },
+        {
+          "substitute": "coconut yogurt",
+          "composite_score": 0.2709,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.6773,
+            "functional_fit": 0.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.93,
+            "moisture_excess": 0.84
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak coconut yogurt in hot water 15 min and squeeze dry.",
+          "rank": 5
+        }
+      ]
+    },
+    "milk": {
+      "original_role": "creamy_liquid",
+      "alternatives": [
+        {
+          "substitute": "coconut milk",
+          "composite_score": 0.7,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 1.0,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.18,
+            "moisture_excess": -0.18
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Press coconut milk 15 min to remove excess moisture.",
+          "rank": 1
+        },
+        {
+          "substitute": "oat milk",
+          "composite_score": 0.7,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 1.0,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.02,
+            "moisture_excess": 0.02
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 2
+        },
+        {
+          "substitute": "cashew cream",
+          "composite_score": 0.6592,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8979,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.22,
+            "moisture_excess": -0.33
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Press cashew cream 15 min to remove excess moisture.",
+          "rank": 3
+        },
+        {
+          "substitute": "coconut yogurt",
+          "composite_score": 0.6423,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8557,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.03,
+            "moisture_excess": -0.04
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 4
+        },
+        {
+          "substitute": "tomato puree",
+          "composite_score": 0.5,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.5,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.03,
+            "moisture_excess": 0.11
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 5
+        }
+      ]
+    },
+    "cream": {
+      "original_role": "creamy_liquid",
+      "alternatives": [
+        {
+          "substitute": "coconut milk",
+          "composite_score": 0.7192,
+          "score_breakdown": {
+            "flavor_similarity": 0.2,
+            "texture_similarity": 0.8979,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.14,
+            "moisture_excess": 0.1
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 1
+        },
+        {
+          "substitute": "coconut yogurt",
+          "composite_score": 0.7192,
+          "score_breakdown": {
+            "flavor_similarity": 0.2,
+            "texture_similarity": 0.8979,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.29,
+            "moisture_excess": 0.24
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak coconut yogurt in hot water 15 min and squeeze dry.",
+          "rank": 2
+        },
+        {
+          "substitute": "cashew cream",
+          "composite_score": 0.7,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 1.0,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.1,
+            "moisture_excess": -0.05
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 3
+        },
+        {
+          "substitute": "oat milk",
+          "composite_score": 0.6592,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8979,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.34,
+            "moisture_excess": 0.3
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak oat milk in hot water 15 min and squeeze dry.",
+          "rank": 4
+        },
+        {
+          "substitute": "tomato puree",
+          "composite_score": 0.4959,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.4897,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.35,
+            "moisture_excess": 0.39
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak tomato puree in hot water 15 min and squeeze dry.",
+          "rank": 5
+        }
+      ]
+    },
+    "yogurt": {
+      "original_role": "creamy_liquid",
+      "alternatives": [
+        {
+          "substitute": "coconut yogurt",
+          "composite_score": 0.76,
+          "score_breakdown": {
+            "flavor_similarity": 0.2,
+            "texture_similarity": 1.0,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.03,
+            "moisture_excess": -0.03
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 1
+        },
+        {
+          "substitute": "cashew cream",
+          "composite_score": 0.6592,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8979,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.22,
+            "moisture_excess": -0.32
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Press cashew cream 15 min to remove excess moisture.",
+          "rank": 2
+        },
+        {
+          "substitute": "coconut milk",
+          "composite_score": 0.6423,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8557,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.18,
+            "moisture_excess": -0.17
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Press coconut milk 15 min to remove excess moisture.",
+          "rank": 3
+        },
+        {
+          "substitute": "oat milk",
+          "composite_score": 0.6423,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8557,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.02,
+            "moisture_excess": 0.03
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 4
+        },
+        {
+          "substitute": "tomato puree",
+          "composite_score": 0.5085,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.5213,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.03,
+            "moisture_excess": 0.12
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 5
+        }
+      ]
+    },
+    "honey": {
+      "original_role": "sweetener",
+      "alternatives": [
+        {
+          "substitute": "maple syrup",
+          "composite_score": 0.6592,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8979,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.0,
+            "moisture_excess": 0.14
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 1
+        },
+        {
+          "substitute": "coconut oil",
+          "composite_score": 0.3293,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8232,
+            "functional_fit": 0.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.99,
+            "moisture_excess": -0.18
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Press coconut oil 15 min to remove excess moisture.",
+          "rank": 2
+        },
+        {
+          "substitute": "olive oil",
+          "composite_score": 0.3293,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8232,
+            "functional_fit": 0.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.99,
+            "moisture_excess": -0.18
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Press olive oil 15 min to remove excess moisture.",
+          "rank": 3
+        },
+        {
+          "substitute": "coconut yogurt",
+          "composite_score": 0.3087,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.7718,
+            "functional_fit": 0.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.06,
+            "moisture_excess": 0.66
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak coconut yogurt in hot water 15 min and squeeze dry.",
+          "rank": 4
+        },
+        {
+          "substitute": "tofu",
+          "composite_score": 0.3,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.75,
+            "functional_fit": 0.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.04,
+            "moisture_excess": 0.67
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak tofu in hot water 15 min and squeeze dry.",
+          "rank": 5
+        }
+      ]
+    },
+    "shrimp": {
+      "original_role": "bulk_protein",
+      "alternatives": [
+        {
+          "substitute": "banana blossom",
+          "composite_score": 0.7429,
+          "score_breakdown": {
+            "flavor_similarity": 0.1429,
+            "texture_similarity": 1.0,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.0,
+            "moisture_excess": 0.14
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.25
+            }
+          ],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 1
+        },
+        {
+          "substitute": "king oyster mushroom",
+          "composite_score": 0.7041,
+          "score_breakdown": {
+            "flavor_similarity": 0.2857,
+            "texture_similarity": 0.7959,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.0,
+            "moisture_excess": 0.14
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Score stalks in cross-hatch pattern, saute in oil to mimic shrimp bite.",
+          "rank": 2
+        },
+        {
+          "substitute": "tofu",
+          "composite_score": 0.6348,
+          "score_breakdown": {
+            "flavor_similarity": 0.1429,
+            "texture_similarity": 0.73,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.03,
+            "moisture_excess": 0.1
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.25
+            }
+          ],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 3
+        },
+        {
+          "substitute": "jackfruit",
+          "composite_score": 0.6348,
+          "score_breakdown": {
+            "flavor_similarity": 0.1429,
+            "texture_similarity": 0.73,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.0,
+            "moisture_excess": -0.01
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.25
+            }
+          ],
+          "culinary_notes": "Shred with two forks after simmering.",
+          "rank": 4
+        },
+        {
+          "substitute": "soya granules",
+          "composite_score": 0.5847,
+          "score_breakdown": {
+            "flavor_similarity": 0.1429,
+            "texture_similarity": 0.6047,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.0,
+            "moisture_excess": -0.67
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.25
+            }
+          ],
+          "culinary_notes": "Press soya granules 15 min to remove excess moisture.",
+          "rank": 5
+        }
+      ]
+    },
+    "mutton": {
+      "original_role": "bulk_protein",
+      "alternatives": [
+        {
+          "substitute": "soya chunks",
+          "composite_score": 0.6293,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8232,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.19,
+            "moisture_excess": -0.5
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.333
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Press soya chunks 15 min to remove excess moisture.",
+          "rank": 1
+        },
+        {
+          "substitute": "jackfruit",
+          "composite_score": 0.6184,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.7959,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.19,
+            "moisture_excess": 0.16
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.333
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Shred with two forks after simmering.",
+          "rank": 2
+        },
+        {
+          "substitute": "soya granules",
+          "composite_score": 0.6184,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.7959,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.19,
+            "moisture_excess": -0.5
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.333
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Press soya granules 15 min to remove excess moisture.",
+          "rank": 3
+        },
+        {
+          "substitute": "tempeh",
+          "composite_score": 0.5586,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.6464,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.09,
+            "moisture_excess": 0.02
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.333
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 4
+        },
+        {
+          "substitute": "king oyster mushroom",
+          "composite_score": 0.5528,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.632,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.19,
+            "moisture_excess": 0.31
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.333
+            },
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Soak king oyster mushroom in hot water 15 min and squeeze dry. Score stalks in cross-hatch pattern, saute in oil to mimic shrimp bite.",
+          "rank": 5
+        }
+      ]
+    },
+    "fish": {
+      "original_role": "bulk_protein",
+      "alternatives": [
+        {
+          "substitute": "banana blossom",
+          "composite_score": 0.82,
+          "score_breakdown": {
+            "flavor_similarity": 0.4,
+            "texture_similarity": 1.0,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.04,
+            "moisture_excess": 0.14
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.5
+            }
+          ],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 1
+        },
+        {
+          "substitute": "king oyster mushroom",
+          "composite_score": 0.6612,
+          "score_breakdown": {
+            "flavor_similarity": 0.1429,
+            "texture_similarity": 0.7959,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.04,
+            "moisture_excess": 0.14
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Score stalks in cross-hatch pattern, saute in oil to mimic shrimp bite.",
+          "rank": 2
+        },
+        {
+          "substitute": "tofu",
+          "composite_score": 0.642,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.73,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.01,
+            "moisture_excess": 0.1
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 3
+        },
+        {
+          "substitute": "jackfruit",
+          "composite_score": 0.642,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.73,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.04,
+            "moisture_excess": -0.01
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Shred with two forks after simmering.",
+          "rank": 4
+        },
+        {
+          "substitute": "soya granules",
+          "composite_score": 0.5919,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.6047,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.04,
+            "moisture_excess": -0.67
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Press soya granules 15 min to remove excess moisture.",
+          "rank": 5
+        }
+      ]
+    },
+    "pork": {
+      "original_role": "bulk_protein",
+      "alternatives": [
+        {
+          "substitute": "jackfruit",
+          "composite_score": 0.7092,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.8979,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.19,
+            "moisture_excess": 0.21
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Soak jackfruit in hot water 15 min and squeeze dry. Shred with two forks after simmering.",
+          "rank": 1
+        },
+        {
+          "substitute": "soya granules",
+          "composite_score": 0.6793,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.8232,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.19,
+            "moisture_excess": -0.45
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Press soya granules 15 min to remove excess moisture.",
+          "rank": 2
+        },
+        {
+          "substitute": "soya chunks",
+          "composite_score": 0.65,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.75,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.19,
+            "moisture_excess": -0.45
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Press soya chunks 15 min to remove excess moisture.",
+          "rank": 3
+        },
+        {
+          "substitute": "tofu",
+          "composite_score": 0.642,
+          "score_breakdown": {
+            "flavor_similarity": 0.4,
+            "texture_similarity": 0.5551,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.16,
+            "moisture_excess": 0.32
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.5
+            }
+          ],
+          "culinary_notes": "Soak tofu in hot water 15 min and squeeze dry. Freeze/thaw then pan-sear until golden for better texture.",
+          "rank": 4
+        },
+        {
+          "substitute": "banana blossom",
+          "composite_score": 0.6086,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.6464,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.19,
+            "moisture_excess": 0.36
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Soak banana blossom in hot water 15 min and squeeze dry.",
+          "rank": 5
+        }
+      ]
+    },
+    "crab": {
+      "original_role": "bulk_protein",
+      "alternatives": [
+        {
+          "substitute": "banana blossom",
+          "composite_score": 0.6423,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.8557,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.01,
+            "moisture_excess": 0.1
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 1
+        },
+        {
+          "substitute": "king oyster mushroom",
+          "composite_score": 0.6184,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.7959,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.01,
+            "moisture_excess": 0.1
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Score stalks in cross-hatch pattern, saute in oil to mimic shrimp bite.",
+          "rank": 2
+        },
+        {
+          "substitute": "tofu",
+          "composite_score": 0.5528,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.632,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.02,
+            "moisture_excess": 0.06
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 3
+        },
+        {
+          "substitute": "jackfruit",
+          "composite_score": 0.5528,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.632,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.01,
+            "moisture_excess": -0.05
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Shred with two forks after simmering.",
+          "rank": 4
+        },
+        {
+          "substitute": "tempeh",
+          "composite_score": 0.5419,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.6047,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.09,
+            "moisture_excess": -0.19
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Press tempeh 15 min to remove excess moisture.",
+          "rank": 5
+        }
+      ]
+    },
+    "duck": {
+      "original_role": "bulk_protein",
+      "alternatives": [
+        {
+          "substitute": "jackfruit",
+          "composite_score": 0.6793,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.8232,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.27,
+            "moisture_excess": 0.21
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak jackfruit in hot water 15 min and squeeze dry. Shred with two forks after simmering.",
+          "rank": 1
+        },
+        {
+          "substitute": "soya granules",
+          "composite_score": 0.6793,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.8232,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.27,
+            "moisture_excess": -0.45
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Press soya granules 15 min to remove excess moisture.",
+          "rank": 2
+        },
+        {
+          "substitute": "soya chunks",
+          "composite_score": 0.6684,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.7959,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.27,
+            "moisture_excess": -0.45
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Press soya chunks 15 min to remove excess moisture.",
+          "rank": 3
+        },
+        {
+          "substitute": "banana blossom",
+          "composite_score": 0.6567,
+          "score_breakdown": {
+            "flavor_similarity": 0.4,
+            "texture_similarity": 0.5918,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.27,
+            "moisture_excess": 0.36
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak banana blossom in hot water 15 min and squeeze dry.",
+          "rank": 4
+        },
+        {
+          "substitute": "king oyster mushroom",
+          "composite_score": 0.5901,
+          "score_breakdown": {
+            "flavor_similarity": 0.1429,
+            "texture_similarity": 0.6181,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.27,
+            "moisture_excess": 0.36
+          },
+          "spice_bridge": [],
+          "culinary_notes": "Soak king oyster mushroom in hot water 15 min and squeeze dry. Score stalks in cross-hatch pattern, saute in oil to mimic shrimp bite.",
+          "rank": 5
+        }
+      ]
+    },
+    "squid": {
+      "original_role": "bulk_protein",
+      "alternatives": [
+        {
+          "substitute": "banana blossom",
+          "composite_score": 0.6087,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.7718,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.0,
+            "moisture_excess": 0.09
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 1
+        },
+        {
+          "substitute": "jackfruit",
+          "composite_score": 0.6,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.75,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.0,
+            "moisture_excess": -0.06
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Shred with two forks after simmering.",
+          "rank": 2
+        },
+        {
+          "substitute": "tofu",
+          "composite_score": 0.5709,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.6773,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": -0.03,
+            "moisture_excess": 0.05
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Use as direct replacement with standard cooking method.",
+          "rank": 3
+        },
+        {
+          "substitute": "king oyster mushroom",
+          "composite_score": 0.5528,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.632,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.0,
+            "moisture_excess": 0.09
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Score stalks in cross-hatch pattern, saute in oil to mimic shrimp bite.",
+          "rank": 4
+        },
+        {
+          "substitute": "soya granules",
+          "composite_score": 0.5268,
+          "score_breakdown": {
+            "flavor_similarity": 0.0,
+            "texture_similarity": 0.567,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.0,
+            "moisture_excess": -0.72
+          },
+          "spice_bridge": [
+            {
+              "spice": "nutritional yeast",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Press soya granules 15 min to remove excess moisture.",
+          "rank": 5
+        }
+      ]
+    },
+    "turkey": {
+      "original_role": "bulk_protein",
+      "alternatives": [
+        {
+          "substitute": "banana blossom",
+          "composite_score": 0.712,
+          "score_breakdown": {
+            "flavor_similarity": 0.4,
+            "texture_similarity": 0.73,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.06,
+            "moisture_excess": 0.25
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.5
+            }
+          ],
+          "culinary_notes": "Soak banana blossom in hot water 15 min and squeeze dry.",
+          "rank": 1
+        },
+        {
+          "substitute": "jackfruit",
+          "composite_score": 0.6923,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.8557,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.06,
+            "moisture_excess": 0.1
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Shred with two forks after simmering.",
+          "rank": 2
+        },
+        {
+          "substitute": "soya granules",
+          "composite_score": 0.6684,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.7959,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.06,
+            "moisture_excess": -0.56
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Press soya granules 15 min to remove excess moisture.",
+          "rank": 3
+        },
+        {
+          "substitute": "king oyster mushroom",
+          "composite_score": 0.6516,
+          "score_breakdown": {
+            "flavor_similarity": 0.1429,
+            "texture_similarity": 0.7718,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.06,
+            "moisture_excess": 0.25
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Soak king oyster mushroom in hot water 15 min and squeeze dry. Score stalks in cross-hatch pattern, saute in oil to mimic shrimp bite.",
+          "rank": 4
+        },
+        {
+          "substitute": "soya chunks",
+          "composite_score": 0.6146,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.6615,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.06,
+            "moisture_excess": -0.56
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Press soya chunks 15 min to remove excess moisture.",
+          "rank": 5
+        }
+      ]
+    },
+    "bacon": {
+      "original_role": "bulk_protein",
+      "alternatives": [
+        {
+          "substitute": "jackfruit",
+          "composite_score": 0.6274,
+          "score_breakdown": {
+            "flavor_similarity": 0.1429,
+            "texture_similarity": 0.7113,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.41,
+            "moisture_excess": 0.54
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.75
+            }
+          ],
+          "culinary_notes": "Soak jackfruit in hot water 15 min and squeeze dry. Shred with two forks after simmering.",
+          "rank": 1
+        },
+        {
+          "substitute": "soya chunks",
+          "composite_score": 0.5957,
+          "score_breakdown": {
+            "flavor_similarity": 0.1429,
+            "texture_similarity": 0.632,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.41,
+            "moisture_excess": -0.12
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.75
+            }
+          ],
+          "culinary_notes": "Press soya chunks 15 min to remove excess moisture.",
+          "rank": 2
+        },
+        {
+          "substitute": "tofu",
+          "composite_score": 0.5901,
+          "score_breakdown": {
+            "flavor_similarity": 0.1429,
+            "texture_similarity": 0.6181,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.38,
+            "moisture_excess": 0.65
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.75
+            }
+          ],
+          "culinary_notes": "Soak tofu in hot water 15 min and squeeze dry. Freeze/thaw then pan-sear until golden for better texture.",
+          "rank": 3
+        },
+        {
+          "substitute": "soya granules",
+          "composite_score": 0.5901,
+          "score_breakdown": {
+            "flavor_similarity": 0.1429,
+            "texture_similarity": 0.6181,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.41,
+            "moisture_excess": -0.12
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.75
+            }
+          ],
+          "culinary_notes": "Press soya granules 15 min to remove excess moisture.",
+          "rank": 4
+        },
+        {
+          "substitute": "banana blossom",
+          "composite_score": 0.5745,
+          "score_breakdown": {
+            "flavor_similarity": 0.1429,
+            "texture_similarity": 0.5792,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.41,
+            "moisture_excess": 0.69
+          },
+          "spice_bridge": [
+            {
+              "spice": "smoked paprika",
+              "fills_gap_ratio": 0.75
+            }
+          ],
+          "culinary_notes": "Soak banana blossom in hot water 15 min and squeeze dry.",
+          "rank": 5
+        }
+      ]
+    },
+    "sausage": {
+      "original_role": "bulk_protein",
+      "alternatives": [
+        {
+          "substitute": "soya granules",
+          "composite_score": 0.6923,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.8557,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.29,
+            "moisture_excess": -0.46
+          },
+          "spice_bridge": [
+            {
+              "spice": "cumin",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Press soya granules 15 min to remove excess moisture.",
+          "rank": 1
+        },
+        {
+          "substitute": "jackfruit",
+          "composite_score": 0.6684,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.7959,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.29,
+            "moisture_excess": 0.2
+          },
+          "spice_bridge": [
+            {
+              "spice": "cumin",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Shred with two forks after simmering.",
+          "rank": 2
+        },
+        {
+          "substitute": "king oyster mushroom",
+          "composite_score": 0.6348,
+          "score_breakdown": {
+            "flavor_similarity": 0.1429,
+            "texture_similarity": 0.73,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.29,
+            "moisture_excess": 0.35
+          },
+          "spice_bridge": [
+            {
+              "spice": "cumin",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Soak king oyster mushroom in hot water 15 min and squeeze dry. Score stalks in cross-hatch pattern, saute in oil to mimic shrimp bite.",
+          "rank": 3
+        },
+        {
+          "substitute": "soya chunks",
+          "composite_score": 0.6275,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.6938,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.29,
+            "moisture_excess": -0.46
+          },
+          "spice_bridge": [
+            {
+              "spice": "cumin",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Press soya chunks 15 min to remove excess moisture.",
+          "rank": 4
+        },
+        {
+          "substitute": "banana blossom",
+          "composite_score": 0.6028,
+          "score_breakdown": {
+            "flavor_similarity": 0.1667,
+            "texture_similarity": 0.632,
+            "functional_fit": 1.0
+          },
+          "chemical_delta": {
+            "lipid_deficit": 0.29,
+            "moisture_excess": 0.35
+          },
+          "spice_bridge": [
+            {
+              "spice": "cumin",
+              "fills_gap_ratio": 0.333
+            }
+          ],
+          "culinary_notes": "Soak banana blossom in hot water 15 min and squeeze dry.",
+          "rank": 5
+        }
+      ]
+    }
+  }
+}

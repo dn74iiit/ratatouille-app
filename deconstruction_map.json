@@ -1,0 +1,1852 @@
+{
+  "salt": {
+    "salt": 1.0
+  },
+  "water": {
+    "water": 1.0
+  },
+  "butter": {
+    "butter": 1.0
+  },
+  "lemon juice": 0.2,
+  "vegetable oil": {
+    "vegetable oil": 1.0
+  },
+  "milk": {
+    "powdered milk": 0.5
+  },
+  "pepper": {
+    "pepper": 1.0
+  },
+  "milk and pepper": {
+    "milk": 0.5,
+    "black pepper": 0.5
+  },
+  "garlic cloves": {
+    "garlic": 1.0
+  },
+  "flour": {
+    "flour": 0.25
+  },
+  "cumin": 1.0,
+  "cilantro": {
+    "cilantro": 1.0
+  },
+  "brown sugar": {
+    "brown sugar": 1.0
+  },
+  "oil": {
+    "oil": 1.0
+  },
+  "eggs": {
+    "eggs": 1.0
+  },
+  "onion": {
+    "medium onion": 0.5,
+    "sweet onion": 0.25
+  },
+  "extra virgin olive oil": {
+    "olive oil": 1.0
+  },
+  "lime juice": {
+    "lime juice": 1.0
+  },
+  "chili powder": {
+    "chili powder": 1.0
+  },
+  "cornstarch": 0.25,
+  "garlic powder": {
+    "garlic powder": 1.0
+  },
+  "garlic": {
+    "garlic cloves": 0.5
+  },
+  "paprika": 1.0,
+  "cream, sour": {
+    "milk": 0.7,
+    "heavy cream": 0.3
+  },
+  "white wine": 1.0,
+  "parmesan cheese, grated": 1.0,
+  "chicken broth": {
+    "chicken": 1.0
+  },
+  "cayenne pepper": 0.1,
+  "honey": 1.0,
+  "oregano": {
+    "oregano": 1.0
+  },
+  "worcestershire sauce": 1.0,
+  "white sugar": 1.0,
+  "cinnamon, ground": 1.0,
+  "beef, ground": 1.0,
+  "mayonnaise": 1.0,
+  "sesame oil": 1.0,
+  "onion , chopped": 1.0,
+  "cloves garlic , minced": {
+    "garlic": 0.5,
+    "garlic cloves": 0.5
+  },
+  "- pepper": 1.0,
+  "tomato paste": 1.0,
+  "egg": 1.0,
+  "oregano, dried": 1.0,
+  "baking powder": {
+    "baking powder": 0.5
+  },
+  "coriander": {
+    "coriander": 1.0
+  },
+  "bay leaf": {
+    "bay leaf": 1.0
+  },
+  "chicken stock": {
+    "water": 1.0
+  },
+  "heavy cream": {
+    "cream": 1.0
+  },
+  "red wine vinegar": {
+    "vinegar": 1.0
+  },
+  "curry powder": {
+    "curry powder": 0.05
+  },
+  "fish sauce": {
+    "fish sauce": 1.0
+  },
+  "garlic clove , minced": {
+    "garlic": 1.0
+  },
+  "canola oil": {
+    "oil": 1.0
+  },
+  "bay leaves": {
+    "bay leaf": 1.0
+  },
+  "vinegar": {
+    "vinegar": 1.0
+  },
+  "kosher salt": {
+    "salt": 1.0
+  },
+  "ginger, ground": {
+    "ginger": 1.0
+  },
+  "green onion, chopped": {
+    "green onion": 1.0
+  },
+  "orange juice": {
+    "orange juice": 1.0
+  },
+  "dijon mustard": {
+    "mustard": 1.0
+  },
+  "red wine": {
+    "wine": 1.0
+  },
+  "red pepper flake, crushed": {
+    "red pepper flake": 1.0
+  },
+  "garlic cloves , crushed": {
+    "garlic": 1.0
+  },
+  "butter, unsalted": {
+    "butter": 1.0
+  },
+  "cumin seed": {
+    "cumin": 1.0
+  },
+  "red pepper flake": {
+    "red pepper flake": 1.0
+  },
+  "vanilla": {
+    "vanilla": 1.0
+  },
+  "medium onion , chopped": {
+    "onion": 1.0
+  },
+  "salt , to taste": {
+    "salt": 1.0
+  },
+  "balsamic vinegar": {
+    "balsamic": 1.0
+  },
+  "can tomato sauce": {
+    "tomato": 0.8
+  },
+  "sliced mushroom": {
+    "mushroom": 1.0
+  },
+  "thyme": 0.1,
+  "black pepper": {
+    "black pepper": 1.0
+  },
+  "cheddar cheese": {
+    "cheddar cheese": 1.0
+  },
+  "raisin": {
+    "raisin": 1.0
+  },
+  "basil": {
+    "basil": 1.0
+  },
+  "onion powder": {
+    "onion powder": 1.0
+  },
+  "turmeric": {
+    "turmeric": 1.0
+  },
+  "ketchup": {
+    "ketchup": 1.0
+  },
+  "pouch tomato sauce": {
+    "tomato": 0.5
+  },
+  "coconut milk": {
+    "coconut milk": 0.4
+  },
+  "breadcrumb": {
+    "breadcrumb": 1.0
+  },
+  "clove": {
+    "clove": 1.0
+  },
+  "pea": {
+    "pea": 1.0
+  },
+  "feta cheese": {
+    "feta cheese": 1.0
+  },
+  "turmeric powder": {
+    "turmeric powder": 1.0
+  },
+  "mint": {
+    "mint": 1.0
+  },
+  "small onion": {
+    "onion": 0.5
+  },
+  "clove garlic": {
+    "garlic": 1.0
+  },
+  "plain yogurt": {
+    "plain yogurt": 1.0
+  },
+  "margarine": {
+    "margarine": 1.0
+  },
+  "large eggs": {
+    "large eggs": 1.0
+  },
+  "flat leaf parsley": {},
+  "rice": {
+    "grain rice": 1.0,
+    "hot cooked rice": 1.0
+  },
+  "cayenne": {
+    "cayenne": 1.0
+  },
+  "sherry": {
+    "sherry": 1.0
+  },
+  "white wine vinegar": {
+    "white wine vinegar": 1.0
+  },
+  "cold water": {
+    "cold water": 1.0
+  },
+  "allspice": {
+    "allspice": 1.0
+  },
+  "chive, chopped": {
+    "chives": 1.0
+  },
+  "coriander, chopped": {
+    "coriander": 1.0
+  },
+  "- olive oil": {
+    "olive oil": 1.0
+  },
+  "cinnamon stick": {
+    "cinnamon": 1.0
+  },
+  "onion , diced": {
+    "onion": 1.0
+  },
+  "beef stock": {
+    "beef stock": 0.5
+  },
+  "half": {
+    "water": 0.5
+  },
+  "caster sugar": {
+    "caster sugar": 1.0
+  },
+  "dill, chopped": {
+    "dill": 1.0
+  },
+  "red onion, chopped": {
+    "red onion": 1.0
+  },
+  "vegetable broth": {
+    "vegetable broth": 1.0
+  },
+  "whole cloves": {
+    "cloves": 1.0
+  },
+  "mozzarella cheese, shredded": {
+    "mozzarella cheese": 1.0
+  },
+  "tabasco sauce": {
+    "tabasco sauce": 1.0
+  },
+  "hot water": {
+    "hot water": 1.0
+  },
+  "tomatoes , chopped": {
+    "tomatoes": 1.0
+  },
+  "vegetable stock": {
+    "vegetable stock": 1.0
+  },
+  "yogurt": {
+    "yogurt": 1.0
+  },
+  "sauce": {
+    "sauce": 1.0
+  },
+  "onions , chopped": {
+    "onions": 1.0
+  },
+  "hoisin sauce": {
+    "hoisin sauce": 1.0
+  },
+  "sesame seed, toasted": {
+    "sesame seed": 1.0
+  },
+  "bean sprout": {
+    "bean sprout": 1.0
+  },
+  "coriander powder": {
+    "coriander seed": 1.0
+  },
+  "tomato, diced": {
+    "tomato": 1.0
+  },
+  "cloves garlic , chopped": {
+    "cloves garlic": 1.0
+  },
+  "cloves garlic , crushed": {
+    "cloves garlic": 1.0
+  },
+  "cornflour": {
+    "cornflour": 1.0
+  },
+  "sherry wine": {
+    "wine": 1.0
+  },
+  "mirin": {
+    "mirin": 1.0
+  },
+  "tomato puree": {
+    "tomato": 1.0
+  },
+  "fennel seed": {
+    "fennel seed": 1.0
+  },
+  "boneless skinless chicken breasts": {
+    "chicken": 1.0
+  },
+  "coriander seed": {
+    "coriander seed": 1.0
+  },
+  "brandy": {
+    "brandy": 1.0
+  },
+  "pine nut": {
+    "pine nut": 1.0
+  },
+  "grain rice": {
+    "rice": 1.0
+  },
+  "spaghetti": {
+    "spaghetti": 1.0
+  },
+  "caraway seed": {
+    "caraway seed": 1.0
+  },
+  "apple cider vinegar": {
+    "apple cider vinegar": 1.0
+  },
+  "cumin powder": {
+    "cumin": 1.0
+  },
+  "walnut, chopped": {
+    "walnut": 1.0
+  },
+  "pepper sauce": {
+    "pepper sauce": 1.0
+  },
+  "(400.0g) can coconut milk": {
+    "coconut milk": 1.0
+  },
+  "tequila": {
+    "tequila": 1.0
+  },
+  "cooking spray": {
+    "vegetable oil": 1.0
+  },
+  "tomatoes": {
+    "tomatoes": 1.0,
+    "vinegar": 0.5
+  },
+  "fresh ground pepper": {
+    "basil leaf": 1.0
+  },
+  "caper": {
+    "capers": 1.0
+  },
+  "rice wine vinegar": {
+    "rice wine": 1.0,
+    "vinegar": 0.5
+  },
+  "ginger, chopped": {
+    "ginger": 1.0
+  },
+  "plain flour": {
+    "flour": 1.0
+  },
+  "pineapple juice": {
+    "pineapple juice": 1.0
+  },
+  "slices bacon, (400.0g)": {
+    "bacon": 1.0
+  },
+  "can tomato, crushed": {
+    "tomato": 1.0
+  },
+  "maple syrup": {
+    "maple syrup": 1.0
+  },
+  "pepper , to taste": {
+    "black pepper": 1.0
+  },
+  "onion , sliced": {
+    "onion": 1.0
+  },
+  "monterey jack cheese, shredded": {
+    "cheese": 1.0
+  },
+  "buttermilk": {
+    "buttermilk": 1.0
+  },
+  "green pepper, chopped": {
+    "green pepper": 1.0
+  },
+  "soy sauce, low sodium": {
+    "soy sauce": 1.0
+  },
+  "olive oil, divided": {
+    "olive oil": 1.0
+  },
+  "corn tortillas": {
+    "corn tortilla": 1.0
+  },
+  "rice wine": {
+    "rice wine": 1.0
+  },
+  "sake": {
+    "sake": 1.0
+  },
+  "beer": {
+    "beer": 1.0
+  },
+  "heavy whipping cream": {
+    "heavy cream": 1.0
+  },
+  "carrot, chopped": {
+    "carrot": 1.0
+  },
+  "egg whites": {
+    "egg": 1.0
+  },
+  "cilantro leaf, chopped": {
+    "cilantro": 1.0
+  },
+  "rum": {
+    "rum": 1.0
+  },
+  "dark soy sauce": {
+    "soy sauce": 1.0
+  },
+  "ricotta cheese": {
+    "ricotta": 1.0
+  },
+  "coriander leaf, chopped": {
+    "coriander": 1.0
+  },
+  "shortening": {
+    "shortening": 1.0
+  },
+  "medium onion": 0.25,
+  "- oil (for frying)": {
+    "oil": 1.0
+  },
+  "vodka": {
+    "vodka": 1.0
+  },
+  "carrot, shredded": {
+    "carrot": 1.0
+  },
+  "green bell pepper, chopped": {
+    "bell pepper": 1.0
+  },
+  "basmati rice": {
+    "rice": 1.0
+  },
+  "medium onion, finely chopped": {
+    "onion": 1.0
+  },
+  "lemon zest": {
+    "lemon": 1.0
+  },
+  "onion, sliced": {
+    "onion": 1.0
+  },
+  "parsley, dried": {
+    "parsley": 1.0
+  },
+  "black peppercorn": {
+    "pepper": 1.0
+  },
+  "fresh ground black pepper, to taste": {
+    "black pepper": 1.0
+  },
+  "carrot, sliced": {
+    "carrot": 1.0
+  },
+  "saffron": {
+    "saffron": 1.0
+  },
+  "cilantro leaf": {
+    "cilantro leaf": 1.0
+  },
+  "celery, diced": {
+    "celery": 1.0
+  },
+  "rosemary": 0.1,
+  "wheat flour": {
+    "wheat flour": 1.0
+  },
+  "(400.0g) can chicken broth": {
+    "chicken broth, low sodium": 1.0
+  },
+  "cheddar cheese, grated": {
+    "cheddar cheese": 1.0
+  },
+  "tahini": {
+    "tahini": 1.0
+  },
+  "scallion, chopped": {
+    "scallion": 1.0
+  },
+  "chili sauce": {
+    "chili sauce": 1.0
+  },
+  "celery seed": {
+    "celery seed": 1.0
+  },
+  "broccoli floret": {
+    "broccoli": 1.0
+  },
+  "(400.0g) can cream mushroom soup": {
+    "cream mushroom soup": 1.0
+  },
+  "cinnamon sticks": {
+    "cinnamon sticks": 1.0
+  },
+  "italian parsley, chopped": {
+    "italian parsley": 1.0
+  },
+  "nutmeg, grated": {
+    "nutmeg": 1.0
+  },
+  "small onion , finely chopped": {
+    "small onion": 1.0
+  },
+  "molasses": {
+    "molasses": 1.0
+  },
+  "celery, sliced": {
+    "celery": 1.0
+  },
+  "stalks celery , chopped": {
+    "celery": 1.0
+  },
+  "chicken broth, low sodium": {
+    "chicken broth, low sodium": 1.0
+  },
+  "mushroom": {
+    "canned mushroom": 0.4
+  },
+  "cream cheese, softened": {
+    "cream cheese": 1.0
+  },
+  "lemon zest, grated": {
+    "lemon zest": 1.0
+  },
+  "seasoning salt": {
+    "seasoning salt": 1.0
+  },
+  "dark brown sugar": 1.0,
+  "can black bean": 0.5,
+  "sour cream": 1.0,
+  "sea salt": 0.25,
+  "mint leaf": {
+    "herb": 1.0
+  },
+  "pecan": 0.1,
+  "corn syrup": 0.25,
+  "green onions": 0.1,
+  "egg white": 0.1,
+  "powdered sugar": 0.1,
+  "gingerroot": 0.1,
+  "egg yolk": 0.1,
+  "golden raisin": 0.1,
+  "large onion": 0.25,
+  "ice": {
+    "ice": 1.0
+  },
+  "cabbage": 0.1,
+  "beef broth": 0.25,
+  "medium onions": 0.1,
+  "greek yogurt": {
+    "yogurt": 1.0
+  },
+  "onions": {
+    "onion": 1.0
+  },
+  "all-purpose flour": {
+    "flour": 1.0
+  },
+  "tomato juice": {
+    "tomato": 1.0
+  },
+  "pine nuts, toasted": {
+    "pine nut": 1.0
+  },
+  "marjoram": {
+    "herb": 1.0
+  },
+  "lemon, juiced": {
+    "lemon": 1.0
+  },
+  "almond extract": {
+    "almond": 1.0
+  },
+  "red pepper, ground": {
+    "red pepper": 1.0
+  },
+  "large onion, diced": {
+    "large onion": 1.0
+  },
+  "- ground black pepper to taste": {
+    "black pepper": 1.0
+  },
+  "chicken breast, boneless skinless": {
+    "chicken": 1.0
+  },
+  "milk, skim": {
+    "milk": 1.0
+  },
+  "large egg": {
+    "egg": 1.0
+  },
+  "tomatoes, diced": {
+    "tomato": 1.0
+  },
+  "carrots": {
+    "carrot": 1.0
+  },
+  "(250.0g) package cream cheese, softened": {
+    "cream cheese": 1.0
+  },
+  "paprika, sweet": {
+    "paprika": 1.0
+  },
+  "chicken breast, boneless skinless cut": {
+    "chicken": 1.0
+  },
+  "yeast": {
+    "yeast": 1.0
+  },
+  "chicken breasts": {
+    "chicken": 1.0
+  },
+  "garlic paste": {
+    "garlic": 1.0
+  },
+  "confectioner's sugar": {
+    "sugar": 1.0
+  },
+  "shallot, chopped": {
+    "shallot": 1.0
+  },
+  "red bell pepper, chopped": {
+    "red bell pepper": 1.0
+  },
+  "parmesan cheese, shredded": {
+    "parmesan cheese": 1.0
+  },
+  "red onion, diced": {
+    "red onion": 1.0
+  },
+  "paprika, smoked": {
+    "paprika": 1.0
+  },
+  "boneless skinless chicken breast halves": {
+    "boneless skinless chicken breast": 1.0
+  },
+  "carrot, diced": {
+    "carrot": 1.0
+  },
+  "cherry tomato": {
+    "cherry tomato": 1.0
+  },
+  "eggs , lightly beaten": {
+    "egg": 1.0
+  },
+  "shallot, minced": {
+    "shallot": 1.0
+  },
+  "white rice": {
+    "rice": 1.0
+  },
+  "white vinegar, distilled": {
+    "vinegar": 1.0
+  },
+  "potatoes": {
+    "potato": 1.0
+  },
+  "lemon, grated rind": {
+    "lemon": 1.0
+  },
+  "ginger paste": {
+    "ginger": 1.0
+  },
+  "cornmeal": {
+    "cornmeal": 1.0
+  },
+  "asafoetida powder": {
+    "asafoetida": 1.0
+  },
+  "salt and black pepper": {
+    "salt": 1.0,
+    "black pepper": 1.0
+  },
+  "almond, slivered": {
+    "almond": 1.0
+  },
+  "milk, evaporated": {
+    "milk": 1.0
+  },
+  "small onion , diced": {
+    "onion": 1.0
+  },
+  "couscous": {
+    "couscous": 1.0
+  },
+  "garlic cloves , peeled": {
+    "garlic": 1.0
+  },
+  "lime , juiced": {
+    "lime": 1.0
+  },
+  "sesame oil, toasted": {
+    "sesame seed": 1.0
+  },
+  "large onion , finely chopped": {
+    "onion": 1.0
+  },
+  "cheese, grated": {
+    "parmesan": 0.5
+  },
+  "1/4 cups water": {
+    "water": 0.25
+  },
+  "1/2 teaspoons ground cumin": {
+    "cumin": 0.5
+  },
+  "(40ml) can tomato, chopped": {
+    "tomato": 0.4
+  },
+  "eggs , separated": {
+    "egg": 0.5
+  },
+  "(800.0g) cans tomato, diced": {
+    "tomato": 0.8
+  },
+  "(400.0g) can tomato": {
+    "tomato": 0.4
+  },
+  "triple sec": {
+    "alcohol": 0.1
+  },
+  "lettuce, shredded": {
+    "lettuce": 0.5
+  },
+  "- salt & freshly ground black pepper , to taste": {
+    "salt": 0.1,
+    "black pepper": 0.1
+  },
+  "1/2 lbs ground beef": {
+    "beef": 0.5
+  },
+  "mustard, prepared": {
+    "mustard": 0.5
+  },
+  "grain white rice": {
+    "rice": 0.5
+  },
+  "pasta": {
+    "pasta": 0.5
+  },
+  "red bell pepper": {
+    "bell pepper": 0.5
+  },
+  "chicken": {
+    "chicken": 0.5
+  },
+  "1/2 cups sugar": {
+    "sugar": 0.5
+  },
+  "corn": {
+    "corn": 0.5
+  },
+  "parmigiano reggiano cheese, grated": {
+    "parmesan": 0.5
+  },
+  "celery salt": {
+    "salt": 0.5
+  },
+  "green pea": {
+    "green pea": 1.0
+  },
+  "penne pasta": {
+    "wheat": 1.0
+  },
+  "apple juice": {
+    "apple": 1.0
+  },
+  "(400.0g) can tomato sauce": {
+    "tomato": 1.0
+  },
+  "red pepper": {
+    "red pepper": 1.0
+  },
+  "medium onion , sliced": {
+    "onion": 1.0
+  },
+  "(400.0g) can tomato, stewed": {
+    "tomato": 1.0
+  },
+  "dark sesame oil": {
+    "sesame seed": 1.0
+  },
+  "baby spinach": {
+    "spinach": 1.0
+  },
+  "cocoa": {
+    "cocoa": 1.0
+  },
+  "brown rice": {
+    "rice": 1.0
+  },
+  "ginger garlic paste": {
+    "ginger": 1.0,
+    "garlic": 1.0
+  },
+  "beef, ground lean": {
+    "beef": 1.0
+  },
+  "cheese, shredded": {
+    "cheese": 1.0
+  },
+  "green onion": {
+    "green onion": 1.0
+  },
+  "(400.0g) can bean, refried": {
+    "bean": 1.0
+  },
+  "carrots , chopped": {
+    "carrot": 1.0
+  },
+  "soya sauce": {
+    "soy": 1.0
+  },
+  "black olive, sliced": {
+    "olive": 1.0
+  },
+  "garlic clove , chopped": {
+    "garlic": 1.0
+  },
+  "large onion , sliced": {
+    "onion": 1.0
+  },
+  "spinach, chopped": {
+    "spinach": 1.0
+  },
+  "mustard powder": {
+    "mustard": 1.0
+  },
+  "minced garlic cloves": {
+    "garlic clove": 1.0
+  },
+  "green chilies": {
+    "chili flake": 1.0
+  },
+  "medium tomatoes , chopped": {
+    "medium tomatoes": 1.0
+  },
+  "dark rum": {
+    "dark rum": 1.0
+  },
+  "linguine": {
+    "-": 1.0
+  },
+  "sunflower oil": {
+    "vegetable oil": 1.0
+  },
+  "garlic clove , finely chopped": {
+    "garlic clove": 1.0
+  },
+  "dill": {
+    "dill weed": 1.0
+  },
+  "ground black pepper": {
+    "-": 1.0
+  },
+  "chili flake": {
+    "-": 1.0
+  },
+  "turkey, ground": {
+    "turkey": 1.0
+  },
+  "egg , lightly beaten": {
+    "egg": 1.0
+  },
+  "(400.0g) can milk, sweetened condensed": {
+    "can milk, sweetened condensed": 1.0
+  },
+  "saffron thread": {
+    "saffron": 1.0
+  },
+  "white rice, cooked": {
+    "rice": 1.0
+  },
+  "salt pepper": {
+    "-": 1.0
+  },
+  "arborio rice": {
+    "-": 1.0
+  },
+  "coriander leaf": {
+    "-": 1.0
+  },
+  "brown rice, cooked": {
+    "rice": 1.0
+  },
+  "cocoa powder": {
+    "-": 1.0
+  },
+  "icing sugar": {
+    "-": 1.0
+  },
+  "fenugreek seed": {
+    "-": 1.0
+  },
+  "(400.0g) can black bean": {
+    "black bean": 1.0
+  },
+  "sage": {
+    "sage": 1.0
+  },
+  "horseradish, prepared": {
+    "horseradish": 1.0
+  },
+  "can kernel corn, drained": {
+    "corn kernel": 1.0
+  },
+  "creamy peanut butter": {
+    "peanut": 1.0
+  },
+  "lamb, ground": {
+    "lamb": 1.0
+  },
+  "large tomatoes, chopped": {
+    "large tomatoes": 1.0
+  },
+  "sugar": {
+    "sugar": 1.0
+  },
+  "green pepper": {
+    "green pepper": 1.0
+  },
+  "olive oil": {
+    "olive oil": 0.5
+  },
+  "wine vinegar": {
+    "wine vinegar": 1.0
+  },
+  "italian sausage": {
+    "sausage": 1.0
+  },
+  "swiss cheese, shredded": {
+    "swiss cheese": 1.0
+  },
+  "lemons, juice of": {
+    "lemon": 1.0
+  },
+  "cloves garlic, crushed": {
+    "garlic": 1.0
+  },
+  "green onion, minced": {
+    "green onion": 1.0
+  },
+  "peanut, chopped": {
+    "peanut": 1.0
+  },
+  "basil leaf, chopped": {
+    "basil leaf": 1.0
+  },
+  "cocoa powder, unsweetened": {
+    "cocoa powder": 1.0
+  },
+  "coconut, shredded": {
+    "coconut": 1.0
+  },
+  "black pepper, coarse ground": {
+    "black pepper": 1.0
+  },
+  "scallion, sliced": {
+    "scallion": 1.0
+  },
+  "large garlic cloves, minced": {
+    "garlic": 1.0
+  },
+  "tamarind paste": {
+    "tamarind": 1.0
+  },
+  "romano cheese, grated": {
+    "romano cheese": 1.0
+  },
+  "(40ml) can cream chicken soup": {
+    "cream": 0.5,
+    "chicken broth": 0.5
+  },
+  "large onions , chopped": {
+    "onion": 1.0
+  },
+  "currant": {
+    "currant": 1.0
+  },
+  "celery ribs , chopped": {
+    "celery": 1.0
+  },
+  "salad oil": {
+    "oil": 1.0
+  },
+  "carrots , sliced": {
+    "carrot": 1.0
+  },
+  "red bell pepper, diced": {
+    "bell pepper": 1.0
+  },
+  "rice flour": {
+    "rice": 1.0
+  },
+  "vegetable oil, divided": {
+    "oil": 1.0
+  },
+  "creme fraiche": {
+    "creme fraiche": 1.0
+  },
+  "rice noodle": {
+    "rice noodle": 1.0
+  },
+  "steak": {
+    "steak": 1.0
+  },
+  "- sugar": {
+    "sugar": 1.0
+  },
+  "orzo pasta": {
+    "orzo pasta": 1.0
+  },
+  "- extra virgin olive oil": {
+    "oil": 1.0
+  },
+  "pesto sauce": {
+    "pesto": 1.0
+  },
+  "palm sugar": {
+    "palm sugar": 1.0
+  },
+  "chili paste": {
+    "chili": 1.0
+  },
+  "half cream": {
+    "cream": 0.5
+  },
+  "medium, shrimp, peeled deveined": {
+    "shrimp": 1.0
+  },
+  "chili sauce, sweet": {
+    "chili sauce": 1.0
+  },
+  "coconut, grated": {
+    "coconut": 1.0
+  },
+  "almond, sliced": {
+    "almond": 1.0
+  },
+  "baby spinach leaf": {
+    "spinach": 1.0
+  },
+  "skinless , boneless chicken breast halves": {
+    "chicken": 1.0
+  },
+  "(800.0g) cans chicken broth": {
+    "chicken broth": 1.0
+  },
+  "fresh ground pepper , to taste": {
+    "pepper": 0.5
+  },
+  "green bell pepper": {
+    "bell pepper": 1.0
+  },
+  "(300.0g) container cream, sour": {
+    "cream": 1.0
+  },
+  "(350.0g) jar salsa": {
+    "salsa": 1.0
+  },
+  "tomato, crushed": {
+    "tomato": 1.0
+  },
+  "teriyaki sauce": {
+    "sauce": 1.0
+  },
+  "raspberry": {
+    "raspberry": 1.0
+  },
+  "- white pepper": {
+    "white pepper": 0.5
+  },
+  "cardamom powder": {
+    "cardamom": 1.0
+  },
+  "catsup": {
+    "catsup": 1.0
+  },
+  "apricot, chopped": {
+    "apricot": 1.0
+  },
+  "salt, divided": {
+    "salt": 0.5
+  },
+  "green bean, cut": {
+    "green bean": 1.0
+  },
+  "chili oil": {
+    "chili oil": 1.0
+  },
+  "coconut cream": {
+    "coconut cream": 1.0
+  },
+  "mascarpone cheese": {
+    "cheese": 1.0
+  },
+  "- sour cream ( optional )": {
+    "sour cream": 1.0
+  },
+  "parsley flake": {
+    "parsley": 1.0
+  },
+  "carrots , diced": {
+    "carrots": 1.0
+  },
+  "(400.0g) can milk, evaporated": {
+    "milk": 0.4
+  },
+  "pearl barley": {
+    "barley": 1.0
+  },
+  "potato, diced": {
+    "potato": 1.0
+  },
+  "milk, low-fat": {
+    "milk": 0.5
+  },
+  "broth": {
+    "water": 1.0
+  },
+  "almond, chopped": {
+    "almond": 1.0
+  },
+  "green bell pepper , diced": {
+    "bell pepper": 1.0
+  },
+  "milk, sweetened condensed": {
+    "milk": 0.6
+  },
+  "thai fish sauce": {
+    "fish sauce": 1.0
+  },
+  "large tomatoes": {
+    "tomato": 1.0
+  },
+  "- salsa": {
+    "tomato": 0.5,
+    "cayenne pepper": 0.1,
+    "onion": 0.1,
+    "jalapeno pepper": 0.1
+  },
+  "chicken bouillon cubes": {
+    "water": 1.0
+  },
+  "- paprika": {
+    "paprika": 1.0
+  },
+  "sultana": {
+    "raisin": 1.0
+  },
+  "poppy seed": {
+    "poppy seed": 1.0
+  },
+  "- lime wedge": {
+    "lime": 1.0
+  },
+  "red lentil": {
+    "lentil": 1.0
+  },
+  "superfine sugar": {
+    "sugar": 1.0
+  },
+  "liquid smoke": {
+    "smoke": 1.0
+  },
+  "- ice cube": {
+    "ice": 1.0
+  },
+  "gingerroot, chopped": {
+    "ginger": 1.0
+  },
+  "- vegetable oil ( for frying )": {
+    "vegetable oil": 1.0
+  },
+  "garlic clove, minced": {
+    "garlic": 1.0
+  },
+  "salt & fresh ground pepper": {
+    "salt": 1.0,
+    "pepper": 1.0
+  },
+  "chicken bouillon cube": {
+    "chicken bouillon": 1.0
+  },
+  "chunky salsa": {
+    "tomato": 0.5,
+    "salsa": 0.5
+  },
+  "sharp cheddar cheese, shredded": {
+    "cheddar cheese": 1.0
+  },
+  "chili pepper flake": {
+    "chili": 1.0
+  },
+  "grand marnier": {
+    "marmont": 1.0
+  },
+  "hard-boiled eggs": {
+    "egg": 1.0
+  },
+  "medium tomatoes , diced": {
+    "tomato": 1.0
+  },
+  "peppercorn": {
+    "pepper": 1.0
+  },
+  "stalks celery": {
+    "celery": 1.0
+  },
+  "cognac": {
+    "cognac": 1.0
+  },
+  "oil (for deep frying)": {
+    "oil": 1.0
+  },
+  "hamburger": {
+    "hamburger": 1.0
+  },
+  "ice, crushed": {
+    "ice": 1.0
+  },
+  "1/2 teaspoons chili powder": {
+    "chili powder": 1.0
+  },
+  "curry leaves": {
+    "curry leaf": 1.0
+  },
+  "marsala wine": {
+    "marsala": 1.0
+  },
+  "blue cheese, crumbled": {
+    "blue cheese": 1.0
+  },
+  "sea salt , to taste": {
+    "salt": 1.0
+  },
+  "(400.0g) can tomato juice, diced": {
+    "tomato juice": 1.0
+  },
+  "cashew": {
+    "cashew": 1.0
+  },
+  "bread flour": {
+    "flour": 1.0
+  },
+  "beef": {
+    "beef": 1.0
+  },
+  "chicken bouillon": {
+    "chicken": 1.0
+  },
+  "grape tomato": {
+    "grape": 1.0,
+    "tomato": 1.0
+  },
+  "double cream": {
+    "cream": 1.0
+  },
+  "(400.0g) can kidney bean": {
+    "kidney bean": 1.0
+  },
+  "lard": {
+    "lard": 1.0
+  },
+  "1/2 tablespoons soy sauce": {
+    "soy sauce": 1.0
+  },
+  "barley": {
+    "barley": 1.0
+  },
+  "confectioner sugar": {
+    "sugar": 1.0
+  },
+  "five spice powder": {
+    "five spice powder": 1.0
+  },
+  "red onion, minced": {
+    "onion": 1.0
+  },
+  "(400.0g) can black bean, drained": {
+    "black bean": 1.0
+  },
+  "cabbage, chopped": {
+    "cabbage": 1.0
+  },
+  "bread crumb": {
+    "crumb": 1.0
+  },
+  "white onion, chopped": {
+    "onion": 1.0
+  },
+  "cream, whipped": {
+    "cream": 1.0
+  },
+  "yellow onion, chopped": {
+    "onion": 1.0
+  },
+  "1/2 cups chicken stock": {
+    "chicken stock": 1.0
+  },
+  "garlic cloves , finely minced": {
+    "garlic": 1.0
+  },
+  "grain rice, uncooked": {
+    "rice": 1.0
+  },
+  "stalks celery , diced": {
+    "celery": 1.0
+  },
+  "tarragon": {
+    "tarragon": 1.0
+  },
+  "thyme leaf": {
+    "thyme": 1.0
+  },
+  "extra beef, ground lean": {
+    "beef": 1.0
+  },
+  "medium onion , thinly sliced": {
+    "onion": 1.0
+  },
+  "italian salad dressing": {
+    "dressing": 1.0
+  },
+  "grenadine": {
+    "grenadine": 1.0
+  },
+  "yoghurt": {
+    "yoghurt": 1.0
+  },
+  "small onion , minced": {
+    "small onion": 1.0
+  },
+  "crabmeat": {
+    "crabmeat": 1.0
+  },
+  "(400.0g) can tomato soup": {
+    "can tomato soup": 1.0
+  },
+  "oat, rolled": {
+    "oat": 1.0
+  },
+  "large onions": {
+    "large onion": 1.0
+  },
+  "harissa": {
+    "harissa": 1.0
+  },
+  "green onions , finely chopped": {
+    "green onion": 1.0
+  },
+  "large onion , thinly sliced": {
+    "large onion": 1.0
+  },
+  "basil, minced": {
+    "basil": 1.0
+  },
+  "red onion , diced": {
+    "red onion": 1.0
+  },
+  "grain white rice, uncooked": {
+    "rice": 1.0
+  },
+  "chili garlic sauce": {
+    "garlic sauce": 1.0
+  },
+  "(400.0g) can corn, drained": {
+    "corn": 1.0
+  },
+  "chuck, ground": {
+    "ground chuck": 1.0
+  },
+  "active yeast": {
+    "yeast": 1.0
+  },
+  "carrot , chopped": {
+    "carrot": 1.0
+  },
+  "poultry seasoning": {
+    "seasoning": 1.0
+  },
+  "orange, grated rind": {
+    "orange": 1.0
+  },
+  "elbow macaroni": {
+    "macaroni": 1.0
+  },
+  "(400.0g) can garbanzo bean, drained": {
+    "garbanzo beans": 1.0
+  },
+  "ice cubes": {
+    "ice": 1.0
+  },
+  "quinoa": {
+    "quinoa": 1.0
+  },
+  "chicken broth, reduced sodium": {
+    "water": 1.0
+  },
+  "baby carrot": {
+    "baby carrot": 1.0
+  },
+  "coconut, desiccated": {
+    "coconut": 1.0
+  },
+  "dried red chilies": {
+    "dried red chilies": 1.0
+  },
+  "tarragon, chopped": {
+    "tarragon": 1.0
+  },
+  "(400.0g) can mushroom": {
+    "mushroom": 1.0
+  },
+  "beef bouillon cube": {
+    "beef bouillon cube": 1.0
+  },
+  "(400.0g) can chickpea": {
+    "chickpea": 1.0
+  },
+  "chive, minced": {
+    "chive": 1.0
+  },
+  "orange zest, grated": {
+    "orange zest": 1.0
+  },
+  "thai red curry paste": {
+    "thai red curry paste": 1.0
+  },
+  "red onion , thinly sliced": {
+    "red onion": 1.0
+  },
+  "- salt": {
+    "salt": 0.5
+  },
+  "spice, mixed": {
+    "spice": 0.5
+  },
+  "- kosher salt & freshly ground black pepper": {
+    "kosher salt": 0.25,
+    "black pepper": 0.25
+  },
+  "mushroom , sliced": {
+    "mushroom": 1.0
+  },
+  "onion salt": {
+    "onion salt": 1.0
+  },
+  "tomatoes , sliced": {
+    "tomato": 0.5
+  },
+  "large tomatoes , diced": {
+    "tomato": 0.5
+  },
+  "- garlic powder": {
+    "garlic powder": 0.5
+  },
+  "vanilla ice cream": {
+    "vanilla ice cream": 1.0
+  },
+  "(400.0g) can corn": {
+    "corn": 1.0
+  },
+  "wine": {
+    "wine": 1.0
+  },
+  "oregano leaf, dried": {
+    "oregano": 1.0
+  },
+  "chive, snipped": {
+    "chive": 1.0
+  },
+  "cheese": {
+    "monterey jack cheese": 0.5
+  },
+  "almond": {
+    "almond": 1.0
+  },
+  "kalamata olive, pitted": {
+    "olive": 1.0
+  },
+  "apple cider": {
+    "apple": 1.0
+  },
+  "port wine": {
+    "port_wine": 1.0
+  },
+  "mozzarella cheese, grated": {
+    "mozzarella": 1.0
+  },
+  "(400.0g) can chickpea, drained rinsed": {
+    "chickpea": 1.0
+  },
+  "onion, grated": {
+    "onion": 1.0
+  },
+  "malt vinegar": {
+    "vinegar": 1.0
+  },
+  "angel hair pasta": {
+    "pasta": 1.0
+  },
+  "parsley leaf, chopped": {
+    "parsley": 1.0
+  },
+  "red chili pepper flake": {
+    "chili_pepper": 1.0
+  },
+  "jalapeno pepper , seeded and minced": {
+    "jalapeno": 1.0
+  },
+  "lime": {
+    "lime": 1.0
+  },
+  "ginger powder": {
+    "ginger": 1.0
+  },
+  "nut, chopped": {
+    "nut": 1.0
+  },
+  "(350.0g) jar spaghetti sauce": {
+    "spaghetti_sauce": 1.0
+  },
+  "cream, sour low fat": {
+    "cream": 1.0
+  },
+  "salt and pepper (to taste)": {},
+  "green bell pepper, diced": {
+    "bell pepper": 1.0
+  },
+  "asparagus": {},
+  "cherry tomatoes, halved": {
+    "tomato": 1.0
+  },
+  "mustard, ground": {
+    "mustard": 1.0
+  },
+  "simple syrup": {},
+  "cranberry, dried": {
+    "cranberry": 1.0
+  },
+  "coffee, brewed": {},
+  "peanut, roasted": {
+    "peanut": 1.0
+  },
+  "green curry paste": {},
+  "large potatoes": {},
+  "cream tartar": {},
+  "coarse salt": {},
+  "white flour": {},
+  "anise seed": {},
+  "mace, ground": {},
+  "cauliflower floret": {},
+  "garlic cloves, smashed": {
+    "garlic": 1.0
+  },
+  "beef bouillon granule": {},
+  "golden syrup": {},
+  "table salt": 1.0,
+  "shallots , chopped": 0.5,
+  "fresh thyme": 0.1,
+  "yellow mustard": 0.5,
+  "chocolate chip": 0.25,
+  "cinnamon": 0.1,
+  "parsley flake, dried": 0.1,
+  "cointreau liqueur": 0.5,
+  "lemon juice (400.0g)": 0.2,
+  "(400.0g) can black olive, sliced": 0.5,
+  "mexican cheese, shredded blend": 0.5,
+  "chocolate chip, semi-sweet": 0.25,
+  "lemon peel, grated": 0.1,
+  "swiss cheese": 0.25,
+  "parsley": 0.1,
+  "flour, sifted": 0.1,
+  "fettuccine": 0.5,
+  "black olive": 0.5,
+  "(800.0g) cans beef broth": 0.5,
+  "miso": 0.5,
+  "tomato ketchup": 0.5,
+  "splenda sugar substitute": 0.1,
+  "broccoli": {
+    "broccoli": 1.0
+  },
+  "yellow onion": {
+    "yellow onion": 1.0
+  },
+  "jasmine rice": {
+    "jasmine rice": 1.0
+  },
+  "slices bacon": {
+    "bacon": 1.0
+  },
+  "mango chutney": {
+    "mango": 1.0,
+    "chutney": 1.0
+  },
+  "vermouth": {
+    "vermouth": 1.0
+  },
+  "mexican oregano": {
+    "oregano": 1.0
+  },
+  "large garlic clove": {
+    "garlic": 1.0
+  },
+  "apricot": {
+    "apricot": 1.0
+  },
+  "fettuccine pasta": {
+    "fettuccine": 1.0
+  },
+  "beef bouillon": {
+    "beef bouillon": 1.0
+  },
+  "avocados": {
+    "avocado": 1.0
+  },
+  "- grated parmesan cheese": {
+    "parmesan cheese": 1.0
+  },
+  "panko breadcrumb": {
+    "panko": 1.0
+  },
+  "-3 garlic cloves": {
+    "garlic": 1.0
+  },
+  "bean sprouts": {
+    "bean sprouts": 1.0
+  },
+  "lime zest": {
+    "lime zest": 1.0
+  },
+  "cherry tomatoes": {
+    "tomato": 0.5
+  },
+  "tea": {},
+  "dried oregano": {
+    "oregano": 0.5
+  },
+  "white bread": {
+    "bread": 1.0
+  },
+  "lemon wedge": {},
+  "pork tenderloin": {
+    "pork": 1.0
+  },
+  "plain yogurt, low fat": {
+    "yogurt": 1.0
+  },
+  "spaghetti sauce": {
+    "spaghetti sauce": 1.0
+  },
+  "msg": {},
+  "fine breadcrumb": {
+    "bread crumbs": 1.0
+  },
+  "(400.0g) can chickpea, drained": {
+    "chickpea": 1.0
+  },
+  "pork, ground lean": {
+    "pork": 1.0
+  },
+  "sambal oelek": {},
+  "chorizo sausage": {},
+  "sage, chopped": {
+    "sage": 1.0
+  },
+  "(400.0g) can enchilada sauce": {
+    "enchilada sauce": 1.0
+  },
+  "pecorino romano cheese, grated": {
+    "cheese": 1.0
+  },
+  "tomato, canned": {
+    "tomato": 1.0
+  },
+  "almond, slivered toasted": {
+    "almond": 1.0
+  },
+  "orange juice, squeezed": {},
+  "cranberry juice": {},
+  "horseradish": {
+    "vegetable oil": 1.0,
+    "raisins": 1.0,
+    "dill": 0.5,
+    "garlic": 0.5,
+    "coconut": 0.5,
+    "eggs": 0.5,
+    "onion soup mix": 0.25,
+    "mustard": 0.25,
+    "chili powder": 0.25,
+    "adobo sauce": 0.25,
+    "sun-dried tomato": 0.25,
+    "chicken": 0.25,
+    "cream cheese": 0.25,
+    "semolina": 0.25,
+    "beer": 0.25,
+    "orange marmalade": 0.25,
+    "paprika": 0.25,
+    "cranberry": 0.25,
+    "potatoes": 0.25,
+    "arugula": 0.25,
+    "ginger": 0.25,
+    "chive": 0.25,
+    "butter": 0.25,
+    "milk": 0.25
+  },
+  "shallots , minced": {
+    "shallots": 1.0
+  },
+  "scallions": {
+    "small onion": 1.0
+  },
+  "- nonstick cooking spray": {},
+  "gin": {},
+  "- cooking oil": {
+    "shallots": 1.0
+  },
+  "orange liqueur": {},
+  "small onion , thinly sliced": {
+    "small onion": 1.0
+  },
+  "- kosher salt , to taste": {},
+  "- whipped cream": {},
+  "irish cream": {},
+  "vermicelli": {
+    "can tomato puree": 0.4
+  },
+  "beef stew meat": {
+    "beef stew meat": 1.0
+  },
+  "guacamole": {
+    "avocado": 1.0
+  },
+  "bean, refried": {
+    "refried beans": 1.0
+  },
+  "chopped onion": {
+    "onion": 1.0
+  },
+  "- oil , for frying": {
+    "cucumber, chopped": 1.0
+  },
+  "butter, cut": {
+    "butter": 1.0
+  },
+  "chicken thighs": {
+    "chicken thighs": 1.0
+  },
+  "chickpea flour": {},
+  "sriracha sauce": {},
+  "chopped tomatoes": {
+    "tomatoes": 1.0
+  },
+  "virgin olive oil": {
+    "tomato": 0.5
+  },
+  "stewing beef": {
+    "beef": 1.0,
+    "ground beef": 1.0
+  },
+  "amaretto": {},
+  "shallot": {
+    "shallots": 0.25
+  },
+  "tomato": {
+    "canned tomato": 0.4
+  },
+  "spring onion": {
+    "spring onion": 0.25
+  },
+  "bell pepper": {
+    "bell pepper": 0.25
+  },
+  "lemon": {
+    "lemon": 0.5
+  }
+}

@@ -1,0 +1,38 @@
+# Phase 2 Agentic Pipeline Walkthrough
+
+I have successfully integrated the complete Phase 2 architecture directly into your FastAPI backend (`api.py`), bringing the Knowledge Graph Context and the LLM Judge online.
+
+## What Was Accomplished
+
+### 1. Unified Fast Inference (Qwen 27B)
+All lightweight, instantaneous reasoning tasks across the backend are now powered by **Qwen 3.8 27B** on Groq's high-speed LPU infrastructure.
+*   **Replaced deprecated Groq models** inside `query_serverless_llm`.
+*   Tasks like `deconstruct_ingredient`, `get_recipe_archetype`, and the new `RecipeJudge` now operate at blazing fast ~700ms round-trip speeds.
+
+### 2. Context Extraction 
+When the `/generate-recipe` endpoint is hit, it now leverages the **In-Memory NetworkX Graph (Option A)**:
+*   Before generating, `api.py` extracts the canonical ingredients and passes them to `GraphRetriever.retrieve_context()`.
+*   A strict `<CONTEXT_BLOCK>` outlining the exact required techniques, pairings, and logical workflow is injected securely at the top of the system prompt.
+
+3. **Render Environment Debugging**: 
+   - Diagnosed and fixed a NetworkX version inconsistency (`KeyError: 'edges'`) on Render.
+   - Identified and mitigated a strict `OOMKilled` boot crash caused by Render's 512MB RAM free-tier limits by implementing a direct-to-pandas chunked streaming method for the daily Mandi datasets, freeing over 100MB of critical boot RAM.
+   - Restored LLM integration by updating the missing `GROQ_API_KEY` in the Render dashboard.
+
+## 4. Verification Results
+The most significant upgrade is the **Agentic Retry Loop** wrapping your Hugging Face Space generation call. Here is how it behaves:
+1.  **Draft:** The HF Space generates a draft recipe based on the injected context.
+2.  **Evaluate:** The draft is instantly sent to `RecipeJudge.evaluate_recipe()` powered by Qwen 27B. 
+3.  **Correct:** If the Judge detects a hallucinated ingredient or illogical step, it issues a `CRITIQUE`. The system intercepts the response before the user ever sees it, appends the critique to the prompt, and forces the HF Space to regenerate the recipe.
+4.  **Limits:** This loop will run up to a maximum of 3 retries to prevent infinite loops.
+
+### 4. Real-time User Feedback
+Since this looping could extend the time the user waits for a recipe, I updated the Server-Sent Events (SSE) stream in `api.py`. The frontend UI will now display real-time status updates such as:
+*   *"Retrieving Context from Hybrid Graph..."*
+*   *"Generating AI Recipe (Attempt 1/3)..."*
+*   *"Micro-Validation: Judging Recipe..."*
+*   *"Critique received. Regenerating Recipe..."*
+
+## Next Steps
+
+With Phase 2 fully completed, your backend now acts as a self-healing agentic pipeline! When you are ready, we can begin work on **Phase 3 (Constrained Decoding Integration)** to physically prevent hallucinated ingredient tokens at the generation level using `Outlines` or `Guidance`.

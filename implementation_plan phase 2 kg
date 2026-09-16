@@ -1,0 +1,55 @@
+# Phase 2: Context-Aware Retrieval and Agentic Pipeline
+
+This plan outlines the architecture for Phase 2, incorporating the newly discussed **Hybrid Logical Flow** approach. This will combine Macro-Flow graph retrieval with Micro-Validation using an LLM-as-a-judge.
+
+## User Review Required
+
+> [!IMPORTANT]
+> This plan heavily modifies the Phase 2 approach to include sequential graph edge extraction (`FOLLOWED_BY`).
+> **Please review the Proposed Changes below.** If you approve, I will begin writing the scripts to extract the workflow templates and build the LLM-as-a-judge logic.
+
+## Open Questions
+
+> [!WARNING]
+> 1. Should I also update your official `Ratatouille_Phase_2_Proposal_V2.md` file to permanently reflect this hybrid approach in your thesis documentation?
+> 2. For the LLM-as-a-judge, will we be using the same local model (e.g. Llama 3) that generates the recipe, or a different API/model?
+
+## Proposed Changes
+
+We will build Phase 2 by executing the following components:
+
+### 1. Macro-Flow Extraction (Workflow Archetypes)
+
+We will revisit our dataset to extract sequential logic and inject it into the graph.
+*   **Script:** `extract_workflow_edges.py` - Scans the ordered lists in `directions` and calculates the probability that one technique precedes another (e.g., `chop` -> `fry`).
+*   **Action:** Add `FOLLOWED_BY` directed edges to our `hybrid_ckg.json` graph to form workflow chains for different recipe archetypes.
+
+#### [NEW] [extract_workflow_edges.py](file:///C:/Users/dhanu/Desktop/Capstone%20Proj%20CB/Rat-Model2V/RAT%20V3/V8/repo/extract_workflow_edges.py)
+
+### 2. Context-Aware Subgraph Retrieval Algorithm
+
+We will build the querying engine that retrieves context from the graph when a user provides ingredients.
+*   **Script:** `graph_retriever.py` - A module that takes user inputs (e.g., "chicken, rice") and a desired archetype (e.g., "Biryani").
+*   **Action:** 
+    1. Retrieves the `PAIRS_WITH` cluster (e.g., pulling in cardamom and mint).
+    2. Retrieves the specific Workflow Template via `FOLLOWED_BY` edges for that archetype.
+    3. Formats this retrieved subgraph into a structured prompt for the SLM.
+
+#### [NEW] [graph_retriever.py](file:///C:/Users/dhanu/Desktop/Capstone%20Proj%20CB/Rat-Model2V/RAT%20V3/V8/repo/graph_retriever.py)
+
+### 3. Iterative Self-Correction Loop (Micro-Validation)
+
+We will build the agentic loop where the LLM critiques its own output.
+*   **Script:** `llm_judge.py` - Contains the evaluation prompt and scoring logic for the Culinary Validity Score (CVS).
+*   **Action:** Evaluates the draft recipe for physical impossibilities, hallucinated ingredients, and logical flow breaks. If it fails, it returns a critique to the SLM for correction.
+
+#### [NEW] [llm_judge.py](file:///C:/Users/dhanu/Desktop/Capstone%20Proj%20CB/Rat-Model2V/RAT%20V3/V8/repo/llm_judge.py)
+
+## Verification Plan
+
+### Automated Tests
+- Run `extract_workflow_edges.py` and manually inspect the `FOLLOWED_BY` chains for a "Soup" vs a "Roast" to ensure they differ logically.
+- Test `graph_retriever.py` with mock inputs to ensure it accurately builds the prompt injection context.
+
+### Manual Verification
+- Simulate a full agentic loop generation and review the log traces to watch the LLM-as-a-judge critique and correct a purposely flawed recipe draft.

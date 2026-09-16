@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: ratatouille-phase3-api
+    env: docker
+    plan: starter # You can change to 'free' or 'standard' as needed
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: HF_TOKEN
+        sync: false
+      - key: GITHUB_PAT
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: HF_SPACE_URL
+        value: "nd1490/ratatouille-inference"
+      - key: HF_SPACE_URL_V10
+        value: "nd1490/ratatouille-inference-v10-q8"

@@ -1,0 +1,93 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{titlesec}
+\usepackage{titling}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+\title{\textbf{Capstone Project Proposal} \\ \Large Phase II: Knowledge Graph-Augmented Recipe Generation for Ratatouille (KG-RAG)}
+\author{
+    \textbf{Student Name:} Nindra Dhanush \\
+    \textbf{Roll Number:} MT25074 \\
+    \textbf{Programme:} M.Tech. (2025--2027) \\
+    \textbf{Institution:} Indraprastha Institute of Information Technology Delhi (IIIT-D) \\
+    \textbf{Laboratory:} CoSyLab (Computational Systems Biology Laboratory) \\
+    \textbf{Supervisor:} Prof. Ganesh Bagler
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Executive Summary}
+This project is a continuation of the Ratatouille Capstone Project, which successfully delivered an AI-powered, cost-constrained Indian budget recipe generator with chemically-aware vegan substitution. While the first phase established a robust pipeline for mathematical budget optimization and plant-based substitutions, this new phase focuses on improving the core recipe generation engine. 
+
+I will explore how to enhance the Small Language Model (SLM) by feeding it structured data from a Culinary Knowledge Graph (CKG). The goal is to test whether this Knowledge Graph-Augmented Generation (KG-RAG) approach reduces hallucinations and produces more logical cooking steps compared to standard prompting or fine-tuning alone.
+
+In this phase, I will build the CKG completely from the RecipeDB dataset without relying on external ontologies. Instead, I will statistically mine structural information---like which ingredients are used together, common cooking techniques, and step order---directly from the existing 50K recipe corpus. The existing components of the Ratatouille pipeline, such as the SciPy budget optimizer, the vegan substitution engine, and the React frontend, will remain intact. The main updates will involve injecting a structured KG context into the model's prompt and introducing a new metric, the Culinary Validity Score (CVS), to properly evaluate the recipes.
+
+\section*{Problem Statement}
+In the previous phase, the fine-tuned Llama 3 model demonstrated strong creative capabilities. However, standard text evaluation metrics like BLEU and BERTScore only measure word overlap and fail to catch real-world cooking mistakes in generated recipes, such as:
+\begin{itemize}[noitemsep]
+    \item \textbf{Hallucinations:} Telling the user to add an ingredient they don't have.
+    \item \textbf{Procedural Errors:} Suggesting illogical steps, like serving food before cooking it.
+    \item \textbf{Missing Ingredients:} Failing to include ingredients the user explicitly provided or that were allocated by the budget optimizer.
+\end{itemize}
+Fine-tuning helps with some of these issues, but the model still lacks real-world cooking logic at generation time. I plan to solve this using KG-RAG, which feeds relevant culinary rules directly into the prompt. This grounds the model in actual recipe data without the need for additional training.
+
+\section*{System Architecture Integration}
+The updated recipe generation pipeline will integrate into the existing architecture as follows:
+\begin{enumerate}[noitemsep]
+    \item \textbf{Vegan Substitution \& Archetype Classification:} Unchanged from Phase I.
+    \item \textbf{Budget Optimization:} Using linear programming to handle cost constraints (unchanged from Phase I).
+    \item \textbf{Input Normalization (New):} Fuzzy-matching the optimized ingredients to standardized CKG node IDs.
+    \item \textbf{Subgraph Retrieval (New):} Expanding outward from the user's ingredients in the graph to find related techniques and step rules, then flattening this data into a text string.
+    \item \textbf{KG-RAG Generation (Updated):} Passing the system instructions, the retrieved graph context, and the user's request to the SLM to write the recipe.
+    \item \textbf{Evaluation (New):} Scoring the final recipe using the new CVS metric and an LLM-as-a-Judge setup.
+\end{enumerate}
+
+\section*{Implementation Plan}
+The project will run over 12 weeks, requiring an estimated 3 hours of work per week.
+
+\subsection*{Phase 1: Building the Culinary Knowledge Graph (Weeks 1--3)}
+\textbf{Goal:} Mine RecipeDB and the existing 50K recipe corpus to build a statistical CKG.
+\begin{itemize}[noitemsep]
+    \item Calculate ingredient co-occurrence using Pointwise Mutual Information (PMI).
+    \item Map cooking techniques to specific ingredients based on the dataset.
+    \item Extract step order rules from the recipe data.
+    \item Build the final graph containing Ingredients, Techniques, and Archetypes.
+\end{itemize}
+
+\subsection*{Phase 2: Retrieval and Linearization (Weeks 4--6)}
+\textbf{Goal:} Extract a relevant sub-section of the graph for a given user request and format it for the model under strict latency limits.
+\begin{itemize}[noitemsep]
+    \item Implement graph search with weighted filtering to find the most relevant nodes.
+    \item Test different text formatting styles (like triplets, prose, or JSON) to see which fits best in the token limit.
+    \item Integrate this retrieval step into the existing FastAPI backend developed in Phase I.
+\end{itemize}
+
+\subsection*{Phase 3: Baseline Experiments (Weeks 7--9)}
+\textbf{Goal:} Generate 1,500 recipes to quantitatively measure how much the KG-RAG approach improves quality.
+\begin{itemize}[noitemsep]
+    \item Test three setups: Zero-Shot, Fine-Tuned without the graph (Phase I baseline), and the new KG-RAG model.
+    \item Run baseline metrics (BLEU, BERTScore) to highlight their limitations in this context.
+    \item Evaluate the different graph text formats to pick the most effective one.
+\end{itemize}
+
+\subsection*{Phase 4: Culinary Validity Score and Evaluation (Weeks 10--12)}
+\textbf{Goal:} Evaluate the system using the new domain-specific metric and an independent LLM judge.
+\begin{itemize}[noitemsep]
+    \item Build the 3-component CVS to check Ingredient Coverage, Step Order, and Technique Plausibility.
+    \item Run a subgroup analysis to ensure the system performs well across different regional cuisines.
+    \item Use an LLM as a judge to score recipes based on a defined rubric.
+    \item Document the results and add a CVS breakdown panel to the existing React frontend.
+\end{itemize}
+
+\section*{Expected Deliverables}
+This project will deliver a fully working KG-RAG pipeline seamlessly integrated into the Ratatouille system. I aim to show that grounding a language model with a data-driven knowledge graph significantly reduces errors and hallucinations in AI recipe generation. The final outputs will include the statistical Culinary Knowledge Graph, the new CVS evaluation metric, and a comprehensive report detailing the findings.
+
+\end{document}
