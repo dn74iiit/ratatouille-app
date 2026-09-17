@@ -71,8 +71,8 @@ class GraphRetriever:
                 seen_pairs.add(p['ingredient'])
                 context["recommended_pairings"].append(p['ingredient'])
                 
-        # Inject Universal Pantry Staples (Data-Driven Authorization)
-        pantry_staples = ['salt', 'black pepper', 'water', 'olive oil', 'vegetable oil', 'garlic powder', 'onion powder', 'cumin', 'paprika']
+        # Inject Universal Pantry Staples (Data-Driven Authorization for Middle-Class Budget)
+        pantry_staples = ['salt', 'water', 'vegetable oil', 'mustard oil', 'turmeric powder', 'red chili powder', 'coriander powder', 'cumin seeds', 'mustard seeds']
         for staple in pantry_staples:
             if staple not in context["recommended_pairings"] and staple not in context["input_ingredients"]:
                 context["recommended_pairings"].append(staple)
