@@ -182,12 +182,30 @@ class GraphRetriever:
                     time.sleep(2)
         
         if query_vector is None:
-            print("[WARN] Vector Search offline. Falling back to Random Historical Recipes for formatting constraints.")
-            import random
+            print("[WARN] Vector Search offline. Falling back to Ingredient Overlap Search.")
+            query_set = set([i.lower().strip() for i in ingredients])
+            
+            def score_recipe(meta):
+                rec_ings = meta.get('ingredients', [])
+                if isinstance(rec_ings, str):
+                    import ast
+                    try:
+                        rec_ings = ast.literal_eval(rec_ings)
+                    except:
+                        rec_ings = [rec_ings]
+                
+                # Check how many requested ingredients appear in this historical recipe
+                rec_text = " ".join([str(ri).lower() for ri in rec_ings])
+                matches = sum(1 for q in query_set if q in rec_text)
+                return matches
+
             examples = []
             if self.vector_metadata:
-                for _ in range(k):
-                    meta = random.choice(self.vector_metadata)
+                # Sort descending by match score
+                best_matches = sorted(self.vector_metadata, key=score_recipe, reverse=True)
+                
+                for i in range(min(k, len(best_matches))):
+                    meta = best_matches[i]
                     ex_str = f"TITLE: {meta['title']}\nINGREDIENTS: {meta['ingredients']}\nDIRECTIONS: {meta['directions']}"
                     examples.append(ex_str)
             return examples
