@@ -147,6 +147,14 @@ class GraphRetriever:
         We form a natural language query combining the archetype and ingredients,
         and retrieve top-k semantically similar historical recipes to inject as examples.
         """
+        # Form the query
+        ingredients = context.get('input_ingredients', [])
+        techniques = context.get('suggested_techniques', [])
+        
+        query_text = f"A {archetype} recipe containing {', '.join(ingredients)}."
+        if techniques:
+            query_text += f" Prepared by {', '.join(techniques[:3])}."
+
         # Encode query using HF API to save RAM
         import requests
         api_url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2"
