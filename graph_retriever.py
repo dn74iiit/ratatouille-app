@@ -157,6 +157,7 @@ class GraphRetriever:
 
         # Encode query using HF API to save RAM
         import requests
+        import time
         api_url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2"
         hf_token = os.environ.get("HF_TOKEN")
         
@@ -165,15 +166,22 @@ class GraphRetriever:
             return []
             
         headers = {"Authorization": f"Bearer {hf_token}"}
-        try:
-            response = requests.post(api_url, headers=headers, json={"inputs": [query_text], "options": {"wait_for_model": True}})
-            response.raise_for_status()
-            query_vector = np.array(response.json()).astype('float32')
-            if len(query_vector.shape) == 1:
-                # Sometimes HF returns a 1D list if only one input
-                query_vector = np.expand_dims(query_vector, axis=0)
-        except Exception as e:
-            print(f"[WARN] Failed to get embedding from HF API: {e}")
+        query_vector = None
+        
+        for attempt in range(1, 4):
+            try:
+                response = requests.post(api_url, headers=headers, json={"inputs": [query_text], "options": {"wait_for_model": True}}, timeout=15)
+                response.raise_for_status()
+                query_vector = np.array(response.json()).astype('float32')
+                if len(query_vector.shape) == 1:
+                    query_vector = np.expand_dims(query_vector, axis=0)
+                break # Success
+            except Exception as e:
+                print(f"[WARN] Failed to get embedding from HF API on attempt {attempt}: {e}")
+                if attempt < 3:
+                    time.sleep(2)
+        
+        if query_vector is None:
             return []
         
         # Search FAISS

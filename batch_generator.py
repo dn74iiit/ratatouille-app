@@ -6,7 +6,7 @@ import pandas as pd
 
 API_URL = "https://ratatouille-backend.onrender.com/generate-recipe"
 
-def generate_recipe(ingredients, budget=200.0):
+def generate_recipe(ingredients, budget=200.0, max_retries=3):
     payload = {
         "ingredients": ingredients,
         "budget": budget,
@@ -16,33 +16,36 @@ def generate_recipe(ingredients, budget=200.0):
         "is_vegan": False
     }
     
-    start_time = time.time()
-    response = requests.post(API_URL, json=payload, stream=True)
-    
-    final_result = None
-    
-    # Process SSE stream
-    for line in response.iter_lines():
-        if line:
-            decoded_line = line.decode('utf-8')
-            if decoded_line.startswith("data: "):
-                try:
-                    data = json.loads(decoded_line[6:])
-                    if data.get("step") == "complete":
-                        final_result = data.get("result")
-                except Exception as e:
-                    print(f"Error parsing SSE data: {e}")
-                    
-    latency = time.time() - start_time
-    
-    # We retrieve the logs directly from MongoDB if needed, 
-    # but the API response could also be updated to return these.
-    # Since the API logs to generation_logs_sync, the massive scale analytics
-    # are automatically captured in MongoDB!
-    # For this script, we'll extract what we can from the API response 
-    # and save successful recipes to the Reference Catalog.
-    
-    return final_result, latency
+    for attempt in range(1, max_retries + 1):
+        try:
+            start_time = time.time()
+            response = requests.post(API_URL, json=payload, stream=True, timeout=300)
+            
+            final_result = None
+            
+            # Process SSE stream
+            for line in response.iter_lines():
+                if line:
+                    decoded_line = line.decode('utf-8')
+                    if decoded_line.startswith("data: "):
+                        try:
+                            data = json.loads(decoded_line[6:])
+                            if data.get("step") == "complete":
+                                final_result = data.get("result")
+                        except Exception as e:
+                            print(f"Error parsing SSE data: {e}")
+                            
+            latency = time.time() - start_time
+            return final_result, latency
+            
+        except requests.exceptions.RequestException as e:
+            print(f"  [WARN] Network error on attempt {attempt}/{max_retries}: {e}")
+            if attempt < max_retries:
+                print("  [*] Waiting 30 seconds for Render to recover before retrying...")
+                time.sleep(30)
+            else:
+                print("  [!] Max retries exceeded. Moving to next recipe.")
+                return None, 0
 
 def run_batch_generation(num_recipes=150):
     print(f"[*] Starting massive scale batch generation of {num_recipes} recipes...")
@@ -90,7 +93,18 @@ def run_batch_generation(num_recipes=150):
     
     extended_test_cases = (test_cases * (num_recipes // len(test_cases) + 1))[:num_recipes]
     
-    catalog = []
+    catalog_path = "data/Reference_Catalog.csv"
+    os.makedirs("data", exist_ok=True)
+    
+    # Initialize the CSV with headers if it doesn't exist
+    if not os.path.exists(catalog_path):
+        pd.DataFrame(columns=[
+            "original_title", "generated_title", "archetype", "ingredients", 
+            "recipe", "is_vegan", "latency_sec", "initial_cvs_score", 
+            "final_cvs_score", "self_correction_attempts"
+        ]).to_csv(catalog_path, index=False)
+    
+    success_count = 0
     
     for idx, case in enumerate(extended_test_cases):
         original_title = case["title"]
@@ -100,12 +114,13 @@ def run_batch_generation(num_recipes=150):
         
         if result and result.get("status") == "success":
             recipe_text = result.get("recipe", "")
-            # Try to extract the generated title from the first line of the markdown
             generated_title_match = re.search(r'^\s*#\s+(.+)', recipe_text, re.MULTILINE)
             generated_title = generated_title_match.group(1).strip() if generated_title_match else original_title
 
             print(f"  -> Generated '{generated_title}' ({result.get('archetype')}) in {latency:.2f}s")
-            catalog.append({
+            
+            # Auto-save immediately (Append Mode)
+            new_row = pd.DataFrame([{
                 "original_title": original_title,
                 "generated_title": generated_title,
                 "archetype": result.get("archetype"),
@@ -116,18 +131,16 @@ def run_batch_generation(num_recipes=150):
                 "initial_cvs_score": result.get("initial_cvs_score"),
                 "final_cvs_score": result.get("final_cvs_score"),
                 "self_correction_attempts": result.get("self_correction_attempts")
-            })
+            }])
+            new_row.to_csv(catalog_path, mode='a', header=False, index=False)
+            success_count += 1
+            print(f"  [SAVED] Appended to {catalog_path} (Total: {success_count})")
         else:
             print("  -> Generation failed or was rejected by budget constraints.")
             
-    if catalog:
-        df = pd.DataFrame(catalog)
-        os.makedirs("data", exist_ok=True)
-        catalog_path = "data/Reference_Catalog.csv"
-        df.to_csv(catalog_path, index=False)
-        print(f"\n[*] Batch generation complete! Saved {len(catalog)} recipes to {catalog_path}.")
-        print("[*] Note: Detailed analytics (CVS scores, latencies, self-correction attempts) are logged in the 'generation_logs' MongoDB collection.")
-    else:
+    print(f"\n[*] Batch generation complete! Successfully generated {success_count} recipes.")
+    print("[*] Note: Detailed analytics (CVS scores, latencies, self-correction attempts) are logged in the 'generation_logs' MongoDB collection.")
+    if success_count == 0:
         print("\n[!] Batch generation failed to produce any valid recipes.")
 
 if __name__ == "__main__":
