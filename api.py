@@ -1054,7 +1054,11 @@ def generate_recipe(request: RecipeRequest):
             if few_shot_examples:
                 injected_context += "\n<FEW_SHOT_EXAMPLES>\n"
                 injected_context += "Here are historically accurate examples of how this archetype is prepared:\n\n"
+                print(f"[FAISS] Successfully retrieved {len(few_shot_examples)} Semantic Vector Examples!")
                 for idx, ex in enumerate(few_shot_examples):
+                    # Extract just the title for the terminal log to avoid spamming the console
+                    ex_title = ex.split('\n')[0].replace('TITLE: ', '')
+                    print(f"   -> Example {idx+1}: {ex_title}")
                     injected_context += f"Example {idx+1}:\n{ex}\n\n"
                 injected_context += "</FEW_SHOT_EXAMPLES>\n"
                 
