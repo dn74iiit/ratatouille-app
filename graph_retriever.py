@@ -71,6 +71,12 @@ class GraphRetriever:
                 seen_pairs.add(p['ingredient'])
                 context["recommended_pairings"].append(p['ingredient'])
                 
+        # Inject Universal Pantry Staples (Data-Driven Authorization)
+        pantry_staples = ['salt', 'black pepper', 'water', 'olive oil', 'vegetable oil', 'garlic powder', 'onion powder', 'cumin', 'paprika']
+        for staple in pantry_staples:
+            if staple not in context["recommended_pairings"] and staple not in context["input_ingredients"]:
+                context["recommended_pairings"].append(staple)
+                
         # 2. Retrieve PREPARED_BY (Technique suggestions based on input + paired ingredients)
         all_relevant_ingredients = ingredients + context["recommended_pairings"]
         techniques = []
@@ -125,7 +131,8 @@ class GraphRetriever:
         prompt += f"[ALLOWED BASE INGREDIENTS]\n{', '.join(context['input_ingredients'])}\n\n"
         
         if context['recommended_pairings']:
-            prompt += f"[ALLOWED FLAVOR PAIRINGS]\n{', '.join(context['recommended_pairings'])}\n\n"
+            prompt += f"[ALLOWED FLAVOR PAIRINGS & PANTRY STAPLES]\n{', '.join(context['recommended_pairings'])}\n"
+            prompt += "You are highly encouraged to use these basic pantry staples to add flavor.\n\n"
             
         prompt += "THE FOLLOWING TECHNIQUES AND WORKFLOWS ARE HIGHLY RECOMMENDED.\n"
         prompt += "You may use standard preparation techniques to bridge gaps, but aim to incorporate this core logic:\n\n"
