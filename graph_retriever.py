@@ -182,7 +182,15 @@ class GraphRetriever:
                     time.sleep(2)
         
         if query_vector is None:
-            return []
+            print("[WARN] Vector Search offline. Falling back to Random Historical Recipes for formatting constraints.")
+            import random
+            examples = []
+            if self.vector_metadata:
+                for _ in range(k):
+                    meta = random.choice(self.vector_metadata)
+                    ex_str = f"TITLE: {meta['title']}\nINGREDIENTS: {meta['ingredients']}\nDIRECTIONS: {meta['directions']}"
+                    examples.append(ex_str)
+            return examples
         
         # Search FAISS
         distances, indices = self.faiss_index.search(query_vector, k)
