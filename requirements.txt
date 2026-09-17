@@ -12,4 +12,3 @@ motor
 groq
 networkx
 faiss-cpu
-fastembed
