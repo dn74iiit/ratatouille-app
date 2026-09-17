@@ -158,7 +158,7 @@ class GraphRetriever:
         # Encode query using HF API to save RAM
         import requests
         import time
-        api_url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2"
+        api_url = "https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2/pipeline/feature-extraction"
         hf_token = os.environ.get("HF_TOKEN")
         
         if not hf_token:
