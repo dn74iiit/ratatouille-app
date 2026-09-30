@@ -42,13 +42,13 @@ def generate_recipe(ingredients, budget=200.0, max_retries=3):
         except requests.exceptions.RequestException as e:
             print(f"  [WARN] Network error on attempt {attempt}/{max_retries}: {e}")
             if attempt < max_retries:
-                print("  [*] Waiting 30 seconds for Render to recover before retrying...")
-                time.sleep(30)
+                print("  [*] Waiting 10 seconds for Uvicorn/Render to recover before retrying...")
+                time.sleep(10)
             else:
                 print("  [!] Max retries exceeded. Moving to next recipe.")
                 return None, 0
 
-def run_batch_generation(num_recipes=150):
+def run_batch_generation(num_recipes=75):
     print(f"[*] Starting massive scale batch generation of {num_recipes} recipes...")
     
     # Load unique ingredient combinations from the STANDARD dataset to test the Vegan Translation engine!
@@ -94,7 +94,7 @@ def run_batch_generation(num_recipes=150):
     
     extended_test_cases = (test_cases * (num_recipes // len(test_cases) + 1))[:num_recipes]
     
-    catalog_path = "data/Reference_Catalog_v2.csv"
+    catalog_path = "data/Reference_Catalog_v3_clean.csv"
     os.makedirs("data", exist_ok=True)
     
     # Initialize the CSV with headers if it doesn't exist
