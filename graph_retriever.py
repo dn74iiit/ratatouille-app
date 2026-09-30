@@ -225,7 +225,41 @@ class GraphRetriever:
             idx = indices[0][i]
             if idx != -1 and idx < len(self.vector_metadata):
                 meta = self.vector_metadata[idx]
-                ex_str = f"TITLE: {meta['title']}\nINGREDIENTS: {meta['ingredients']}\nDIRECTIONS: {meta['directions']}"
+                
+                # Parse and clean ingredients
+                ing_list = meta.get('ingredients', [])
+                if isinstance(ing_list, str):
+                    try:
+                        import ast
+                        ing_list = ast.literal_eval(ing_list)
+                    except:
+                        ing_list = [ing_list]
+                        
+                # Parse and clean directions to prevent LLM formatting hallucinations
+                dir_list = meta.get('directions', [])
+                if isinstance(dir_list, str):
+                    try:
+                        import ast
+                        dir_list = ast.literal_eval(dir_list)
+                    except:
+                        dir_list = [dir_list]
+                
+                # Clean directions: stop at variations/notes, format as strict numbered list
+                clean_dirs = ""
+                step_num = 1
+                for step in dir_list:
+                    step = str(step).strip()
+                    # Stop including steps if we hit messy internet reviews or variations
+                    if step.lower().startswith(('note', 'variation', 'optional', 'to serve', 'serve')):
+                        break
+                    # Strip existing leading numbers (like "1. ") to prevent double numbering "1. 1."
+                    import re
+                    step = re.sub(r'^\d+[\.\)]\s*', '', step)
+                    if step:
+                        clean_dirs += f"{step_num}. {step}\n"
+                        step_num += 1
+                
+                ex_str = f"TITLE: {meta['title']}\nINGREDIENTS: {', '.join(ing_list)}\nDIRECTIONS:\n{clean_dirs.strip()}"
                 examples.append(ex_str)
                 
         return examples
