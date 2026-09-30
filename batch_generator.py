@@ -4,7 +4,7 @@ import time
 import requests
 import pandas as pd
 
-API_URL = "https://ratatouille-backend.onrender.com/generate-recipe"
+API_URL = "http://127.0.0.1:10000/generate-recipe"
 
 def generate_recipe(ingredients, budget=200.0, max_retries=3):
     payload = {
@@ -20,6 +20,7 @@ def generate_recipe(ingredients, budget=200.0, max_retries=3):
         try:
             start_time = time.time()
             response = requests.post(API_URL, json=payload, stream=True, timeout=300)
+            response.raise_for_status() # Trigger retry if Render returns 502/503
             
             final_result = None
             
@@ -93,7 +94,7 @@ def run_batch_generation(num_recipes=150):
     
     extended_test_cases = (test_cases * (num_recipes // len(test_cases) + 1))[:num_recipes]
     
-    catalog_path = "data/Reference_Catalog.csv"
+    catalog_path = "data/Reference_Catalog_v2.csv"
     os.makedirs("data", exist_ok=True)
     
     # Initialize the CSV with headers if it doesn't exist

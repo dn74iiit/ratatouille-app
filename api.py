@@ -1070,6 +1070,10 @@ def generate_recipe(request: RecipeRequest):
         # EXACT V10 PROMPT STRUCTURE (With Agentic Context)
         base_prompt = (
             f"<|begin_of_text|>System: You are a strict chef. You MUST explicitly use EVERY single ingredient provided in the list below in your recipe directions.\n"
+            f"CRITICAL RULES:\n"
+            f"1. DO NOT copy the FEW_SHOT_EXAMPLES. They are ONLY for structural reference.\n"
+            f"2. DO NOT output variations, alternative fillings, personal notes, or reviews.\n"
+            f"3. Output ONLY the TITLE and the numbered DIRECTIONS.\n\n"
             f"{injected_context}\n\n"
             f"### INGREDIENTS:\n"
             f"{ingr_text}\n"
@@ -1144,13 +1148,20 @@ def generate_recipe(request: RecipeRequest):
             ai_text = ai_text.split("### TITLE:\n")[1].strip()
             
         # Cut off standard looping signatures and Notes
+        import re
+        
+        # Aggressively chop off any numbered step that starts with "Variation", "Note", or "To serve"
+        ai_text = re.split(r'\n\d+\.\s*(?:Variation|Note|To serve|Serve|Enjoy)', ai_text, flags=re.IGNORECASE)[0]
+        
         cut_phrases = [
             "\nEnjoy!", "\nServe hot", "\nBon Apetit", "\nChef's Note:", 
-            "\nVariations:", "\nServing suggestion:", "\nNote:"
+            "\nVariations:", "\nServing suggestion:", "\nNote:",
+            "\nVariation #", "\nTo serve"
         ]
         for phrase in cut_phrases:
-            if phrase in ai_text:
-                ai_text = ai_text.split(phrase)[0].strip()
+            if phrase.lower() in ai_text.lower():
+                # case insensitive split
+                ai_text = re.split(re.escape(phrase), ai_text, flags=re.IGNORECASE)[0].strip()
 
         # If the AI tries to start a new section with "###" (like "### Serving suggestion:" or "### Note:"), cut it off.
         # The only valid "###" in the AI output is "### DIRECTIONS:"
