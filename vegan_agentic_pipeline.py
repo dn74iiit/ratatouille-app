@@ -170,6 +170,42 @@ async def generate_agentic_vegan(request: RecipeRequest):
         
     return StreamingResponse(generate(), media_type="text/event-stream")
 
+@app.post("/generate-fast-qwen")
+async def generate_fast_qwen(request: RecipeRequest):
+    start_time = time.time()
+    ingr_text = "\n".join(f"- {i}" for i in request.ingredients)
+    
+    qwen_model = "qwen-2.5-32b"
+    try:
+        if client:
+            available_models = [m.id for m in client.models.list().data]
+            qwen_model = next((m for m in available_models if 'qwen' in m.lower()), "mixtral-8x7b-32768")
+    except:
+        pass
+        
+    prompt = (
+        f"You are a master chef. Create a delicious recipe using these ingredients:\n"
+        f"{ingr_text}\n\n"
+        f"Output ONLY the title on the first line starting with '### TITLE:' and the numbered instructions.\n"
+    )
+    
+    res = client.chat.completions.create(
+        messages=[{"role": "user", "content": prompt}],
+        model=qwen_model,
+        max_completion_tokens=500,
+        temperature=0.7
+    )
+    
+    recipe_text = res.choices[0].message.content.strip()
+    
+    from fastapi.responses import StreamingResponse
+    def generate():
+        yield f"data: {json.dumps({'step': 'generating', 'message': f'Turbo Generating with {qwen_model}...'})}\n\n"
+        time.sleep(0.5)
+        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': request.ingredients, 'archetype': 'Fast Qwen', 'is_vegan': False, 'attempts': 0})}\n\n"
+        
+    return StreamingResponse(generate(), media_type="text/event-stream")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=10001)
