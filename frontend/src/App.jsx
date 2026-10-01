@@ -550,14 +550,35 @@ function App() {
 
             <div className="action-buttons">
               <button onClick={handleSubmit} disabled={loading} className="btn-primary">
-                {loading ? <span className="loader"></span> : 'Generate Recipe'}
+                Generate Recipe
               </button>
-              <button onClick={handleSurpriseMe} className="btn-secondary">
+              <button onClick={handleSurpriseMe} className="btn-secondary" disabled={loading}>
                 Surprise me!!
               </button>
             </div>
 
-            <div className="chips-outer-container" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '2.5rem', maxWidth: '800px', width: '100%' }}>
+            {loading && (
+              <div style={{ width: '100%', maxWidth: '500px', margin: '1.5rem auto 0', background: '#f3f4f6', borderRadius: '9999px', padding: '0.25rem', border: '1px solid #e5e7eb', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 0.5rem 0.25rem 0.5rem', fontSize: '0.85rem', color: 'var(--maroon)', fontWeight: 'bold' }}>
+                  <span>{stepMessage || 'Processing...'}</span>
+                  <span>{elapsedSeconds}s</span>
+                </div>
+                <div style={{ width: '100%', height: '8px', background: '#e5e7eb', borderRadius: '9999px', overflow: 'hidden' }}>
+                  <div style={{ 
+                    height: '100%', 
+                    background: agenticVegan ? '#4ade80' : 'var(--primary)', 
+                    width: (!stepMessage || stepMessage.includes('Initial')) ? '20%' : 
+                           stepMessage.includes('Graph') ? '40%' : 
+                           stepMessage.includes('Vegan') ? '60%' : 
+                           stepMessage.includes('Reject') ? '75%' : 
+                           stepMessage.includes('Generat') ? '80%' : '90%', 
+                    transition: 'width 0.8s ease' 
+                  }}></div>
+                </div>
+              </div>
+            )}
+
+            <div className="chips-outer-container" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: loading ? '1.5rem' : '2.5rem', maxWidth: '800px', width: '100%' }}>
               <div className="chip highlight" onClick={handleSurpriseMe} style={{ flexShrink: 0, zIndex: 10, boxShadow: '0 4px 6px -1px rgba(250, 204, 21, 0.4)' }}>✨ Random</div>
               <div className="marquee-wrapper" style={{ marginTop: 0, flex: 1 }}>
                 <div className="chips-container marquee-content">
