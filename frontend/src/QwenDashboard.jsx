@@ -71,78 +71,78 @@ export default function QwenDashboard() {
   const avgLlamaTime = (llamaTime / total).toFixed(2);
 
   return (
-    <div className="glass-panel main-panel fade-in" style={{ padding: '2rem' }}>
+    <div className="glass-panel main-panel fade-in" style={{ padding: '2rem', background: '#ffffff', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', borderRadius: '12px', border: '1px solid #f3f4f6' }}>
       <header style={{ marginBottom: '2rem', textAlign: 'center' }}>
-        <h1 className="title" style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Agentic Comparison Dashboard 📊</h1>
-        <p className="subtitle">Llama 3 (Fine-Tuned) vs Groq Llama/Mixtral (Generalist Zero-Shot)</p>
+        <h1 className="title" style={{ fontSize: '2.5rem', marginBottom: '0.5rem', color: 'var(--maroon)' }}>Agentic Comparison Dashboard 📊</h1>
+        <p className="subtitle" style={{ color: 'var(--text-muted)' }}>Llama 3 (Fine-Tuned) vs Groq Llama/Mixtral (Generalist Zero-Shot)</p>
       </header>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-        <div style={{ background: 'rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '12px', textAlign: 'center' }}>
-          <h3 style={{ color: '#9ca3af', fontSize: '0.9rem', textTransform: 'uppercase' }}>Recipes Processed</h3>
-          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', margin: '0.5rem 0' }}>{total} / 144</p>
+        <div style={{ background: '#f9fafb', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', border: '1px solid #e5e7eb' }}>
+          <h3 style={{ color: '#6b7280', fontSize: '0.9rem', textTransform: 'uppercase' }}>Recipes Processed</h3>
+          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--maroon)', margin: '0.5rem 0' }}>{total} / 144</p>
         </div>
-        <div style={{ background: 'rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', borderTop: '4px solid #ef4444' }}>
-          <h3 style={{ color: '#9ca3af', fontSize: '0.9rem', textTransform: 'uppercase' }}>Llama 3 Avg Latency</h3>
-          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', margin: '0.5rem 0' }}>{avgLlamaTime}s</p>
+        <div style={{ background: '#fef2f2', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', borderTop: '4px solid #ef4444', borderBottom: '1px solid #e5e7eb', borderLeft: '1px solid #e5e7eb', borderRight: '1px solid #e5e7eb' }}>
+          <h3 style={{ color: '#ef4444', fontSize: '0.9rem', textTransform: 'uppercase' }}>Llama 3 Avg Latency</h3>
+          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#dc2626', margin: '0.5rem 0' }}>{avgLlamaTime}s</p>
         </div>
-        <div style={{ background: 'rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', borderTop: '4px solid #3b82f6' }}>
-          <h3 style={{ color: '#9ca3af', fontSize: '0.9rem', textTransform: 'uppercase' }}>Qwen Avg Latency</h3>
-          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#fff', margin: '0.5rem 0' }}>{avgQwenTime}s</p>
+        <div style={{ background: '#eff6ff', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', borderTop: '4px solid #3b82f6', borderBottom: '1px solid #e5e7eb', borderLeft: '1px solid #e5e7eb', borderRight: '1px solid #e5e7eb' }}>
+          <h3 style={{ color: '#3b82f6', fontSize: '0.9rem', textTransform: 'uppercase' }}>Qwen Avg Latency</h3>
+          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#2563eb', margin: '0.5rem 0' }}>{avgQwenTime}s</p>
         </div>
-        <div style={{ background: 'rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '12px', textAlign: 'center' }}>
-          <h3 style={{ color: '#9ca3af', fontSize: '0.9rem', textTransform: 'uppercase' }}>Total Hallucinations Caught</h3>
+        <div style={{ background: '#f9fafb', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', border: '1px solid #e5e7eb' }}>
+          <h3 style={{ color: '#6b7280', fontSize: '0.9rem', textTransform: 'uppercase' }}>Total Hallucinations Caught</h3>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', marginTop: '0.5rem' }}>
             <div>
-              <span style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '1.2rem' }}>Llama:</span> <span style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 'bold' }}>{llamaFails}</span>
+              <span style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '1.2rem' }}>Llama:</span> <span style={{ color: '#374151', fontSize: '1.5rem', fontWeight: 'bold' }}>{llamaFails}</span>
             </div>
             <div>
-              <span style={{ color: '#3b82f6', fontWeight: 'bold', fontSize: '1.2rem' }}>Qwen:</span> <span style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 'bold' }}>{qwenFails}</span>
+              <span style={{ color: '#3b82f6', fontWeight: 'bold', fontSize: '1.2rem' }}>Qwen:</span> <span style={{ color: '#374151', fontSize: '1.5rem', fontWeight: 'bold' }}>{qwenFails}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <h2 style={{ color: 'white', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>Side-by-Side Outputs</h2>
+      <h2 style={{ color: 'var(--maroon)', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>Side-by-Side Outputs</h2>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         {data.slice().reverse().map((row, idx) => (
-          <div key={idx} style={{ background: 'rgba(0,0,0,0.4)', borderRadius: '12px', padding: '1.5rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div key={idx} style={{ background: '#f9fafb', borderRadius: '12px', padding: '1.5rem', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 style={{ color: 'white', fontSize: '1.3rem', margin: 0 }}>{row.original_title}</h3>
+              <h3 style={{ color: 'var(--text-main)', fontSize: '1.3rem', margin: 0 }}>{row.original_title}</h3>
               <span className="badge">{row.archetype}</span>
             </div>
-            <p style={{ color: '#9ca3af', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+            <p style={{ color: '#6b7280', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
               <strong>Ingredients:</strong> {row.ingredients}
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
               {/* Llama Panel */}
-              <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '8px', borderTop: '3px solid #ef4444' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>
+              <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '8px', borderTop: '3px solid #ef4444', borderBottom: '1px solid #f3f4f6', borderLeft: '1px solid #f3f4f6', borderRight: '1px solid #f3f4f6' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.5rem' }}>
                   <h4 style={{ color: '#ef4444', margin: 0 }}>Llama 3 V10</h4>
-                  <div style={{ fontSize: '0.85rem', color: '#9ca3af', textAlign: 'right' }}>
+                  <div style={{ fontSize: '0.85rem', color: '#6b7280', textAlign: 'right' }}>
                     <div>Time: <strong>{row.latency_sec}s</strong></div>
                     <div>Corrections: <strong>{row.self_correction_attempts}</strong></div>
                     <div>Score: <strong>{row.final_cvs_score}</strong></div>
                   </div>
                 </div>
-                <div style={{ whiteSpace: 'pre-wrap', color: '#e5e7eb', fontSize: '0.9rem', maxHeight: '300px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+                <div style={{ whiteSpace: 'pre-wrap', color: '#374151', fontSize: '0.9rem', maxHeight: '300px', overflowY: 'auto', paddingRight: '0.5rem' }}>
                   {row.recipe}
                 </div>
               </div>
 
               {/* Qwen Panel */}
-              <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '8px', borderTop: '3px solid #3b82f6' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>
+              <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '8px', borderTop: '3px solid #3b82f6', borderBottom: '1px solid #f3f4f6', borderLeft: '1px solid #f3f4f6', borderRight: '1px solid #f3f4f6' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.5rem' }}>
                   <h4 style={{ color: '#3b82f6', margin: 0 }}>Groq Qwen 2.5</h4>
-                  <div style={{ fontSize: '0.85rem', color: '#9ca3af', textAlign: 'right' }}>
+                  <div style={{ fontSize: '0.85rem', color: '#6b7280', textAlign: 'right' }}>
                     <div>Time: <strong>{row.qwen_latency_sec}s</strong></div>
                     <div>Corrections: <strong>{row.qwen_self_correction_attempts}</strong></div>
                     <div>Score: <strong>{row.qwen_final_cvs_score}</strong></div>
                   </div>
                 </div>
-                <div style={{ whiteSpace: 'pre-wrap', color: '#e5e7eb', fontSize: '0.9rem', maxHeight: '300px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+                <div style={{ whiteSpace: 'pre-wrap', color: '#374151', fontSize: '0.9rem', maxHeight: '300px', overflowY: 'auto', paddingRight: '0.5rem' }}>
                   {row.qwen_recipe}
                 </div>
               </div>

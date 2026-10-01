@@ -519,7 +519,10 @@ function App() {
                   ))}
                 </select>
               </div>
-              <label className="vegan-toggle">
+            </div>
+
+            <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', marginTop: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <label className="vegan-toggle" style={{ background: '#ffffff', padding: '0.5rem 1rem', borderRadius: '9999px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <input 
                   type="checkbox" 
                   checked={isVegan} 
@@ -528,7 +531,7 @@ function App() {
                 />
                 Make it Vegan
               </label>
-              <label className="vegan-toggle" style={{background: agenticVegan ? 'rgba(74, 222, 128, 0.2)' : 'transparent', border: agenticVegan ? '1px solid #4ade80' : 'none', color: agenticVegan ? '#4ade80' : 'inherit'}}>
+              <label className="vegan-toggle" style={{ background: agenticVegan ? 'rgba(74, 222, 128, 0.1)' : '#ffffff', padding: '0.5rem 1rem', borderRadius: '9999px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: agenticVegan ? '1px solid #4ade80' : '1px solid #f3f4f6', color: agenticVegan ? '#166534' : 'inherit', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <input 
                   type="checkbox" 
                   checked={agenticVegan} 
@@ -539,7 +542,7 @@ function App() {
                 />
                 Agentic Vegan 🚀
               </label>
-              <div className="model-toggle">
+              <div className="model-toggle" style={{ background: '#ffffff', borderRadius: '9999px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: '1px solid #f3f4f6', overflow: 'hidden' }}>
                 <button type="button" className={modelVersion === 'v8' ? 'active' : ''} onClick={() => setModelVersion('v8')}>V8</button>
                 <button type="button" className={modelVersion === 'v10' ? 'active' : ''} onClick={() => setModelVersion('v10')}>V10</button>
               </div>
