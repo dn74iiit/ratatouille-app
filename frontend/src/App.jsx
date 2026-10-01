@@ -624,7 +624,7 @@ function App() {
               <div className="marquee-wrapper" style={{ marginTop: 0, flex: 1 }}>
                 <div className="chips-container marquee-content">
                   {globalRecipes.slice(0, 10).map((doc, idx) => {
-                     const title = doc.recipe.recipe.split('\n')[0].replace('### TITLE:', '').trim();
+                     const title = doc.recipe.recipe.split('\n')[0].replace(/^###\s*(TITLE:)?\s*/i, '').trim();
                      return (
                        <div key={`a-${idx}`} className="chip" onClick={() => {
                          const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype, doc.recipe.is_vegan);
@@ -636,7 +636,7 @@ function App() {
                   })}
                   {/* Duplicated for infinite scrolling effect */}
                   {globalRecipes.slice(0, 10).map((doc, idx) => {
-                     const title = doc.recipe.recipe.split('\n')[0].replace('### TITLE:', '').trim();
+                     const title = doc.recipe.recipe.split('\n')[0].replace(/^###\\s*(TITLE:)?\\s*/i, '').trim();
                      return (
                        <div key={`b-${idx}`} className="chip" onClick={() => {
                          const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype, doc.recipe.is_vegan);
@@ -658,7 +658,7 @@ function App() {
               <div className="modal-content fade-in">
                 <div className="modal-header">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <h2 className="modal-title" style={{ margin: 0 }}>{result.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h2>
+                    <h2 className="modal-title" style={{ margin: 0 }}>{result.recipe.split('\n')[0].replace(/^###\s*(TITLE:)?\s*/i, '').trim()}</h2>
                     {result.is_vegan && (
                       <span style={{background: '#4ade80', color: '#064e3b', padding: '4px 12px', borderRadius: '16px', fontSize: '0.85rem', fontWeight: 'bold', display: 'inline-block'}}>
                         🌱 VEGAN {result.agentic_attempts !== undefined && `(Agentic Checks: ${result.agentic_attempts})`}

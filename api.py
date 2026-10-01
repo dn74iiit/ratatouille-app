@@ -1194,7 +1194,7 @@ def generate_recipe(request: RecipeRequest):
                     "ingredient_count": len(clean_ingredients),
                     "initial_cvs_score": initial_cvs_score,
                     "final_cvs_score": final_cvs_score,
-                    "self_correction_attempts": attempt
+                    "self_correction_attempts": attempt, "latency": total_time, "model": request.model_version, "budget": request.budget, "city": request.state
                 }
                 generation_logs_sync.insert_one(log_entry)
                 print(f"[OK] Generation log saved to DB. Total time: {total_time:.2f}s")
@@ -1210,7 +1210,7 @@ def generate_recipe(request: RecipeRequest):
             "is_vegan": request.is_vegan,
             "initial_cvs_score": initial_cvs_score,
             "final_cvs_score": final_cvs_score,
-            "self_correction_attempts": attempt
+            "self_correction_attempts": attempt, "latency": total_time, "model": request.model_version, "budget": request.budget, "city": request.state
         }
         yield f"data: {json.dumps({'step': 'complete', 'result': final_result})}\n\n"
 
@@ -1349,7 +1349,7 @@ async def generate_agentic_vegan(request: RecipeRequest):
             yield f"data: {json.dumps({'step': 'judging', 'message': f'Vegan Judge Rejected Recipe! Retrying {attempts} times...'})}\n\n"
             time.sleep(0.5)
             
-        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': final_recipe, 'calculated_ingredients': request.ingredients, 'archetype': 'Agentic Vegan', 'is_vegan': True, 'attempts': attempts})}\n\n"
+        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': final_recipe, 'calculated_ingredients': request.ingredients, 'archetype': 'Agentic Vegan', 'is_vegan': True, 'attempts': attempts, 'latency': latency, 'model': target_model, 'budget': request.budget, 'city': request.state})}\n\n"
         
     return StreamingResponse(generate(), media_type="text/event-stream")
 
@@ -1387,6 +1387,8 @@ async def generate_fast_qwen(request: RecipeRequest):
     def generate():
         yield f"data: {json.dumps({'step': 'generating', 'message': f'Turbo Generating with {qwen_model}...'})}\n\n"
         time.sleep(0.5)
-        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': request.ingredients, 'archetype': 'Fast Qwen', 'is_vegan': request.is_vegan, 'attempts': 0})}\n\n"
+        latency = time.time() - start_time
+        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': request.ingredients, 'archetype': 'Fast Qwen', 'is_vegan': request.is_vegan, 'attempts': 0, 'latency': latency, 'model': qwen_model, 'budget': request.budget, 'city': request.state})}\n\n"
         
     return StreamingResponse(generate(), media_type="text/event-stream")
+
