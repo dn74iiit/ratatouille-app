@@ -25,15 +25,42 @@ const UNSPLASH_CACHE = {
     "Bread": ["1509440159596-0249088772ff", "1608198093002-ad4e005484ec"],
     "Soup": ["1547592166-23ac45744acd", "1604152135912-04a022e23696", "1578020190125-f4f7c18bc9cb"],
     "Rice_Dish": ["1512058564366-18510be2db19", "1596797038530-2c107229654b"],
-    "Dry_Sabzi": ["1546833999-b9f581a1996d", "1565557623262-b51c2513a641", "1604152135912-04a022e23696"]
+    "Dry_Sabzi": ["1546833999-b9f581a1996d", "1565557623262-b51c2513a641", "1604152135912-04a022e23696"],
+    "NonVegan": ["1604908176997-125f25cc6f3d", "1544025162846-ea81c1929c56", "1598514982205-f36b96d1e8dd"],
+    "Vegan": ["1512621776951-a57141f2eefd", "1546069901-ba9599a7e63c", "1540420773420-3366774f5237", "1567306226416-0e060f08cbd4"]
 };
 
-const getRandomBanner = (archetype, isVegan = false) => {
-    let arch = UNSPLASH_CACHE[archetype] ? archetype : "Curry";
-    if (isVegan && arch === "Rice_Dish") {
-        arch = "Dry_Sabzi";
+const getRandomBanner = (archetype, isVegan = false, recipeTitle = "") => {
+    let arch = archetype;
+    const t = (recipeTitle || "").toLowerCase();
+    
+    // Attempt title parsing for better relevance
+    if (t.includes("salad")) arch = "Salad";
+    else if (t.includes("curry") || t.includes("masala")) arch = "Curry";
+    else if (t.includes("soup") || t.includes("stew") || t.includes("broth")) arch = "Soup";
+    else if (t.includes("rice") || t.includes("pilaf") || t.includes("biryani")) arch = "Rice_Dish";
+    else if (t.includes("bread") || t.includes("roti") || t.includes("naan")) arch = "Bread";
+    else if (t.includes("cake") || t.includes("sweet") || t.includes("cookie") || t.includes("dessert")) arch = "Dessert";
+    
+    // Fallback if the pipeline passed a generic archetype (like "Fast Qwen")
+    if (!UNSPLASH_CACHE[arch]) {
+        arch = isVegan ? "Vegan" : "Curry";
     }
-    const photos = UNSPLASH_CACHE[arch];
+
+    // Safety check to ensure we don't accidentally return meat images for vegan dishes
+    if (isVegan && arch === "NonVegan") {
+        arch = "Vegan";
+    } else if (!isVegan && (t.includes("chicken") || t.includes("meat") || t.includes("beef") || t.includes("egg") || t.includes("fish"))) {
+        arch = "NonVegan";
+    }
+    
+    // Override logic from original
+    if (isVegan && arch === "Rice_Dish") {
+        arch = "Dry_Sabzi"; 
+    }
+    
+    // Guarantee fallback
+    const photos = UNSPLASH_CACHE[arch] || UNSPLASH_CACHE["Curry"];
     const photoId = photos[Math.floor(Math.random() * photos.length)];
     return `https://images.unsplash.com/photo-${photoId}?q=80&w=1632&auto=format&fit=crop`;
 };
@@ -280,7 +307,8 @@ function App() {
                     calculated_ingredients: data.calculated_ingredients,
                     archetype: data.archetype,
                     is_vegan: data.is_vegan,
-                    agentic_attempts: data.attempts
+                    agentic_attempts: data.attempts,
+                    image_url: getRandomBanner(data.archetype, data.is_vegan, data.recipe.split('\n')[0])
                   });
                 } else {
                   setResult(data.result);
@@ -642,7 +670,7 @@ function App() {
                 
                 {(result.image_url || result.isSurprise || result.archetype) ? (
                   <div className="modal-image-container">
-                    <img src={result.image_url || getRandomBanner(result.archetype, result.is_vegan)} alt="Recipe" className="modal-image" />
+                    <img src={result.image_url} alt="Recipe" className="modal-image" />
                   </div>
                 ) : (
                   <div style={{ marginTop: '70px' }}></div>
