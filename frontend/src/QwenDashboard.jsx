@@ -113,18 +113,18 @@ export default function QwenDashboard() {
               <span className="badge">{row.archetype}</span>
             </div>
             <p style={{ color: '#6b7280', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-              <strong>Ingredients:</strong> {row.ingredients}
+              <strong>Ingredients:</strong> {row.ingredients || 'Not recorded in dataset'}
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
               {/* Llama Panel */}
               <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '8px', borderTop: '3px solid #ef4444', borderBottom: '1px solid #f3f4f6', borderLeft: '1px solid #f3f4f6', borderRight: '1px solid #f3f4f6' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.5rem' }}>
-                  <h4 style={{ color: '#ef4444', margin: 0 }}>Llama 3 V10</h4>
-                  <div style={{ fontSize: '0.85rem', color: '#6b7280', textAlign: 'right' }}>
-                    <div>Time: <strong>{row.latency_sec}s</strong></div>
-                    <div>Corrections: <strong>{row.self_correction_attempts}</strong></div>
-                    <div>Score: <strong>{row.final_cvs_score}</strong></div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.75rem', alignItems: 'center' }}>
+                  <h4 style={{ color: '#ef4444', margin: 0, fontSize: '1.1rem' }}>Llama 3 V10</h4>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <span style={{ background: '#fef2f2', color: '#ef4444', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 'bold', border: '1px solid #fecaca' }}>⏱ {parseFloat(row.latency_sec || 0).toFixed(1)}s</span>
+                    <span style={{ background: '#fef2f2', color: '#ef4444', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 'bold', border: '1px solid #fecaca' }}>🔄 {row.self_correction_attempts} Corrections</span>
+                    <span style={{ background: '#fef2f2', color: '#ef4444', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 'bold', border: '1px solid #fecaca' }}>⭐ {row.final_cvs_score} Score</span>
                   </div>
                 </div>
                 <div style={{ whiteSpace: 'pre-wrap', color: '#374151', fontSize: '0.9rem', maxHeight: '300px', overflowY: 'auto', paddingRight: '0.5rem' }}>
@@ -134,12 +134,12 @@ export default function QwenDashboard() {
 
               {/* Qwen Panel */}
               <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '8px', borderTop: '3px solid #3b82f6', borderBottom: '1px solid #f3f4f6', borderLeft: '1px solid #f3f4f6', borderRight: '1px solid #f3f4f6' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.5rem' }}>
-                  <h4 style={{ color: '#3b82f6', margin: 0 }}>Groq Qwen 2.5</h4>
-                  <div style={{ fontSize: '0.85rem', color: '#6b7280', textAlign: 'right' }}>
-                    <div>Time: <strong>{row.qwen_latency_sec}s</strong></div>
-                    <div>Corrections: <strong>{row.qwen_self_correction_attempts}</strong></div>
-                    <div>Score: <strong>{row.qwen_final_cvs_score}</strong></div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.75rem', alignItems: 'center' }}>
+                  <h4 style={{ color: '#3b82f6', margin: 0, fontSize: '1.1rem' }}>Groq Qwen 2.5</h4>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <span style={{ background: '#eff6ff', color: '#3b82f6', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 'bold', border: '1px solid #bfdbfe' }}>⏱ {parseFloat(row.qwen_latency_sec || 0).toFixed(1)}s</span>
+                    <span style={{ background: '#eff6ff', color: '#3b82f6', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 'bold', border: '1px solid #bfdbfe' }}>🔄 {row.qwen_self_correction_attempts} Corrections</span>
+                    <span style={{ background: '#eff6ff', color: '#3b82f6', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 'bold', border: '1px solid #bfdbfe' }}>⭐ {row.qwen_final_cvs_score} Score</span>
                   </div>
                 </div>
                 <div style={{ whiteSpace: 'pre-wrap', color: '#374151', fontSize: '0.9rem', maxHeight: '300px', overflowY: 'auto', paddingRight: '0.5rem' }}>
