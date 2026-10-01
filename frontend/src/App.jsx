@@ -236,7 +236,8 @@ function App() {
           servings: parseInt(servings),
           state: stateName,
           archetype: "Agentic Vegan",
-          is_vegan: true
+          is_vegan: true,
+          model_version: modelVersion
         };
       } else if (modelVersion === 'qwen') {
         endpoint = `http://localhost:10001/generate-fast-qwen`;
@@ -548,7 +549,7 @@ function App() {
                   checked={agenticVegan} 
                   onChange={(e) => {
                     setAgenticVegan(e.target.checked);
-                    if (e.target.checked) setIsVegan(false); // mutually exclusive
+                    if (e.target.checked) setIsVegan(false); // Make it Vegan is mutually exclusive with Agentic Vegan
                   }} 
                 />
                 Agentic Vegan 🚀

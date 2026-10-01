@@ -136,10 +136,18 @@ async def generate_agentic_vegan(request: RecipeRequest):
     final_recipe = ""
     attempts = 0
     
+    target_model = PRIMARY_MODEL
+    if request.model_version == 'qwen':
+        try:
+            available_models = [m.id for m in client.models.list().data]
+            target_model = next((m for m in available_models if 'qwen' in m.lower()), "mixtral-8x7b-32768")
+        except:
+            target_model = "qwen-2.5-32b"
+            
     for attempt in range(3):
         res = client.chat.completions.create(
             messages=[{"role": "user", "content": current_prompt}],
-            model=PRIMARY_MODEL,
+            model=target_model,
             max_completion_tokens=500,
             temperature=0.6
         )
