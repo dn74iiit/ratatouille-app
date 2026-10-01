@@ -664,15 +664,24 @@ function App() {
                   <div className="instructions-col">
                     <h3>Instructions</h3>
                     <ul className="instructions-list">
-                      {result.recipe.includes('### DIRECTIONS:') 
-                        ? result.recipe.split('### DIRECTIONS:')[1].trim().split('\n').map((step, idx) => {
-                            const match = step.match(/^(\d+)\.\s+(.*)/);
-                            if (match) {
-                              return <li key={idx}><strong>{match[1]}.</strong> <span>{match[2]}</span></li>;
-                            }
-                            return <li key={idx}><span>{step}</span></li>;
-                          })
-                        : <li><span>{result.recipe}</span></li>}
+                      {(() => {
+                        let instructionsText = "";
+                        if (result.recipe.includes('### DIRECTIONS:')) {
+                          instructionsText = result.recipe.split('### DIRECTIONS:')[1];
+                        } else {
+                          // For new pipelines (Groq Fast/Agentic Vegan), title is first line, rest is directions
+                          const lines = result.recipe.split('\n');
+                          instructionsText = lines.slice(1).join('\n');
+                        }
+                        
+                        return instructionsText.trim().split('\n').map((step, idx) => {
+                          const match = step.match(/^(\d+)\.\s+(.*)/);
+                          if (match) {
+                            return <li key={idx}><strong>{match[1]}.</strong> <span>{match[2]}</span></li>;
+                          }
+                          return step.trim() ? <li key={idx}><span>{step}</span></li> : null;
+                        });
+                      })()}
                     </ul>
                   </div>
                 </div>
