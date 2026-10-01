@@ -80,7 +80,7 @@ export default function QwenDashboard() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
         <div style={{ background: '#f9fafb', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', border: '1px solid #e5e7eb' }}>
           <h3 style={{ color: '#6b7280', fontSize: '0.9rem', textTransform: 'uppercase' }}>Recipes Processed</h3>
-          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--maroon)', margin: '0.5rem 0' }}>{total} / 144</p>
+          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--maroon)', margin: '0.5rem 0' }}>{total}</p>
         </div>
         <div style={{ background: '#fef2f2', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', borderTop: '4px solid #ef4444', borderBottom: '1px solid #e5e7eb', borderLeft: '1px solid #e5e7eb', borderRight: '1px solid #e5e7eb' }}>
           <h3 style={{ color: '#ef4444', fontSize: '0.9rem', textTransform: 'uppercase' }}>Llama 3 Avg Latency</h3>
