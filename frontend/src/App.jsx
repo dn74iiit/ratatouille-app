@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
 import { Search, X, ShoppingBasket, QrCode, Link as LinkIcon } from 'lucide-react';
+import QwenDashboard from './QwenDashboard';
 
 const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8000' : 'https://ratatouille-backend.onrender.com';
 
@@ -216,17 +217,31 @@ function App() {
     const ingList = Array.isArray(ingredients) ? ingredients : ingredients.split(',').map(i => i.trim()).filter(i => i);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/generate-recipe`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      let endpoint = `${BACKEND_URL}/generate-recipe`;
+      let payload = {
+        ingredients: ingList,
+        budget: parseFloat(budget),
+        servings: parseInt(servings),
+        state: stateName,
+        model_version: modelVersion,
+        is_vegan: isVegan
+      };
+
+      if (agenticVegan) {
+        endpoint = `http://localhost:10001/generate-agentic-vegan`;
+        payload = {
           ingredients: ingList,
           budget: parseFloat(budget),
           servings: parseInt(servings),
           state: stateName,
-          model_version: modelVersion,
-          is_vegan: isVegan
-        })
+          archetype: "Agentic Vegan"
+        };
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
 
       const reader = response.body.getReader();
@@ -244,8 +259,19 @@ function App() {
             if (!dataStr.trim()) continue;
             try {
               const data = JSON.parse(dataStr);
-              if (data.step === 'complete') {
-                setResult(data.result);
+              if (data.step === 'complete' || data.step === 'final_recipe') {
+                // Map agentic backend keys to standard frontend expected keys
+                if (data.step === 'final_recipe') {
+                  setResult({
+                    recipe: data.recipe,
+                    calculated_ingredients: data.calculated_ingredients,
+                    archetype: data.archetype,
+                    is_vegan: data.is_vegan,
+                    agentic_attempts: data.attempts
+                  });
+                } else {
+                  setResult(data.result);
+                }
                 setStepMessage('');
               } else if (data.step === 'error') {
                 setError(data.message);
@@ -415,6 +441,13 @@ function App() {
               >
                 Community
               </button>
+              <button 
+                className={`nav-tab ${viewMode === 'compare' ? 'active' : ''}`}
+                onClick={() => setViewMode('compare')}
+                style={{ color: '#4ade80' }}
+              >
+                vs Qwen ⚡
+              </button>
             </div>
           </div>
 
@@ -490,8 +523,20 @@ function App() {
                   type="checkbox" 
                   checked={isVegan} 
                   onChange={(e) => setIsVegan(e.target.checked)} 
+                  disabled={agenticVegan}
                 />
                 Make it Vegan
+              </label>
+              <label className="vegan-toggle" style={{background: agenticVegan ? 'rgba(74, 222, 128, 0.2)' : 'transparent', border: agenticVegan ? '1px solid #4ade80' : 'none', color: agenticVegan ? '#4ade80' : 'inherit'}}>
+                <input 
+                  type="checkbox" 
+                  checked={agenticVegan} 
+                  onChange={(e) => {
+                    setAgenticVegan(e.target.checked);
+                    if (e.target.checked) setIsVegan(false); // mutually exclusive
+                  }} 
+                />
+                Agentic Vegan 🚀
               </label>
               <div className="model-toggle">
                 <button type="button" className={modelVersion === 'v8' ? 'active' : ''} onClick={() => setModelVersion('v8')}>V8</button>
@@ -546,7 +591,14 @@ function App() {
             <div className="modal-overlay">
               <div className="modal-content fade-in">
                 <div className="modal-header">
-                  <h2 className="modal-title">{result.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h2>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <h2 className="modal-title" style={{ margin: 0 }}>{result.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h2>
+                    {result.is_vegan && (
+                      <span style={{background: '#4ade80', color: '#064e3b', padding: '4px 12px', borderRadius: '16px', fontSize: '0.85rem', fontWeight: 'bold', display: 'inline-block'}}>
+                        🌱 VEGAN {result.agentic_attempts !== undefined && `(Agentic Checks: ${result.agentic_attempts})`}
+                      </span>
+                    )}
+                  </div>
                   <button className="close-btn" onClick={() => setResult(null)}><X size={24} /></button>
                 </div>
                 
@@ -850,6 +902,10 @@ function App() {
             </div>
           )}
         </div>
+      )}
+
+      {viewMode === 'compare' && (
+        <QwenDashboard />
       )}
 
       {viewMode === 'community' && (
