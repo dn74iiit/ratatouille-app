@@ -1328,6 +1328,7 @@ async def generate_agentic_vegan(request: RecipeRequest):
             temperature=0.6
         )
         recipe_text = res.choices[0].message.content.strip()
+        actual_model = res.model if hasattr(res, "model") else target_model
         
         judge_result = vegan_judge.evaluate_recipe(recipe_text)
         
@@ -1349,7 +1350,7 @@ async def generate_agentic_vegan(request: RecipeRequest):
             yield f"data: {json.dumps({'step': 'judging', 'message': f'Vegan Judge Rejected Recipe! Retrying {attempts} times...'})}\n\n"
             time.sleep(0.5)
             
-        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': final_recipe, 'calculated_ingredients': request.ingredients, 'archetype': 'Agentic Vegan', 'is_vegan': True, 'attempts': attempts, 'latency': latency, 'model': target_model, 'budget': request.budget, 'city': request.state})}\n\n"
+        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': final_recipe, 'calculated_ingredients': request.ingredients, 'archetype': 'Agentic Vegan', 'is_vegan': True, 'attempts': attempts, 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
         
     return StreamingResponse(generate(), media_type="text/event-stream")
 
@@ -1383,12 +1384,13 @@ async def generate_fast_qwen(request: RecipeRequest):
     )
     
     recipe_text = res.choices[0].message.content.strip()
+    actual_model = res.model if hasattr(res, "model") else qwen_model
     
     def generate():
-        yield f"data: {json.dumps({'step': 'generating', 'message': f'Turbo Generating with {qwen_model}...'})}\n\n"
+        yield f"data: {json.dumps({'step': 'generating', 'message': f'Turbo Generating with {actual_model}...'})}\n\n"
         time.sleep(0.5)
         latency = time.time() - start_time
-        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': request.ingredients, 'archetype': 'Fast Qwen', 'is_vegan': request.is_vegan, 'attempts': 0, 'latency': latency, 'model': qwen_model, 'budget': request.budget, 'city': request.state})}\n\n"
+        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': request.ingredients, 'archetype': 'Fast Qwen', 'is_vegan': request.is_vegan, 'attempts': 0, 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
         
     return StreamingResponse(generate(), media_type="text/event-stream")
 
