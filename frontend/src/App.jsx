@@ -521,7 +521,7 @@ function App() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', marginTop: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', marginTop: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
               <label className="vegan-toggle" style={{ background: '#ffffff', padding: '0.5rem 1rem', borderRadius: '9999px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <input 
                   type="checkbox" 
@@ -578,7 +578,7 @@ function App() {
               </div>
             )}
 
-            <div className="chips-outer-container" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: loading ? '1.5rem' : '2.5rem', maxWidth: '800px', width: '100%' }}>
+            <div className="chips-outer-container" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: loading ? '1rem' : '1.5rem', maxWidth: '800px', width: '100%' }}>
               <div className="chip highlight" onClick={handleSurpriseMe} style={{ flexShrink: 0, zIndex: 10, boxShadow: '0 4px 6px -1px rgba(250, 204, 21, 0.4)' }}>✨ Random</div>
               <div className="marquee-wrapper" style={{ marginTop: 0, flex: 1 }}>
                 <div className="chips-container marquee-content">
