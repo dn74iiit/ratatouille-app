@@ -138,10 +138,9 @@ function App() {
   const [budget, setBudget] = useState(150);
   const [servings, setServings] = useState(1);
   const [stateName, setStateName] = useState('Delhi');
-  const [modelVersion, setModelVersion] = useState('v10');  // 'v8' | 'v10'
+  const [modelVersion, setModelVersion] = useState('v10');  // 'v8' | 'v10' | 'qwen'
   const [isVegan, setIsVegan] = useState(false);
   const [agenticVegan, setAgenticVegan] = useState(false);
-  const [fastQwen, setFastQwen] = useState(false);
   
   // Response State
   const [loading, setLoading] = useState(false);
@@ -236,16 +235,18 @@ function App() {
           budget: parseFloat(budget),
           servings: parseInt(servings),
           state: stateName,
-          archetype: "Agentic Vegan"
+          archetype: "Agentic Vegan",
+          is_vegan: true
         };
-      } else if (fastQwen) {
+      } else if (modelVersion === 'qwen') {
         endpoint = `http://localhost:10001/generate-fast-qwen`;
         payload = {
           ingredients: ingList,
           budget: parseFloat(budget),
           servings: parseInt(servings),
           state: stateName,
-          archetype: "Fast Qwen"
+          archetype: "Fast Qwen",
+          is_vegan: isVegan
         };
       }
 
@@ -536,10 +537,7 @@ function App() {
                 <input 
                   type="checkbox" 
                   checked={isVegan} 
-                  onChange={(e) => {
-                    setIsVegan(e.target.checked);
-                    if (e.target.checked) setFastQwen(false);
-                  }} 
+                  onChange={(e) => setIsVegan(e.target.checked)} 
                   disabled={agenticVegan}
                 />
                 Make it Vegan
@@ -550,31 +548,15 @@ function App() {
                   checked={agenticVegan} 
                   onChange={(e) => {
                     setAgenticVegan(e.target.checked);
-                    if (e.target.checked) {
-                      setIsVegan(false); // mutually exclusive
-                      setFastQwen(false);
-                    }
+                    if (e.target.checked) setIsVegan(false); // mutually exclusive
                   }} 
                 />
                 Agentic Vegan 🚀
               </label>
-              <label className="vegan-toggle" style={{ background: fastQwen ? 'rgba(59, 130, 246, 0.1)' : '#ffffff', padding: '0.5rem 1rem', borderRadius: '9999px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: fastQwen ? '1px solid #3b82f6' : '1px solid #f3f4f6', color: fastQwen ? '#1d4ed8' : 'inherit', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input 
-                  type="checkbox" 
-                  checked={fastQwen} 
-                  onChange={(e) => {
-                    setFastQwen(e.target.checked);
-                    if (e.target.checked) {
-                      setAgenticVegan(false); // mutually exclusive
-                      setIsVegan(false);
-                    }
-                  }} 
-                />
-                Turbo Qwen ⚡
-              </label>
               <div className="model-toggle" style={{ background: '#ffffff', borderRadius: '9999px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: '1px solid #f3f4f6', overflow: 'hidden' }}>
                 <button type="button" className={modelVersion === 'v8' ? 'active' : ''} onClick={() => setModelVersion('v8')}>V8</button>
                 <button type="button" className={modelVersion === 'v10' ? 'active' : ''} onClick={() => setModelVersion('v10')}>V10</button>
+                <button type="button" className={modelVersion === 'qwen' ? 'active' : ''} onClick={() => setModelVersion('qwen')} style={{ color: modelVersion === 'qwen' ? '#3b82f6' : 'inherit' }}>Groq (Fast) ⚡</button>
               </div>
             </div>
 
@@ -596,7 +578,7 @@ function App() {
                 <div style={{ width: '100%', height: '8px', background: '#e5e7eb', borderRadius: '9999px', overflow: 'hidden' }}>
                   <div style={{ 
                     height: '100%', 
-                    background: fastQwen ? '#3b82f6' : agenticVegan ? '#4ade80' : 'var(--primary)', 
+                    background: modelVersion === 'qwen' ? '#3b82f6' : agenticVegan ? '#4ade80' : 'var(--primary)', 
                     width: (!stepMessage || stepMessage.includes('Initial')) ? '20%' : 
                            stepMessage.includes('Graph') ? '40%' : 
                            stepMessage.includes('Vegan') ? '60%' : 

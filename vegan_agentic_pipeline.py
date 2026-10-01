@@ -42,6 +42,8 @@ class RecipeRequest(BaseModel):
     servings: int = 1
     state: str = ""
     archetype: str = "Curry"
+    is_vegan: bool = False
+    model_version: str = ""
 
 class VeganGraphRetriever:
     """Simulates a specialized Vegan Knowledge Graph for Agentic Context Injection."""
@@ -183,9 +185,12 @@ async def generate_fast_qwen(request: RecipeRequest):
     except:
         pass
         
+    vegan_directive = "YOU MUST ENSURE THIS RECIPE IS 100% STRICTLY VEGAN. DO NOT USE ANY ANIMAL PRODUCTS." if request.is_vegan else ""
+    
     prompt = (
         f"You are a master chef. Create a delicious recipe using these ingredients:\n"
         f"{ingr_text}\n\n"
+        f"{vegan_directive}\n"
         f"Output ONLY the title on the first line starting with '### TITLE:' and the numbered instructions.\n"
     )
     
@@ -202,7 +207,7 @@ async def generate_fast_qwen(request: RecipeRequest):
     def generate():
         yield f"data: {json.dumps({'step': 'generating', 'message': f'Turbo Generating with {qwen_model}...'})}\n\n"
         time.sleep(0.5)
-        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': request.ingredients, 'archetype': 'Fast Qwen', 'is_vegan': False, 'attempts': 0})}\n\n"
+        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': request.ingredients, 'archetype': 'Fast Qwen', 'is_vegan': request.is_vegan, 'attempts': 0})}\n\n"
         
     return StreamingResponse(generate(), media_type="text/event-stream")
 
