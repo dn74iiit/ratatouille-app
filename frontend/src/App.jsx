@@ -140,6 +140,7 @@ function App() {
   const [stateName, setStateName] = useState('Delhi');
   const [modelVersion, setModelVersion] = useState('v10');  // 'v8' | 'v10'
   const [isVegan, setIsVegan] = useState(false);
+  const [agenticVegan, setAgenticVegan] = useState(false);
   
   // Response State
   const [loading, setLoading] = useState(false);
