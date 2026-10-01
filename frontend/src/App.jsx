@@ -229,7 +229,7 @@ function App() {
       };
 
       if (agenticVegan) {
-        endpoint = `http://localhost:10001/generate-agentic-vegan`;
+        endpoint = `${BACKEND_URL}/generate-agentic-vegan`;
         payload = {
           ingredients: ingList,
           budget: parseFloat(budget),
@@ -240,7 +240,7 @@ function App() {
           model_version: modelVersion
         };
       } else if (modelVersion === 'qwen') {
-        endpoint = `http://localhost:10001/generate-fast-qwen`;
+        endpoint = `${BACKEND_URL}/generate-fast-qwen`;
         payload = {
           ingredients: ingList,
           budget: parseFloat(budget),
