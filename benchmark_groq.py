@@ -132,6 +132,7 @@ def run_benchmark():
                     "Scenario": case["name"],
                     "Pipeline": pipeline_name,
                     "Latency (sec)": latency,
+                    "Granular_Step_Times": result_data.get("step_times", {}) if final_event else {},
                     "Status": status,
                     "CVS Score": cvs_score,
                     "Budget Handled": "Yes" if final_ingredients else "No",

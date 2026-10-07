@@ -1613,7 +1613,8 @@ def generate_fast_qwen(request: RecipeRequest):
             "city": request.state,
             "judge_critiques": all_critiques,
             "graph_context": graph_context if 'graph_context' in locals() else {},
-            "few_shot_examples": few_shot_examples if 'few_shot_examples' in locals() else []
+            "few_shot_examples": few_shot_examples if 'few_shot_examples' in locals() else [],
+            "step_times": times
         }
         yield f"data: {json.dumps({'step': 'complete', 'result': final_result})}\n\n"
 
