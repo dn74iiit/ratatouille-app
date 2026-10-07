@@ -85,7 +85,7 @@ def parse_sse(response_iter):
     return final_data
 
 def run_benchmark():
-    print("🚀 Starting Groq Pipeline Benchmark...")
+    print("Starting Groq Pipeline Benchmark...")
     results = []
     
     test_cases = generate_test_cases(100)
@@ -169,11 +169,11 @@ def run_benchmark():
                 })
                 
     # Generate Report
-    print("\n\n📊 BENCHMARK RESULTS 📊")
+    print("\n\nBENCHMARK RESULTS")
     df = pd.DataFrame(results)
     print(df.to_markdown(index=False))
     df.to_csv("groq_benchmark_results.csv", index=False)
-    print("\n✅ Results saved to 'groq_benchmark_results.csv'")
+    print("\nResults saved to 'groq_benchmark_results.csv'")
 
 if __name__ == "__main__":
     run_benchmark()
