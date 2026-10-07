@@ -66,6 +66,9 @@ export default function ReportsTab({ backendUrl }) {
     scenariosMap[row.Scenario][row.Pipeline] = row;
   });
   const groupedScenarios = Object.values(scenariosMap);
+  const completeScenarios = groupedScenarios.filter(scenario => 
+      scenario["Groq Bare"] && scenario["Groq Budget"] && scenario["Groq Full (Agentic)"]
+  );
 
   const yAxisConfig = {
       avgLatency: { label: "Latency (sec)", color: "#3b82f6", domain: ['auto', 'auto'] },
@@ -106,10 +109,10 @@ export default function ReportsTab({ backendUrl }) {
         </ResponsiveContainer>
       </div>
 
-      <h3 style={{ borderBottom: '2px solid #e5e7eb', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Side-by-Side Horizontal Comparison</h3>
+      <h3 style={{ borderBottom: '2px solid #e5e7eb', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Side-by-Side Horizontal Comparison ({completeScenarios.length} Scenarios)</h3>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          {groupedScenarios.map((scenario, idx) => (
+          {completeScenarios.map((scenario, idx) => (
               <div key={idx} style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
                   <div style={{ background: '#f3f4f6', padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>
                       <strong>Scenario: {scenario.name}</strong> | Budget: ₹{scenario.budget} | Ingredients: {scenario.ingredients?.join(', ')}
