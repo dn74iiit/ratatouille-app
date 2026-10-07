@@ -1603,7 +1603,14 @@ def generate_fast_qwen(request: RecipeRequest):
             "is_vegan": request.is_vegan,
             "initial_cvs_score": initial_cvs_score,
             "final_cvs_score": final_cvs_score,
-            "self_correction_attempts": attempt, "latency": total_time, "model": actual_model, "budget": request.budget, "city": request.state
+            "self_correction_attempts": attempt,
+            "latency": total_time,
+            "model": actual_model,
+            "budget": request.budget,
+            "city": request.state,
+            "judge_critique": judge_result.get("critique") if 'judge_result' in locals() else None,
+            "graph_context": graph_context if 'graph_context' in locals() else {},
+            "few_shot_examples": few_shot_examples if 'few_shot_examples' in locals() else []
         }
         yield f"data: {json.dumps({'step': 'complete', 'result': final_result})}\n\n"
 
