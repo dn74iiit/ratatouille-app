@@ -1729,3 +1729,16 @@ async def generate_fast_budget(request: RecipeRequest):
         
     return StreamingResponse(generate(), media_type="text/event-stream")
 
+@app.get("/benchmark-reports")
+async def get_benchmark_reports():
+    """Fetches benchmark run data for the analysis tab."""
+    if db is None:
+        return {"status": "error", "message": "MongoDB not connected"}
+    try:
+        cursor = db.benchmark_runs.find().sort("Timestamp", -1)
+        runs = await cursor.to_list(length=1000)
+        for run in runs:
+            run["_id"] = str(run["_id"])
+        return {"status": "success", "data": runs}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

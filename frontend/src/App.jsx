@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './index.css';
 import { Search, X, ShoppingBasket, QrCode, Link as LinkIcon } from 'lucide-react';
 import QwenDashboard from './QwenDashboard';
+import ReportsTab from './ReportsTab';
 
 const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8000' : 'https://ratatouille-backend.onrender.com';
 
@@ -508,6 +509,13 @@ function App() {
                 style={{ color: '#4ade80' }}
               >
                 vs Qwen ⚡
+              </button>
+              <button 
+                className={`nav-tab ${viewMode === 'reports' ? 'active' : ''}`}
+                onClick={() => setViewMode('reports')}
+                style={{ color: '#818cf8', fontWeight: 'bold' }}
+              >
+                Analysis & Reports 📊
               </button>
             </div>
           </div>
@@ -1070,6 +1078,12 @@ function App() {
               })}
             </div>
           )}
+        </div>
+      )}
+
+      {viewMode === 'reports' && (
+        <div className="main-panel fade-in" style={{ padding: '2rem 1rem' }}>
+          <ReportsTab backendUrl={BACKEND_URL} />
         </div>
       )}
 
