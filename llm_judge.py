@@ -99,13 +99,19 @@ class RecipeJudge:
             }
         
     def _build_judge_prompt(self, recipe_text, context):
+        indian_pantry_staples = [
+            "salt", "water", "oil", "turmeric", "cumin seeds", "mustard seeds", 
+            "red chili powder", "coriander powder", "garam masala", "black pepper"
+        ]
+        
         prompt = (
             "You are an expert Culinary Judge.\n"
             "Evaluate the following recipe draft based on these criteria:\n"
-            "1. NO HALLUCINATIONS: Does it use ingredients outside the allowed list?\n"
+            "1. NO HALLUCINATIONS: Does it use ingredients outside the allowed list or allowed pantry staples?\n"
             "2. LOGICAL FLOW: Are the steps physically possible (e.g. you cannot fry something that is liquid without a pan)?\n"
             "3. WORKFLOW: Did it generally follow the suggested techniques (e.g. boiling, chopping)?\n\n"
-            f"[ALLOWED INGREDIENTS]: {', '.join(context.get('input_ingredients', []) + context.get('recommended_pairings', []))}\n\n"
+            f"[ALLOWED INGREDIENTS]: {', '.join(context.get('input_ingredients', []) + context.get('recommended_pairings', []))}\n"
+            f"[ALLOWED PANTRY STAPLES]: {', '.join(indian_pantry_staples)}\n\n"
             f"[RECIPE DRAFT]:\n{recipe_text}\n\n"
             "Provide a 'Culinary Validity Score' from 0.0 to 1.0.\n"
             "If the score is less than 0.8, provide a strict 1-sentence CRITIQUE explaining what must be fixed.\n"
