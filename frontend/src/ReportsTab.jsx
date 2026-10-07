@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, ZAxis } from 'recharts';
 
 export default function ReportsTab({ backendUrl }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  const [yAxisSelection, setYAxisSelection] = useState('avgLatency');
 
   useEffect(() => {
     fetch(`${backendUrl}/benchmark-reports`)
@@ -23,95 +25,145 @@ export default function ReportsTab({ backendUrl }) {
   if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading benchmark data...</div>;
   if (!data || data.length === 0) return <div style={{ padding: '2rem', textAlign: 'center' }}>No benchmark data found. Run python benchmark_groq.py!</div>;
 
-  // Aggregate Data
-  const pipelines = ["Bare Qwen", "Budget Qwen", "Fast Qwen"]; // Fast Qwen = Full Agentic
+  // Actual Pipeline names used in benchmark_groq.py
+  const pipelines = ["Groq Bare", "Groq Budget", "Groq Full (Agentic)"];
+  
   const stats = pipelines.map(pipe => {
     const pipeData = data.filter(d => d.Pipeline === pipe);
     const count = pipeData.length;
+    
+    // Parse CVS string to float (it might be "N/A" if it failed)
+    const validCvsData = pipeData.filter(d => d["CVS Score"] !== "N/A" && typeof d["CVS Score"] === 'number');
     const avgLatency = count ? pipeData.reduce((acc, curr) => acc + (curr["Latency (sec)"] || 0), 0) / count : 0;
-    const avgCVS = count ? pipeData.reduce((acc, curr) => acc + (curr["CVS Score"] || 0), 0) / count : 0;
+    const avgCVS = validCvsData.length ? validCvsData.reduce((acc, curr) => acc + curr["CVS Score"], 0) / validCvsData.length : 0;
     const totalCorrections = pipeData.reduce((acc, curr) => acc + (curr["Self_Correction_Attempts"] || 0), 0);
     const avgCorrections = count ? totalCorrections / count : 0;
     
-    // Calculate Budget Fail Rate (Where Budget Handled == 'No' or Status == 'Error')
-    const budgetFailures = pipeData.filter(d => d["Budget Handled"] === "No" || d.Status === "Error").length;
+    const budgetFailures = pipeData.filter(d => d["Budget Handled"] === "No" || d.Status !== "Success").length;
+    const successRate = count ? ((count - budgetFailures) / count) * 100 : 0;
     
     return {
-      name: pipe.replace(' Qwen', ''),
+      name: pipe,
       avgLatency: parseFloat(avgLatency.toFixed(2)),
       avgCVS: parseFloat(avgCVS.toFixed(2)),
       avgCorrections: parseFloat(avgCorrections.toFixed(2)),
+      successRate: parseFloat(successRate.toFixed(1)),
       totalRuns: count,
       budgetFailures: budgetFailures
     };
   });
 
+  // Group data by Scenario for Side-by-Side Comparison
+  const scenariosMap = {};
+  data.forEach(row => {
+    if (!scenariosMap[row.Scenario]) {
+        scenariosMap[row.Scenario] = { 
+            name: row.Scenario, 
+            ingredients: row.Input_Ingredients,
+            budget: row.Budget 
+        };
+    }
+    scenariosMap[row.Scenario][row.Pipeline] = row;
+  });
+  const groupedScenarios = Object.values(scenariosMap);
+
+  const yAxisConfig = {
+      avgLatency: { label: "Latency (sec)", color: "#3b82f6", domain: ['auto', 'auto'] },
+      avgCVS: { label: "Culinary Validity Score", color: "#10b981", domain: [0, 1] },
+      avgCorrections: { label: "Avg Judge Loops", color: "#f59e0b", domain: ['auto', 'auto'] },
+      successRate: { label: "Budget & Rules Success (%)", color: "#8b5cf6", domain: [0, 100] }
+  };
+
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '1rem', background: '#fff', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+    <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '1rem', background: '#fff', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
       <h2 style={{ textAlign: 'center', marginBottom: '2rem', color: '#1f2937' }}>Pipeline Evaluation Report</h2>
       
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', marginBottom: '3rem' }}>
-        
-        {/* Latency Chart */}
-        <div style={{ background: '#f9fafb', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-          <h3 style={{ textAlign: 'center', marginBottom: '1rem', color: '#4b5563' }}>Average Latency (Seconds)</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={stats} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="avgLatency" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Latency (s)" />
-            </BarChart>
-          </ResponsiveContainer>
-          <p style={{ fontSize: '0.85rem', color: '#6b7280', textAlign: 'center', marginTop: '0.5rem' }}>Lower is better. Shows the "Cost of Agents".</p>
+      <div style={{ background: '#f9fafb', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h3 style={{ margin: 0, color: '#4b5563' }}>Performance Chart</h3>
+            <div>
+                <label style={{ marginRight: '10px', fontWeight: 'bold' }}>Select Y-Axis Metric:</label>
+                <select 
+                    value={yAxisSelection} 
+                    onChange={(e) => setYAxisSelection(e.target.value)}
+                    style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                >
+                    <option value="avgLatency">Average Latency (Seconds)</option>
+                    <option value="avgCVS">Average CVS (Culinary Score)</option>
+                    <option value="avgCorrections">Average Judge Loops</option>
+                    <option value="successRate">Overall Success / Budget Handled (%)</option>
+                </select>
+            </div>
         </div>
-
-        {/* CVS Score Chart */}
-        <div style={{ background: '#f9fafb', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-          <h3 style={{ textAlign: 'center', marginBottom: '1rem', color: '#4b5563' }}>Average Culinary Validity Score (CVS)</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={stats} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" />
-              <YAxis domain={[0, 1]} />
-              <Tooltip />
-              <Bar dataKey="avgCVS" fill="#10b981" radius={[4, 4, 0, 0]} name="CVS Score (0-1)" />
-            </BarChart>
-          </ResponsiveContainer>
-          <p style={{ fontSize: '0.85rem', color: '#6b7280', textAlign: 'center', marginTop: '0.5rem' }}>Higher is better. 1.0 means no culinary hallucinations.</p>
-        </div>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={stats} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="name" />
+            <YAxis domain={yAxisConfig[yAxisSelection].domain} />
+            <Tooltip />
+            <Bar dataKey={yAxisSelection} fill={yAxisConfig[yAxisSelection].color} radius={[4, 4, 0, 0]} name={yAxisConfig[yAxisSelection].label} />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
 
-      <h3 style={{ borderBottom: '2px solid #e5e7eb', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Raw Data & Granular Step Times</h3>
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-          <thead>
-            <tr style={{ background: '#f3f4f6', textAlign: 'left' }}>
-              <th style={{ padding: '0.75rem', borderBottom: '1px solid #e5e7eb' }}>Timestamp</th>
-              <th style={{ padding: '0.75rem', borderBottom: '1px solid #e5e7eb' }}>Pipeline</th>
-              <th style={{ padding: '0.75rem', borderBottom: '1px solid #e5e7eb' }}>Total Time</th>
-              <th style={{ padding: '0.75rem', borderBottom: '1px solid #e5e7eb' }}>SciPy Cost</th>
-              <th style={{ padding: '0.75rem', borderBottom: '1px solid #e5e7eb' }}>FAISS/Graph Cost</th>
-              <th style={{ padding: '0.75rem', borderBottom: '1px solid #e5e7eb' }}>Retries</th>
-              <th style={{ padding: '0.75rem', borderBottom: '1px solid #e5e7eb' }}>CVS</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.slice(0, 50).map((row, idx) => (
-              <tr key={idx} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                <td style={{ padding: '0.75rem' }}>{new Date(row.Timestamp * 1000).toLocaleTimeString()}</td>
-                <td style={{ padding: '0.75rem', fontWeight: '500' }}>{row.Pipeline.replace(' Qwen', '')}</td>
-                <td style={{ padding: '0.75rem' }}>{(row["Latency (sec)"] || 0).toFixed(2)}s</td>
-                <td style={{ padding: '0.75rem' }}>{row.Granular_Step_Times?.optimization_sec ? `${row.Granular_Step_Times.optimization_sec.toFixed(3)}s` : '-'}</td>
-                <td style={{ padding: '0.75rem' }}>{row.Granular_Step_Times?.retrieval_sec ? `${row.Granular_Step_Times.retrieval_sec.toFixed(3)}s` : '-'}</td>
-                <td style={{ padding: '0.75rem' }}>{row.Self_Correction_Attempts || 0}</td>
-                <td style={{ padding: '0.75rem', color: row["CVS Score"] < 0.8 ? '#ef4444' : '#10b981' }}>{row["CVS Score"]}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {data.length > 50 && <p style={{ textAlign: 'center', marginTop: '1rem', color: '#6b7280', fontSize: '0.85rem' }}>Showing latest 50 records...</p>}
+      <h3 style={{ borderBottom: '2px solid #e5e7eb', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Side-by-Side Horizontal Comparison</h3>
+      
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          {groupedScenarios.slice(0, 20).map((scenario, idx) => (
+              <div key={idx} style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                  <div style={{ background: '#f3f4f6', padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>
+                      <strong>Scenario: {scenario.name}</strong> | Budget: ₹{scenario.budget} | Ingredients: {scenario.ingredients?.join(', ')}
+                  </div>
+                  <div style={{ display: 'flex', width: '100%' }}>
+                      {pipelines.map((pipe) => {
+                          const run = scenario[pipe];
+                          return (
+                              <div key={pipe} style={{ flex: 1, padding: '1rem', borderRight: '1px solid #e5e7eb', minWidth: '33%' }}>
+                                  <h4 style={{ textAlign: 'center', color: '#374151', borderBottom: '1px dashed #ccc', paddingBottom: '0.5rem' }}>{pipe}</h4>
+                                  {!run ? <p style={{ color: '#9ca3af' }}>No data for this scenario yet.</p> : (
+                                      <div style={{ fontSize: '0.85rem' }}>
+                                          <p><strong>Status:</strong> <span style={{ color: run.Status === 'Success' ? 'green' : 'red' }}>{run.Status}</span></p>
+                                          <p><strong>Latency:</strong> {run["Latency (sec)"]}s</p>
+                                          <p><strong>CVS Score:</strong> {run["CVS Score"]}</p>
+                                          <p><strong>Judge Loops:</strong> {run.Self_Correction_Attempts}</p>
+                                          
+                                          {run.Calculated_Ingredients_Weights?.length > 0 && (
+                                              <div style={{ marginTop: '0.5rem' }}>
+                                                  <strong>Calculated Budgeted Weights:</strong>
+                                                  <ul style={{ paddingLeft: '1.2rem', margin: '0.2rem 0', color: '#4b5563' }}>
+                                                      {run.Calculated_Ingredients_Weights.map((w, i) => <li key={i}>{w}</li>)}
+                                                  </ul>
+                                              </div>
+                                          )}
+
+                                          {run.Judge_Critiques?.length > 0 && (
+                                              <div style={{ marginTop: '0.5rem' }}>
+                                                  <strong>Judge Critiques (Trace):</strong>
+                                                  <ul style={{ paddingLeft: '1.2rem', margin: '0.2rem 0', color: '#b91c1c' }}>
+                                                      {run.Judge_Critiques.map((c, i) => <li key={i}>{c}</li>)}
+                                                  </ul>
+                                              </div>
+                                          )}
+
+                                          <div style={{ marginTop: '1rem' }}>
+                                              <strong>Generated Recipe:</strong>
+                                              <div style={{ 
+                                                  background: '#f9fafb', padding: '0.5rem', marginTop: '0.3rem', 
+                                                  maxHeight: '300px', overflowY: 'auto', border: '1px solid #e5e7eb',
+                                                  whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '0.8rem'
+                                              }}>
+                                                  {run.Generated_Recipe || "Failed to generate recipe."}
+                                              </div>
+                                          </div>
+                                      </div>
+                                  )}
+                              </div>
+                          )
+                      })}
+                  </div>
+              </div>
+          ))}
+          {groupedScenarios.length > 20 && <p style={{ textAlign: 'center', color: '#6b7280' }}>Showing latest 20 grouped scenarios...</p>}
       </div>
     </div>
   );
