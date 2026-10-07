@@ -162,32 +162,17 @@ class GraphRetriever:
         if techniques:
             query_text += f" Prepared by {', '.join(techniques[:3])}."
 
-        # Encode query using HF API to save RAM
-        import requests
-        import time
-        api_url = "https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2/pipeline/feature-extraction"
-        hf_token = os.environ.get("HF_TOKEN")
-        
-        if not hf_token:
-            print("[WARN] HF_TOKEN not found in environment, cannot perform vector search.")
-            return []
+        # Use local sentence-transformer (free, infinite rate limit, ~80MB RAM)
+        try:
+            from sentence_transformers import SentenceTransformer
+            if not hasattr(self, 'encoder_model'):
+                self.encoder_model = SentenceTransformer('all-MiniLM-L6-v2')
             
-        headers = {"Authorization": f"Bearer {hf_token}"}
-        query_vector = None
-        
-        for attempt in range(1, 4):
-            try:
-                response = requests.post(api_url, headers=headers, json={"inputs": [query_text], "options": {"wait_for_model": True}}, timeout=15)
-                response.raise_for_status()
-                query_vector = np.array(response.json()).astype('float32')
-                if len(query_vector.shape) == 1:
-                    query_vector = np.expand_dims(query_vector, axis=0)
-                break # Success
-            except Exception as e:
-                print(f"[WARN] Failed to get embedding from HF API on attempt {attempt}: {e}")
-                if attempt < 3:
-                    time.sleep(2)
-        
+            embedding = self.encoder_model.encode([query_text])
+            query_vector = np.array(embedding).astype('float32')
+        except Exception as e:
+            print(f"[WARN] Failed to generate local embedding: {e}")
+            query_vector = None
         if query_vector is None:
             print("[WARN] Vector Search offline. Falling back to Ingredient Overlap Search.")
             query_set = set([i.lower().strip() for i in ingredients])
