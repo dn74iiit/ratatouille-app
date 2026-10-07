@@ -141,7 +141,7 @@ def run_benchmark():
                     "State": case["state"],
                     "Generated_Recipe": result_data.get("recipe", "") if final_event and "recipe" in result_data else "",
                     "Self_Correction_Attempts": result_data.get("self_correction_attempts", 0) if final_event else 0,
-                    "Judge_Critique": result_data.get("judge_critique", None) if final_event else None,
+                    "Judge_Critiques": result_data.get("judge_critiques", []) if final_event else [],
                     "Graph_Context": result_data.get("graph_context", {}) if final_event else {},
                     "Few_Shot_Examples": result_data.get("few_shot_examples", []) if final_event else [],
                     "Timestamp": time.time()

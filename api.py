@@ -1485,6 +1485,7 @@ def generate_fast_qwen(request: RecipeRequest):
         
         initial_cvs_score = None
         final_cvs_score = None
+        all_critiques = []
         
         client = get_inference_client()
         qwen_model = "qwen-2.5-32b"
@@ -1520,6 +1521,8 @@ def generate_fast_qwen(request: RecipeRequest):
             judge_start = time.time()
             judge_result = recipe_judge.evaluate_recipe(ai_text, graph_context)
             times[f'judge_sec_attempt_{attempt}'] = time.time() - judge_start
+            
+            all_critiques.append(f"Attempt {attempt}: {judge_result.get('critique')}")
             
             if judge_result.get("is_valid"):
                 print(f"[JUDGE] Passed on attempt {attempt}: {judge_result.get('critique')}")
@@ -1608,7 +1611,7 @@ def generate_fast_qwen(request: RecipeRequest):
             "model": actual_model,
             "budget": request.budget,
             "city": request.state,
-            "judge_critique": judge_result.get("critique") if 'judge_result' in locals() else None,
+            "judge_critiques": all_critiques,
             "graph_context": graph_context if 'graph_context' in locals() else {},
             "few_shot_examples": few_shot_examples if 'few_shot_examples' in locals() else []
         }
