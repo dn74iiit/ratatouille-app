@@ -1355,42 +1355,257 @@ async def generate_agentic_vegan(request: RecipeRequest):
     return StreamingResponse(generate(), media_type="text/event-stream")
 
 @app.post("/generate-fast-qwen")
-async def generate_fast_qwen(request: RecipeRequest):
-    start_time = time.time()
-    ingr_text = "\n".join(f"- {i}" for i in request.ingredients)
-    
-    client = get_inference_client()
-    qwen_model = "qwen-2.5-32b"
-    try:
-        available_models = [m.id for m in client.models.list().data]
-        qwen_model = next((m for m in available_models if 'qwen' in m.lower()), "mixtral-8x7b-32768")
-    except:
-        pass
+def generate_fast_qwen(request: RecipeRequest):
+    def event_stream():
+        yield f"data: {json.dumps({'step': 'starting', 'message': 'Initializing Groq Agentic Pipeline...'})}\n\n"
         
-    vegan_directive = "YOU MUST ENSURE THIS RECIPE IS 100% STRICTLY VEGAN. DO NOT USE ANY ANIMAL PRODUCTS." if request.is_vegan else ""
-    
-    prompt = (
-        f"You are a master chef. Create a delicious recipe using these ingredients:\n"
-        f"{ingr_text}\n\n"
-        f"{vegan_directive}\n"
-        f"Output ONLY the title on the first line starting with '### TITLE:' and the numbered instructions.\n"
-    )
-    
-    res = client.chat.completions.create(
-        messages=[{"role": "user", "content": prompt}],
-        model=qwen_model,
-        max_completion_tokens=500,
-        temperature=0.7
-    )
-    
-    recipe_text = res.choices[0].message.content.strip()
-    actual_model = res.model if hasattr(res, "model") else qwen_model
-    
-    def generate():
-        yield f"data: {json.dumps({'step': 'generating', 'message': f'Turbo Generating with {actual_model}...'})}\n\n"
-        time.sleep(0.5)
-        latency = time.time() - start_time
-        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': request.ingredients, 'archetype': 'Fast Qwen', 'is_vegan': request.is_vegan, 'attempts': 0, 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
+        start_time = time.time()
+        times = {}
+
+        # Automatically split by comma in case the user sends one giant string
+        clean_ingredients = []
+        for item in request.ingredients:
+            clean_ingredients.extend([i.strip() for i in item.split(',') if i.strip()])
+
+        if request.is_vegan:
+            yield f"data: {json.dumps({'step': 'veganizing', 'message': 'Running Vegan Substitution Engine...'})}\n\n"
+            step_start = time.time()
+            
+            import vegan_engine
+            archetype_fast = _classify_archetype_fast([parse_ingredient_input(i)[1] for i in clean_ingredients])
+            veganized_ingredients = []
+            for raw_ing in clean_ingredients:
+                qty, name = parse_ingredient_input(raw_ing)
+                name_lower = name.lower().strip()
+                canonical_name = canonicalize_ingredient(name_lower)
+                if canonical_name != name_lower:
+                    print(f"[CANON] '{name_lower}' → '{canonical_name}'")
+                blueprint = None
+
+                if vegan_alternatives_sync is not None:
+                    try:
+                        db_doc = vegan_alternatives_sync.find_one({"_id": canonical_name})
+                        if db_doc and db_doc.get("best_vegan_substitute"):
+                            blueprint = {
+                                "status": "success",
+                                "original_ingredient": name,
+                                "best_vegan_substitute": db_doc["best_vegan_substitute"],
+                                "match_score": db_doc.get("match_score", 0),
+                                "compensation_blueprint": db_doc.get("compensation_blueprint", {
+                                    "auxiliary_additions": [],
+                                    "techniques": [],
+                                    "spice_bridge": []
+                                })
+                            }
+                            print(f"[DB HIT] '{canonical_name}' → '{db_doc['best_vegan_substitute']}' (score: {db_doc.get('match_score', '?')})")
+                    except Exception as e:
+                        print(f"[DB WARN] vegan_alternatives lookup failed for '{canonical_name}': {e}")
+
+                if blueprint is None:
+                    try:
+                        features = vegan_engine.load_features()
+                        if canonical_name in features or vegan_engine.classify_by_keyword(canonical_name) is not None:
+                            blueprint = vegan_engine.generate_vegan_blueprint(canonical_name, archetype=archetype_fast)
+                            print(f"[LOCAL HIT] '{canonical_name}' -> '{blueprint.get('best_vegan_substitute', 'N/A')}'")
+                        else:
+                            print(f"[SKIP] '{canonical_name}' not in DB and no static fallback - keeping as-is")
+                            blueprint = {"status": "unknown"}
+                    except Exception as e:
+                        print(f"[ENGINE ERROR] vegan_engine failed for '{canonical_name}': {e}")
+                        blueprint = {"status": "error"}
+
+
+                if blueprint and blueprint.get("status") == "success" and \
+                   blueprint.get("original_ingredient") != blueprint.get("best_vegan_substitute"):
+                    substitute = blueprint["best_vegan_substitute"]
+                    veganized_ingredients.append(f"{qty}g {substitute}" if qty is not None else substitute)
+                    for add in blueprint.get("compensation_blueprint", {}).get("auxiliary_additions", []):
+                        veganized_ingredients.append(f"{add['amount']} {add['name']}")
+                    for spice in blueprint.get("compensation_blueprint", {}).get("spice_bridge", []):
+                        veganized_ingredients.append(spice["spice"])
+                else:
+                    veganized_ingredients.append(raw_ing)
+
+            clean_ingredients = veganized_ingredients
+            times['veganization_sec'] = time.time() - step_start
+
+        yield f"data: {json.dumps({'step': 'optimizing', 'message': f'Running Cost Constraint Optimization (Budget: ₹{request.budget})...'})}\n\n"
+        step_start = time.time()
+        print(f"[] Running Cost Constraint Optimization for Budget: INR {request.budget}...")
+        calculated_ingredients, archetype = optimize_recipe_v2(clean_ingredients, request.budget, request.servings, request.state)
+
+        if not calculated_ingredients:
+            yield f"data: {json.dumps({'step': 'error', 'message': 'The provided budget is mathematically impossible for these ingredients at current market prices.'})}\n\n"
+            return
+
+        times['optimization_sec'] = time.time() - step_start
+
+        ingr_text = "\n".join(f"- {i}" for i in calculated_ingredients)
+
+        # Retrieve Graph Context
+        if graph_retriever is not None:
+            yield f"data: {json.dumps({'step': 'retrieving_context', 'message': 'Retrieving Context from Hybrid Graph...'})}\n\n"
+            step_start = time.time()
+            retrieval_ings = [parse_ingredient_input(r)[1] for r in clean_ingredients]
+            graph_context = graph_retriever.retrieve_context(retrieval_ings)
+            injected_context = graph_retriever.generate_prompt_injection(graph_context)
+            
+            few_shot_examples = graph_retriever.retrieve_few_shot_examples(graph_context, archetype, k=2)
+            if few_shot_examples:
+                injected_context += "\n<FEW_SHOT_EXAMPLES>\n"
+                injected_context += "Here are historically accurate examples of how this archetype is prepared:\n\n"
+                print(f"[FAISS] Successfully retrieved {len(few_shot_examples)} Semantic Vector Examples!")
+                for idx, ex in enumerate(few_shot_examples):
+                    ex_title = ex.split('\n')[0].replace('TITLE: ', '')
+                    print(f"   -> Example {idx+1}: {ex_title}")
+                    injected_context += f"Example {idx+1}:\n{ex}\n\n"
+                injected_context += "</FEW_SHOT_EXAMPLES>\n"
+                
+            times['retrieval_sec'] = time.time() - step_start
+        else:
+            injected_context = ""
+            graph_context = {}
+
+        base_prompt = (
+            f"<|begin_of_text|>System: You are a strict chef. You MUST explicitly use EVERY single ingredient provided in the list below in your recipe directions.\n"
+            f"CRITICAL RULES:\n"
+            f"1. DO NOT copy the FEW_SHOT_EXAMPLES. They are ONLY for structural reference.\n"
+            f"2. DO NOT output variations, alternative fillings, personal notes, or reviews.\n"
+            f"3. Output ONLY the TITLE and the numbered DIRECTIONS.\n\n"
+            f"{injected_context}\n\n"
+            f"### INGREDIENTS:\n"
+            f"{ingr_text}\n"
+            f"### TITLE:\n"
+        )
+        print(f"[AI-GROQ] Generating final recipe for archetype: {archetype}")
+
+        max_retries = 3
+        ai_text = ""
+        current_prompt = base_prompt
         
-    return StreamingResponse(generate(), media_type="text/event-stream")
+        initial_cvs_score = None
+        final_cvs_score = None
+        
+        client = get_inference_client()
+        qwen_model = "qwen-2.5-32b"
+        try:
+            available_models = [m.id for m in client.models.list().data]
+            qwen_model = next((m for m in available_models if 'qwen' in m.lower()), "mixtral-8x7b-32768")
+        except:
+            pass
+            
+        actual_model = qwen_model
+        
+        for attempt in range(1, max_retries + 1):
+            yield f"data: {json.dumps({'step': 'generating', 'message': f'Generating AI Recipe (Attempt {attempt}/{max_retries})...'})}\n\n"
+            step_start = time.time()
+            
+            res = client.chat.completions.create(
+                messages=[{"role": "user", "content": current_prompt}],
+                model=qwen_model,
+                max_completion_tokens=500,
+                temperature=0.6
+            )
+            
+            ai_text = res.choices[0].message.content.strip()
+            if hasattr(res, "model"):
+                actual_model = res.model
+                
+            times[f'generation_sec_attempt_{attempt}'] = time.time() - step_start
+            
+            if recipe_judge is None:
+                break
+                
+            yield f"data: {json.dumps({'step': 'judging', 'message': f'Micro-Validation: Judging Recipe...'})}\n\n"
+            judge_start = time.time()
+            judge_result = recipe_judge.evaluate_recipe(ai_text, graph_context)
+            times[f'judge_sec_attempt_{attempt}'] = time.time() - judge_start
+            
+            if judge_result.get("is_valid"):
+                print(f"[JUDGE] Passed on attempt {attempt}: {judge_result.get('critique')}")
+                if initial_cvs_score is None: initial_cvs_score = judge_result.get("score")
+                final_cvs_score = judge_result.get("score")
+                break
+            else:
+                print(f"[JUDGE] Failed on attempt {attempt}: {judge_result.get('critique')}")
+                if initial_cvs_score is None: initial_cvs_score = judge_result.get("score")
+                final_cvs_score = judge_result.get("score")
+                if attempt < max_retries:
+                    yield f"data: {json.dumps({'step': 'correcting', 'message': f'Critique received. Regenerating Recipe...'})}\n\n"
+                    current_prompt = (
+                        f"{base_prompt}\n"
+                        f"[PREVIOUS DRAFT REJECTED BY JUDGE]:\n{ai_text}\n"
+                        f"[JUDGE CRITIQUE TO FIX]: {judge_result.get('critique')}\n"
+                        f"Rewrite the recipe, strictly following the critique.\n"
+                        f"### TITLE:\n"
+                    )
+
+        print(f"DEBUG RAW AI_TEXT: {repr(ai_text)}")
+
+        stop_tokens = ['<|eot_id|>', '<|end_of_text|>', '<|begin_of_text|>', '\n### INGREDIENTS:']
+        for t in stop_tokens:
+            if t in ai_text:
+                ai_text = ai_text.split(t)[0].strip()
+
+        if "### TITLE:\n" in ai_text:
+            ai_text = ai_text.split("### TITLE:\n")[1].strip()
+            
+        import re
+        ai_text = re.split(r'\n\d+\.\s*(?:Variation|Note|To serve|Serve|Enjoy)', ai_text, flags=re.IGNORECASE)[0]
+        
+        cut_phrases = [
+            "\nEnjoy!", "\nServe hot", "\nBon Apetit", "\nChef's Note:", 
+            "\nVariations:", "\nServing suggestion:", "\nNote:",
+            "\nVariation #", "\nTo serve"
+        ]
+        for phrase in cut_phrases:
+            if phrase.lower() in ai_text.lower():
+                ai_text = re.split(re.escape(phrase), ai_text, flags=re.IGNORECASE)[0].strip()
+
+        if "### DIRECTIONS:\n" in ai_text:
+            parts = ai_text.split("### DIRECTIONS:\n")
+            title_part = parts[0]
+            directions_part = parts[1]
+            if "\n### " in directions_part:
+                directions_part = directions_part.split("\n### ")[0]
+            ai_text = f"{title_part}### DIRECTIONS:\n{directions_part}".strip()
+            
+        total_time = time.time() - start_time
+        
+        if generation_logs_sync is not None:
+            try:
+                log_entry = {
+                    "timestamp": time.time(),
+                    "model_version": "groq_fast",
+                    "is_vegan": request.is_vegan,
+                    "archetype": archetype,
+                    "budget": request.budget,
+                    "servings": request.servings,
+                    "state": request.state,
+                    "times_sec": times,
+                    "total_time_sec": total_time,
+                    "ingredient_count": len(clean_ingredients),
+                    "initial_cvs_score": initial_cvs_score,
+                    "final_cvs_score": final_cvs_score,
+                    "self_correction_attempts": attempt, "latency": total_time, "model": actual_model, "budget": request.budget, "city": request.state
+                }
+                generation_logs_sync.insert_one(log_entry)
+                print(f"[OK] Generation log saved to DB. Total time: {total_time:.2f}s")
+            except Exception as e:
+                print(f"[WARN] Failed to save generation log: {e}")
+
+        final_result = {
+            "status": "success",
+            "archetype": archetype,
+            "calculated_ingredients": calculated_ingredients,
+            "recipe": ai_text,
+            "image_url": get_random_banner(archetype),
+            "is_vegan": request.is_vegan,
+            "initial_cvs_score": initial_cvs_score,
+            "final_cvs_score": final_cvs_score,
+            "self_correction_attempts": attempt, "latency": total_time, "model": actual_model, "budget": request.budget, "city": request.state
+        }
+        yield f"data: {json.dumps({'step': 'complete', 'result': final_result})}\n\n"
+
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
 
