@@ -109,7 +109,7 @@ export default function ReportsTab({ backendUrl }) {
       <h3 style={{ borderBottom: '2px solid #e5e7eb', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Side-by-Side Horizontal Comparison</h3>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          {groupedScenarios.slice(0, 20).map((scenario, idx) => (
+          {groupedScenarios.map((scenario, idx) => (
               <div key={idx} style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
                   <div style={{ background: '#f3f4f6', padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>
                       <strong>Scenario: {scenario.name}</strong> | Budget: ₹{scenario.budget} | Ingredients: {scenario.ingredients?.join(', ')}
@@ -163,7 +163,6 @@ export default function ReportsTab({ backendUrl }) {
                   </div>
               </div>
           ))}
-          {groupedScenarios.length > 20 && <p style={{ textAlign: 'center', color: '#6b7280' }}>Showing latest 20 grouped scenarios...</p>}
       </div>
     </div>
   );
