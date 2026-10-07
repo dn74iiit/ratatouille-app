@@ -1609,3 +1609,108 @@ def generate_fast_qwen(request: RecipeRequest):
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")
 
+
+@app.post("/generate-fast-bare")
+async def generate_fast_bare(request: RecipeRequest):
+    """
+    Groq (Bare) 🚀 Pipeline — Zero agentic features.
+    No graph, no FAISS, no judge, no SciPy. Just raw LLM generation.
+    """
+    start_time = time.time()
+    ingr_text = "\n".join(f"- {i}" for i in request.ingredients)
+    
+    client = get_inference_client()
+    qwen_model = "qwen-2.5-32b"
+    try:
+        available_models = [m.id for m in client.models.list().data]
+        qwen_model = next((m for m in available_models if 'qwen' in m.lower()), "mixtral-8x7b-32768")
+    except:
+        pass
+        
+    vegan_directive = "YOU MUST ENSURE THIS RECIPE IS 100% STRICTLY VEGAN. DO NOT USE ANY ANIMAL PRODUCTS." if request.is_vegan else ""
+    
+    prompt = (
+        f"You are a master chef. Create a delicious recipe using these ingredients:\n"
+        f"{ingr_text}\n\n"
+        f"{vegan_directive}\n"
+        f"Output ONLY the title on the first line starting with '### TITLE:' and the numbered instructions.\n"
+    )
+    
+    res = client.chat.completions.create(
+        messages=[{"role": "user", "content": prompt}],
+        model=qwen_model,
+        max_completion_tokens=500,
+        temperature=0.7
+    )
+    
+    recipe_text = res.choices[0].message.content.strip()
+    actual_model = res.model if hasattr(res, "model") else qwen_model
+    
+    def generate():
+        yield f"data: {json.dumps({'step': 'generating', 'message': f'Turbo Generating Bare with {actual_model}...'})}\n\n"
+        time.sleep(0.5)
+        latency = time.time() - start_time
+        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': request.ingredients, 'archetype': 'Bare Qwen', 'is_vegan': request.is_vegan, 'attempts': 0, 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
+        
+    return StreamingResponse(generate(), media_type="text/event-stream")
+
+
+@app.post("/generate-fast-budget")
+async def generate_fast_budget(request: RecipeRequest):
+    """
+    Groq (Budget) 💰 Pipeline — SciPy optimization only.
+    No graph, no FAISS, no judge. Just budget optimization + LLM generation.
+    """
+    start_time = time.time()
+    
+    clean_ingredients = []
+    for item in request.ingredients:
+        clean_ingredients.extend([i.strip() for i in item.split(',') if i.strip()])
+        
+    def generate():
+        yield f"data: {json.dumps({'step': 'starting', 'message': 'Initializing Budget Pipeline...'})}\n\n"
+        time.sleep(0.5)
+        yield f"data: {json.dumps({'step': 'optimizing', 'message': f'Running Cost Constraint Optimization (Budget: ₹{request.budget})...'})}\n\n"
+        
+        calculated_ingredients, archetype = optimize_recipe_v2(clean_ingredients, request.budget, request.servings, request.state)
+        
+        if not calculated_ingredients:
+            yield f"data: {json.dumps({'step': 'error', 'message': 'The provided budget is mathematically impossible for these ingredients at current market prices.'})}\n\n"
+            return
+            
+        ingr_text = "\n".join(f"- {i}" for i in calculated_ingredients)
+        
+        client = get_inference_client()
+        qwen_model = "qwen-2.5-32b"
+        try:
+            available_models = [m.id for m in client.models.list().data]
+            qwen_model = next((m for m in available_models if 'qwen' in m.lower()), "mixtral-8x7b-32768")
+        except:
+            pass
+            
+        vegan_directive = "YOU MUST ENSURE THIS RECIPE IS 100% STRICTLY VEGAN. DO NOT USE ANY ANIMAL PRODUCTS." if request.is_vegan else ""
+        
+        prompt = (
+            f"You are a master chef. Create a delicious budget recipe using these calculated ingredient quantities:\n"
+            f"{ingr_text}\n\n"
+            f"{vegan_directive}\n"
+            f"Output ONLY the title on the first line starting with '### TITLE:' and the numbered instructions.\n"
+        )
+        
+        yield f"data: {json.dumps({'step': 'generating', 'message': f'Generating Budget Recipe with {qwen_model}...'})}\n\n"
+        
+        res = client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model=qwen_model,
+            max_completion_tokens=500,
+            temperature=0.7
+        )
+        
+        recipe_text = res.choices[0].message.content.strip()
+        actual_model = res.model if hasattr(res, "model") else qwen_model
+        
+        latency = time.time() - start_time
+        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': calculated_ingredients, 'archetype': 'Budget Qwen', 'is_vegan': request.is_vegan, 'attempts': 0, 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
+        
+    return StreamingResponse(generate(), media_type="text/event-stream")
+

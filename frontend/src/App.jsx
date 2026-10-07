@@ -276,6 +276,26 @@ function App() {
           archetype: "Fast Qwen",
           is_vegan: isVegan
         };
+      } else if (modelVersion === 'qwen_bare') {
+        endpoint = `${BACKEND_URL}/generate-fast-bare`;
+        payload = {
+          ingredients: ingList,
+          budget: parseFloat(budget),
+          servings: parseInt(servings),
+          state: stateName,
+          archetype: "Bare Qwen",
+          is_vegan: isVegan
+        };
+      } else if (modelVersion === 'qwen_budget') {
+        endpoint = `${BACKEND_URL}/generate-fast-budget`;
+        payload = {
+          ingredients: ingList,
+          budget: parseFloat(budget),
+          servings: parseInt(servings),
+          state: stateName,
+          archetype: "Budget Qwen",
+          is_vegan: isVegan
+        };
       }
 
       const response = await fetch(endpoint, {
@@ -585,7 +605,9 @@ function App() {
               <div className="model-toggle" style={{ background: '#ffffff', borderRadius: '9999px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: '1px solid #f3f4f6', overflow: 'hidden' }}>
                 <button type="button" className={modelVersion === 'v8' ? 'active' : ''} onClick={() => setModelVersion('v8')}>V8</button>
                 <button type="button" className={modelVersion === 'v10' ? 'active' : ''} onClick={() => setModelVersion('v10')}>V10</button>
-                <button type="button" className={modelVersion === 'qwen' ? 'active' : ''} onClick={() => setModelVersion('qwen')} style={{ color: modelVersion === 'qwen' ? '#3b82f6' : 'inherit' }}>Groq (Fast) ⚡</button>
+                <button type="button" className={modelVersion === 'qwen' ? 'active' : ''} onClick={() => setModelVersion('qwen')} style={{ color: modelVersion === 'qwen' ? '#3b82f6' : 'inherit' }}>Groq (Full) ⚡</button>
+                <button type="button" className={modelVersion === 'qwen_budget' ? 'active' : ''} onClick={() => setModelVersion('qwen_budget')} style={{ color: modelVersion === 'qwen_budget' ? '#10b981' : 'inherit' }}>Groq (Budget) 💰</button>
+                <button type="button" className={modelVersion === 'qwen_bare' ? 'active' : ''} onClick={() => setModelVersion('qwen_bare')} style={{ color: modelVersion === 'qwen_bare' ? '#ef4444' : 'inherit' }}>Groq (Bare) 🚀</button>
               </div>
             </div>
 
@@ -607,7 +629,7 @@ function App() {
                 <div style={{ width: '100%', height: '8px', background: '#e5e7eb', borderRadius: '9999px', overflow: 'hidden' }}>
                   <div style={{ 
                     height: '100%', 
-                    background: modelVersion === 'qwen' ? '#3b82f6' : agenticVegan ? '#4ade80' : 'var(--primary)', 
+                    background: modelVersion.startsWith('qwen') ? '#3b82f6' : agenticVegan ? '#4ade80' : 'var(--primary)', 
                     width: (!stepMessage || stepMessage.includes('Initial')) ? '20%' : 
                            stepMessage.includes('Graph') ? '40%' : 
                            stepMessage.includes('Vegan') ? '60%' : 
