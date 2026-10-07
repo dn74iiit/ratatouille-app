@@ -22,8 +22,12 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from graph_retriever import GraphRetriever
 from llm_judge import RecipeJudge
 
-nltk.download('wordnet', quiet=True)
-nltk.download('omw-1.4', quiet=True)
+import os
+nltk_dir = os.path.join(os.getcwd(), "nltk_data")
+os.makedirs(nltk_dir, exist_ok=True)
+nltk.data.path.append(nltk_dir)
+nltk.download('wordnet', download_dir=nltk_dir, quiet=True)
+nltk.download('omw-1.4', download_dir=nltk_dir, quiet=True)
 
 # ============================================================
 # APP INIT
