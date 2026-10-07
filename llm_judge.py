@@ -34,7 +34,11 @@ class RecipeJudge:
         
         # Let's check for common hallucinated ingredients that ARE NOT in the allowed list
         # This is a sample list of common culprits SLMs hallucinate:
-        common_hallucinations = ['cream', 'milk', 'butter', 'cheese', 'sugar', 'flour', 'egg', 'eggs', 'tomato', 'onion', 'lemon']
+        common_hallucinations = [
+            'cream', 'milk', 'butter', 'cheese', 'sugar', 'flour', 'egg', 'eggs', 
+            'tomato', 'onion', 'lemon', 'beef', 'chicken', 'pork', 'meat', 'lamb', 
+            'mutton', 'fish', 'shrimp', 'bacon', 'sausage'
+        ]
         
         hallucinated_found = []
         recipe_words = self._extract_ingredients_from_text(recipe_text)
