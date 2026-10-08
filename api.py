@@ -1330,7 +1330,7 @@ class VeganRecipeJudge:
             client = get_inference_client()
             res = client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
-                model="llama-3.1-8b-instant",
+                model="qwen/qwen3.8-27b",
                 max_completion_tokens=150,
                 temperature=0.1
             )
@@ -1355,12 +1355,13 @@ async def generate_agentic_vegan(request: RecipeRequest):
     vegan_context = vegan_retriever.get_context(request.ingredients)
     
     base_prompt = (
-        f"System: You are a strict vegan chef. You MUST explicitly use EVERY single ingredient provided below.\n"
+        f"System: You are a strict Indian vegan chef. The user wants to cook a dish using the ingredients below, but some may be animal products.\n"
+        f"YOUR MISSION: You MUST completely remove any animal products and replace them using the exact RAG rules provided below. DO NOT use the original animal products in the final recipe.\n"
         f"CRITICAL RULES:\n"
         f"1. DO NOT output variations or notes.\n"
-        f"2. Output ONLY the TITLE and the numbered DIRECTIONS.\n\n"
+        f"2. Output ONLY the TITLE, an 'Ingredients' list (with the substituted vegan items, NOT the animal ones), and numbered DIRECTIONS.\n\n"
         f"{vegan_context}\n\n"
-        f"### INGREDIENTS:\n{ingr_text}\n\n### TITLE:\n"
+        f"### ORIGINAL USER INGREDIENTS (TO BE VEGANIZED):\n{ingr_text}\n\n### TITLE:\n"
     )
     
     current_prompt = base_prompt
