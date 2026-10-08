@@ -422,7 +422,7 @@ function App() {
                     archetype: data.archetype,
                     is_vegan: data.is_vegan,
                     agentic_attempts: data.attempts,
-                    image_url: getRandomBanner(data.archetype, data.is_vegan, data.recipe.split('\n')[0])
+                    image_url: ""
                   });
                 } else {
                   setResult(data.result);
