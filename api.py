@@ -1227,14 +1227,17 @@ import faiss
 from sentence_transformers import SentenceTransformer
 
 class VeganGraphRetriever:
-    """Simulates a specialized Vegan Knowledge Graph for Agentic Context Injection using FAISS RAG."""
+    """Simulates a specialized Vegan Knowledge Graph for Agentic Context Injection using FAISS RAG and Functional Mappings."""
     def __init__(self):
         self.index_path = os.path.join(os.path.dirname(__file__), "data", "vegan_knowledge.index")
         self.map_path = os.path.join(os.path.dirname(__file__), "data", "vegan_knowledge_map.json")
+        self.matrix_path = os.path.join(os.path.dirname(__file__), "data", "vegan_functional_matrix.json")
         self.model = None
         self.index = None
         self.knowledge_map = []
+        self.functional_matrix = {}
         
+        # Load FAISS
         try:
             if os.path.exists(self.index_path) and os.path.exists(self.map_path):
                 self.index = faiss.read_index(self.index_path)
@@ -1243,27 +1246,39 @@ class VeganGraphRetriever:
                 self.model = SentenceTransformer('all-MiniLM-L6-v2')
         except Exception as e:
             print(f"Warning: Could not load FAISS vegan knowledge: {e}")
+            
+        # Load JSON Matrix
+        try:
+            if os.path.exists(self.matrix_path):
+                with open(self.matrix_path, "r", encoding="utf-8") as f:
+                    self.functional_matrix = json.load(f)
+        except Exception as e:
+            print(f"Warning: Could not load vegan_functional_matrix.json: {e}")
 
     def get_context(self, ingredients):
         injected_rules = []
         
-        # If FAISS loaded successfully, perform Semantic Search
+        # 1. Structural Mapping Injection
+        for ing in ingredients:
+            ing_lower = ing.lower()
+            for key, data in self.functional_matrix.items():
+                if key in ing_lower:
+                    rule = f"CRITICAL MAPPING FOR {key.upper()}: Substitute with {data['substitute']}. {data['context']} Function: {data['function']}."
+                    if rule not in injected_rules:
+                        injected_rules.append(rule)
+        
+        # 2. FAISS Semantic Search
         if self.index and self.model and self.knowledge_map:
-            # Create a query from the ingredients
             query = "How to replace: " + ", ".join(ingredients)
             query_vector = self.model.encode([query])
-            
-            # Retrieve Top-2 closest culinary chunks
             distances, indices = self.index.search(np.array(query_vector), 2)
-            
             for idx in indices[0]:
                 if idx != -1 and idx < len(self.knowledge_map):
                     chunk = self.knowledge_map[idx]
-                    rule = f"RAG RETRIEVED TECHNIQUE: {chunk}"
+                    rule = f"CULINARY RAG TECHNIQUE: {chunk}"
                     if rule not in injected_rules:
                         injected_rules.append(rule)
 
-        # Base Indian context fallback
         injected_rules.append("GENERAL RULE: Restrict all substitutions to easily accessible Indian ingredients (e.g., Tofu, Soy Chunks/Nutrela, Besan, Cashews, Coconut, Jackfruit). Avoid expensive or rare Western vegan products.")
 
         return "<VEGAN_STRUCTURAL_CONTEXT>\n" + "\n".join(injected_rules) + "\n</VEGAN_STRUCTURAL_CONTEXT>"
