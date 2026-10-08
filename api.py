@@ -1226,49 +1226,54 @@ def generate_recipe(request: RecipeRequest):
 class VeganGraphRetriever:
     """Simulates a specialized Vegan Knowledge Graph for Agentic Context Injection."""
     def __init__(self):
-        self.structural_rules = {
-            "tofu": "CRITICAL TECHNIQUE: You MUST instruct the user to press the water out of the tofu before cooking it.",
-            "coconut oil": "CRITICAL TECHNIQUE: Coconut oil has a lower smoke point. You MUST instruct the user to cook on low-medium heat to prevent burning.",
-            "flaxseed": "CRITICAL TECHNIQUE: To use flaxseed as a binder, you MUST instruct the user to mix it with water and let it sit for 5 minutes to form a gel.",
-            "cashew cream": "CRITICAL TECHNIQUE: Cashews must be soaked in hot water before blending into a cream."
-        }
-        
+        self.matrix_path = os.path.join(os.path.dirname(__file__), "data", "vegan_functional_matrix.json")
+        self.matrix = {}
+        try:
+            with open(self.matrix_path, "r", encoding="utf-8") as f:
+                self.matrix = json.load(f)
+        except Exception as e:
+            print(f"Warning: Could not load vegan_functional_matrix.json: {e}")
+
     def get_context(self, ingredients):
         injected_rules = []
         for ing in ingredients:
-            for key, rule in self.structural_rules.items():
-                if key in ing.lower():
-                    injected_rules.append(rule)
+            ing_lower = ing.lower()
+            for key, data in self.matrix.items():
+                if key in ing_lower:
+                    rule = f"CRITICAL TECHNIQUE FOR {key.upper()}: Function is {data['function']}. Substitute with {data['substitute']}. {data['context']} DO NOT USE Western niche ingredients like Aquafaba or Seitan."
+                    if rule not in injected_rules:
+                        injected_rules.append(rule)
         
-        if not injected_rules:
-            return ""
-            
+        # Base Indian context
+        injected_rules.append("GENERAL RULE: Restrict all substitutions to easily accessible Indian ingredients (e.g., Tofu, Soy Chunks/Nutrela, Besan, Cashews, Coconut, Jackfruit). Avoid expensive or rare Western vegan products.")
+
         return "<VEGAN_STRUCTURAL_CONTEXT>\n" + "\n".join(injected_rules) + "\n</VEGAN_STRUCTURAL_CONTEXT>"
 
 class VeganRecipeJudge:
     def __init__(self):
-        self.non_vegan_culprits = ['butter', 'ghee', 'cheese', 'paneer', 'egg', 'eggs', 'honey', 'milk', 'cream', 'chicken', 'meat', 'beef', 'pork']
+        self.non_vegan_culprits = ['butter', 'ghee', 'cheese', 'paneer', 'egg', 'eggs', 'honey', 'milk', 'cream', 'chicken', 'meat', 'beef', 'pork', 'mutton', 'fish', 'curd', 'yogurt', 'gelatin', 'whey']
         
     def evaluate_recipe(self, recipe_text):
         recipe_lower = recipe_text.lower()
         
-        # 1. Zero-Tolerance Hallucination Check
-        hallucinated = [c for c in self.non_vegan_culprits if re.search(r'\b' + c + r'\b', recipe_lower) and c not in ["coconut milk", "almond milk", "cashew cream", "peanut butter"]]
+        # 1. Zero-Tolerance Hallucination Check (Pass 1)
+        hallucinated = [c for c in self.non_vegan_culprits if re.search(r'\b' + c + r'\b', recipe_lower) and c not in ["coconut milk", "almond milk", "cashew cream", "peanut butter", "soy milk", "cashew milk"]]
         if hallucinated:
             return {
                 "score": 0.2,
-                "critique": f"FATAL ERROR: You hallucinated non-vegan ingredients: {', '.join(hallucinated)}. You MUST remove them immediately."
+                "critique": f"FATAL ERROR: You hallucinated non-vegan ingredients: {', '.join(hallucinated)}. You MUST remove them immediately and substitute with common Indian alternatives."
             }
             
-        # 2. Structural Physics Check (LLM Judge)
+        # 2. Structural Physics & Cultural Accessibility Check (Pass 2 - LLM Judge)
         prompt = (
-            "You are a strict Vegan Culinary Judge.\n"
+            "You are a strict Vegan Culinary Judge specializing in Indian cuisine.\n"
             "Evaluate the following recipe draft based on these criteria:\n"
-            "1. NO ANIMAL PRODUCTS: Are there any hidden animal products?\n"
-            "2. STRUCTURAL PHYSICS: If the recipe uses Tofu, did they press it? If it uses Coconut Oil, did they use low heat?\n\n"
+            "1. NO ANIMAL PRODUCTS: Are there any hidden animal products? (If yes, score < 0.5)\n"
+            "2. ACCESSIBILITY: Did they use hard-to-find Western vegan products (like Aquafaba, Seitan, Nutritional Yeast) instead of common Indian ones (like Besan, Soy Chunks, Cashews)? (If yes, score < 0.8)\n"
+            "3. STRUCTURAL PHYSICS: Did the substitutions maintain the fat and moisture balance? (e.g., replacing ghee with water is bad. replacing paneer with tofu is good if they pressed it).\n\n"
             f"[RECIPE DRAFT]:\n{recipe_text}\n\n"
             "Provide a 'Culinary Validity Score' from 0.0 to 1.0.\n"
-            "If the score is less than 0.8, provide a strict 1-sentence CRITIQUE explaining what must be fixed.\n"
+            "If the score is less than 0.85, provide a strict 1-sentence CRITIQUE explaining what must be fixed.\n"
             "Output format:\n"
             "SCORE: [score]\n"
             "CRITIQUE: [critique if any]"
