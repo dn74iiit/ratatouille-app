@@ -71,17 +71,39 @@ function MultiSelectIngredient({ selected, setSelected }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = React.useRef(null);
 
-  const filtered = COMMON_INGREDIENTS.filter(
-    ing => ing.toLowerCase().includes(inputValue.toLowerCase()) && !selected.includes(ing)
-  ).slice(0, 8); // top 8 suggestions
+  const trimmedInput = inputValue.trim().toLowerCase();
 
-  const addIngredient = (ing) => {
-    const trimmed = ing.trim();
-    if (trimmed && !selected.includes(trimmed)) {
-      setSelected([...selected, trimmed]);
-    }
+  const filtered = COMMON_INGREDIENTS.filter(
+    ing => (trimmedInput === '' || ing.toLowerCase().includes(trimmedInput)) && !selected.includes(ing)
+  ).sort((a, b) => {
+    if (!trimmedInput) return 0; // No input, keep default order
+    const aLower = a.toLowerCase();
+    const bLower = b.toLowerCase();
+    const aStarts = aLower.startsWith(trimmedInput);
+    const bStarts = bLower.startsWith(trimmedInput);
+    if (aStarts && !bStarts) return -1;
+    if (!aStarts && bStarts) return 1;
+    return a.localeCompare(b);
+  }).slice(0, 8);
+
+  const addIngredient = (ingStr) => {
+    // Handle comma-separated pastes or typing
+    const items = ingStr.split(',').map(i => i.trim()).filter(Boolean);
+    if (items.length === 0) return;
+    
+    // Capitalize first letter of each word to keep it organized
+    const formattedItems = items.map(item => item.charAt(0).toUpperCase() + item.slice(1).toLowerCase());
+    
+    const newSelected = [...selected];
+    formattedItems.forEach(item => {
+      // Check case-insensitive existence
+      if (!newSelected.some(existing => existing.toLowerCase() === item.toLowerCase())) {
+        newSelected.push(item);
+      }
+    });
+    
+    setSelected(newSelected);
     setInputValue('');
-    // Keep suggestions open so user can pick another ingredient immediately
     inputRef.current?.focus();
   };
 
@@ -92,9 +114,27 @@ function MultiSelectIngredient({ selected, setSelected }) {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
+      // If there's an exact suggestion match or user highlighted one, we'd normally pick it.
+      // For now, just add whatever is in the input box if they hit enter.
+      if (inputValue.trim()) {
+        addIngredient(inputValue);
+      }
+    } else if (e.key === ',' && inputValue.trim()) {
+      e.preventDefault();
       addIngredient(inputValue);
     } else if (e.key === 'Backspace' && inputValue === '' && selected.length > 0) {
       removeIngredient(selected[selected.length - 1]);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    // If user types a comma, treat it as a separator instantly
+    if (val.includes(',')) {
+      addIngredient(val);
+    } else {
+      setInputValue(val);
+      setShowSuggestions(true);
     }
   };
 
@@ -107,7 +147,8 @@ function MultiSelectIngredient({ selected, setSelected }) {
         {selected.map((ing, idx) => (
           <span key={idx} style={{
             background: '#fee2e2', color: '#b91c1c', padding: '0.2rem 0.6rem',
-            borderRadius: '16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.3rem'
+            borderRadius: '16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.3rem',
+            fontWeight: '500', boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
           }}>
             {ing}
             <span style={{cursor: 'pointer', opacity: 0.6}} onClick={() => removeIngredient(ing)}>×</span>
@@ -117,38 +158,50 @@ function MultiSelectIngredient({ selected, setSelected }) {
           ref={inputRef}
           type="text"
           value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-            setShowSuggestions(true);
-          }}
+          onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onFocus={() => setShowSuggestions(true)}
-          onBlur={() => setShowSuggestions(false)}
-          placeholder={selected.length === 0 ? "Type an ingredient and press Enter..." : ""}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} // delay to allow clicks on dropdown
+          placeholder={selected.length === 0 ? "Type ingredients (e.g. Rice, Tomato)..." : "Add more..."}
           style={{
             flex: 1, border: 'none', outline: 'none', minWidth: '150px', fontSize: '1rem', background: 'transparent'
           }}
         />
       </div>
-      {showSuggestions && (inputValue || filtered.length > 0) && (
+      {showSuggestions && (inputValue.trim() || filtered.length > 0) && (
         <ul style={{
           position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff',
-          border: '1px solid #e5e7eb', borderRadius: '8px', marginTop: '0.25rem',
-          maxHeight: '200px', overflowY: 'auto', zIndex: 50, listStyle: 'none', padding: '0.5rem 0',
-          boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'
+          border: '1px solid #e5e7eb', borderRadius: '8px', marginTop: '0.5rem',
+          maxHeight: '220px', overflowY: 'auto', zIndex: 50, listStyle: 'none', padding: '0.5rem 0',
+          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)'
         }}>
-          {filtered.map((sug, idx) => (
-            <li key={idx} onMouseDown={(e) => { e.preventDefault(); addIngredient(sug); }} style={{
-              padding: '0.5rem 1rem', cursor: 'pointer', transition: 'background 0.2s'
-            }} onMouseOver={(e) => e.target.style.background = '#f3f4f6'} onMouseOut={(e) => e.target.style.background = 'transparent'}>
-              {sug}
-            </li>
-          ))}
-          {inputValue && !filtered.includes(inputValue) && (
+          {filtered.length > 0 && <li style={{ padding: '0.2rem 1rem', fontSize: '0.75rem', color: '#9ca3af', textTransform: 'uppercase', fontWeight: 'bold' }}>Smart Suggestions</li>}
+          {filtered.map((sug, idx) => {
+            // Highlight matching part
+            const matchIndex = sug.toLowerCase().indexOf(trimmedInput);
+            const beforeMatch = sug.slice(0, matchIndex);
+            const matchText = sug.slice(matchIndex, matchIndex + trimmedInput.length);
+            const afterMatch = sug.slice(matchIndex + trimmedInput.length);
+            
+            return (
+              <li key={idx} onMouseDown={(e) => { e.preventDefault(); addIngredient(sug); }} style={{
+                padding: '0.5rem 1rem', cursor: 'pointer', transition: 'background 0.2s', display: 'flex', alignItems: 'center'
+              }} onMouseOver={(e) => e.target.style.background = '#f3f4f6'} onMouseOut={(e) => e.target.style.background = 'transparent'}>
+                {matchIndex >= 0 ? (
+                  <span>
+                    {beforeMatch}
+                    <strong style={{ color: '#ef4444' }}>{matchText}</strong>
+                    {afterMatch}
+                  </span>
+                ) : sug}
+              </li>
+            );
+          })}
+          {inputValue.trim() && !filtered.some(f => f.toLowerCase() === trimmedInput) && (
              <li onMouseDown={(e) => { e.preventDefault(); addIngredient(inputValue); }} style={{
-              padding: '0.5rem 1rem', cursor: 'pointer', color: '#ef4444', fontStyle: 'italic'
+              padding: '0.5rem 1rem', cursor: 'pointer', color: '#3b82f6', borderTop: filtered.length > 0 ? '1px solid #e5e7eb' : 'none'
             }} onMouseOver={(e) => e.target.style.background = '#f3f4f6'} onMouseOut={(e) => e.target.style.background = 'transparent'}>
-              Add custom "{inputValue}"
+              + Add custom: <strong>"{inputValue.trim()}"</strong>
             </li>
           )}
         </ul>
