@@ -12,3 +12,4 @@ motor
 groq
 networkx
 faiss-cpu
+sentence-transformers
