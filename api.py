@@ -1223,29 +1223,21 @@ def generate_recipe(request: RecipeRequest):
 # ============================================================
 # VEGAN AGENTIC PIPELINE (GROQ)
 # ============================================================
-import faiss
-from sentence_transformers import SentenceTransformer
-
 class VeganGraphRetriever:
-    """Simulates a specialized Vegan Knowledge Graph for Agentic Context Injection using FAISS RAG and Functional Mappings."""
+    """Simulates a specialized Vegan Knowledge Graph for Agentic Context Injection using lightweight String Matching."""
     def __init__(self):
-        self.index_path = os.path.join(os.path.dirname(__file__), "data", "vegan_knowledge.index")
         self.map_path = os.path.join(os.path.dirname(__file__), "data", "vegan_knowledge_map.json")
         self.matrix_path = os.path.join(os.path.dirname(__file__), "data", "vegan_functional_matrix.json")
-        self.model = None
-        self.index = None
         self.knowledge_map = []
         self.functional_matrix = {}
         
-        # Load FAISS
+        # Load Knowledge Map (The 9 RAG chunks)
         try:
-            if os.path.exists(self.index_path) and os.path.exists(self.map_path):
-                self.index = faiss.read_index(self.index_path)
+            if os.path.exists(self.map_path):
                 with open(self.map_path, "r", encoding="utf-8") as f:
                     self.knowledge_map = json.load(f)
-                self.model = SentenceTransformer('all-MiniLM-L6-v2')
         except Exception as e:
-            print(f"Warning: Could not load FAISS vegan knowledge: {e}")
+            print(f"Warning: Could not load vegan_knowledge_map.json: {e}")
             
         # Load JSON Matrix
         try:
@@ -1255,8 +1247,14 @@ class VeganGraphRetriever:
         except Exception as e:
             print(f"Warning: Could not load vegan_functional_matrix.json: {e}")
 
+    def _get_similarity(self, query_words, text):
+        text_words = set(text.lower().split())
+        overlap = query_words.intersection(text_words)
+        return len(overlap)
+
     def get_context(self, ingredients):
         injected_rules = []
+        query_words = set([w.lower() for ing in ingredients for w in ing.split()])
         
         # 1. Structural Mapping Injection
         for ing in ingredients:
@@ -1267,14 +1265,15 @@ class VeganGraphRetriever:
                     if rule not in injected_rules:
                         injected_rules.append(rule)
         
-        # 2. FAISS Semantic Search
-        if self.index and self.model and self.knowledge_map:
-            query = "How to replace: " + ", ".join(ingredients)
-            query_vector = self.model.encode([query])
-            distances, indices = self.index.search(np.array(query_vector), 2)
-            for idx in indices[0]:
-                if idx != -1 and idx < len(self.knowledge_map):
-                    chunk = self.knowledge_map[idx]
+        # 2. Lightweight Semantic Search
+        if self.knowledge_map and query_words:
+            # Score each chunk by how many query words it contains
+            scored_chunks = [(chunk, self._get_similarity(query_words, chunk)) for chunk in self.knowledge_map]
+            scored_chunks.sort(key=lambda x: x[1], reverse=True)
+            
+            # Retrieve Top-2 closest culinary chunks
+            for chunk, score in scored_chunks[:2]:
+                if score > 0: # Only inject if there's at least one word overlap
                     rule = f"CULINARY RAG TECHNIQUE: {chunk}"
                     if rule not in injected_rules:
                         injected_rules.append(rule)
