@@ -1224,14 +1224,14 @@ def generate_recipe(request: RecipeRequest):
 # VEGAN AGENTIC PIPELINE (GROQ)
 # ============================================================
 class VeganGraphRetriever:
-    """Simulates a specialized Vegan Knowledge Graph for Agentic Context Injection using lightweight String Matching."""
+    """Simulates a specialized Vegan Knowledge Graph using Agentic LLM-Based Retrieval."""
     def __init__(self):
         self.map_path = os.path.join(os.path.dirname(__file__), "data", "vegan_knowledge_map.json")
         self.matrix_path = os.path.join(os.path.dirname(__file__), "data", "vegan_functional_matrix.json")
         self.knowledge_map = []
         self.functional_matrix = {}
         
-        # Load Knowledge Map (The 9 RAG chunks)
+        # Load Knowledge Map (The RAG chunks)
         try:
             if os.path.exists(self.map_path):
                 with open(self.map_path, "r", encoding="utf-8") as f:
@@ -1247,16 +1247,10 @@ class VeganGraphRetriever:
         except Exception as e:
             print(f"Warning: Could not load vegan_functional_matrix.json: {e}")
 
-    def _get_similarity(self, query_words, text):
-        text_words = set(text.lower().split())
-        overlap = query_words.intersection(text_words)
-        return len(overlap)
-
     def get_context(self, ingredients):
         injected_rules = []
-        query_words = set([w.lower() for ing in ingredients for w in ing.split()])
         
-        # 1. Structural Mapping Injection
+        # 1. Structural Mapping Injection (Fast dictionary lookup)
         for ing in ingredients:
             ing_lower = ing.lower()
             for key, data in self.functional_matrix.items():
@@ -1265,18 +1259,38 @@ class VeganGraphRetriever:
                     if rule not in injected_rules:
                         injected_rules.append(rule)
         
-        # 2. Lightweight Semantic Search
-        if self.knowledge_map and query_words:
-            # Score each chunk by how many query words it contains
-            scored_chunks = [(chunk, self._get_similarity(query_words, chunk)) for chunk in self.knowledge_map]
-            scored_chunks.sort(key=lambda x: x[1], reverse=True)
-            
-            # Retrieve Top-2 closest culinary chunks
-            for chunk, score in scored_chunks[:2]:
-                if score > 0: # Only inject if there's at least one word overlap
-                    rule = f"CULINARY RAG TECHNIQUE: {chunk}"
-                    if rule not in injected_rules:
-                        injected_rules.append(rule)
+        # 2. Agentic LLM Semantic Retrieval (Zero RAM overhead)
+        if self.knowledge_map and ingredients:
+            try:
+                client = get_inference_client()
+                # Create an enumerated list of techniques for the LLM to choose from
+                techniques_text = "\n".join([f"[{i}] {chunk}" for i, chunk in enumerate(self.knowledge_map)])
+                
+                system_prompt = "You are a Retrieval Agent. Your only job is to return the indices of the 2 most relevant cooking techniques for the provided ingredients."
+                user_prompt = f"Ingredients: {', '.join(ingredients)}\n\nTechniques:\n{techniques_text}\n\nReturn ONLY a comma-separated list of the 2 best integer indices (e.g., '3, 7'). Do not write any other text."
+                
+                response = client.chat.completions.create(
+                    model="qwen/qwen3.8-27b",
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    temperature=0.0,
+                    max_completion_tokens=10
+                )
+                
+                output = response.choices[0].message.content.strip()
+                # Parse the indices out of the response
+                import re
+                indices = [int(x) for x in re.findall(r'\d+', output)]
+                
+                for idx in indices[:2]:
+                    if 0 <= idx < len(self.knowledge_map):
+                        rule = f"CULINARY RAG TECHNIQUE: {self.knowledge_map[idx]}"
+                        if rule not in injected_rules:
+                            injected_rules.append(rule)
+            except Exception as e:
+                print(f"Agentic Retrieval failed: {e}")
 
         injected_rules.append("GENERAL RULE: Restrict all substitutions to easily accessible Indian ingredients (e.g., Tofu, Soy Chunks/Nutrela, Besan, Cashews, Coconut, Jackfruit). Avoid expensive or rare Western vegan products.")
 
