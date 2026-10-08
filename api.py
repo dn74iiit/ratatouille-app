@@ -1368,7 +1368,7 @@ async def generate_agentic_vegan(request: RecipeRequest):
     attempts = 0
     
     client = get_inference_client()
-    target_model = "llama-3.1-8b-instant"
+    target_model = "qwen/qwen3.8-27b"
     if request.model_version == 'qwen':
         try:
             available_models = [m.id for m in client.models.list().data]
