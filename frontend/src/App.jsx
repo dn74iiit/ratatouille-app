@@ -15,9 +15,15 @@ const INDIAN_STATES = [
   "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
 ];
 
-const COMMON_INGREDIENTS = [
-  "Salt", "Olive oil", "Butter", "Garlic", "Onion", "Black pepper", "Sugar", "Water", "Lemon juice", "Tomato", "Egg", "Flour", "Milk", "Vegetable oil", "Parmesan cheese", "Parsley", "Soy sauce", "Chicken breast", "Brown sugar", "Vanilla extract", "Cumin", "Mayonnaise", "Paprika", "Oregano", "Cilantro", "Cinnamon", "Cheddar cheese", "Carrot", "Heavy cream", "Red pepper flakes", "Bell pepper", "Lemon", "Lime", "Chili powder", "Baking powder", "Basil", "Scallions", "Garlic powder", "Honey", "Balsamic vinegar", "Ginger", "Mozzarella cheese", "Red onion", "Baking soda", "Bacon", "White wine", "Chicken broth", "Thyme", "Cornstarch", "Sour cream", "Mustard", "Vinegar", "Celery", "Cayenne pepper", "Ground beef", "Nutmeg", "Coriander", "Almonds", "Apple cider vinegar", "Avocado", "Sesame oil", "Rosemary", "Soy", "Green onion", "Red wine vinegar", "Peanut butter", "Jalapeno", "Maple syrup", "Tomato paste", "Bread crumbs", "Lime juice", "Shrimp", "Dijon mustard", "Spinach", "Bay leaf", "White sugar", "Mint", "Sriracha", "Mushroom", "Walnut", "Chocolate chips", "Cream cheese", "Zucchini", "Beef broth", "Canola oil", "Coconut oil", "Potato", "Peanuts", "Cocoa powder", "Cucumber", "Clove", "Orange juice", "White pepper", "Apple", "Cabbage", "Oats", "Coconut milk", "Salmon", "Feta cheese", "Pork", "Blueberries", "Corn", "Sesame seeds", "Prosciutto", "Ketchup", "Yogurt", "Mustard powder", "Vegetable broth", "Strawberries", "Asparagus", "Pineapple", "Cauliflower", "Fish sauce", "Broccoli", "Allspice", "Avocado oil", "Black beans", "Almond milk", "Green beans", "Turmeric", "Chicken", "Ghee", "Bread", "Red wine", "Rice", "Pasta", "Chickpeas", "Beef", "Orange", "Sausage", "Maple", "Lime zest", "Lemon zest", "Dill", "Fennel", "Cardamom", "Anise", "Tarragon", "Chives", "Marjoram", "Sage", "Lemongrass", "Saffron", "Star anise", "Curry powder", "Garam masala", "Five spice", "Chili flakes", "Chipotle", "Habanero", "Poblano", "Serrano", "Gochugaru", "Anchovy", "Capers", "Olives", "Sun-dried tomatoes", "Artichoke", "Eggplant", "Butternut squash", "Sweet potato", "Pumpkin", "Radish", "Turnip", "Parsnip", "Beetroot", "Leek", "Shallot", "Watercress", "Arugula", "Kale", "Romaine", "Iceberg", "Radicchio", "Endive", "Brussels sprouts", "Bok choy", "Swiss chard", "Collard greens", "Mustard greens", "Cabbage (red)", "Cabbage (Napa)", "Seaweed", "Tofu", "Tempeh", "Seitan", "Edamame", "Lentils (red)", "Lentils (green)", "Lentils (brown)", "Beans (kidney)", "Beans (pinto)", "Beans (navy)", "Beans (cannellini)", "Peas", "Snow peas", "Snap peas", "Corn (sweet)", "Rice (white)", "Rice (brown)"
-];
+const CATEGORIZED_INGREDIENTS = {
+  "Vegetables": ["Tomato", "Onion", "Garlic", "Carrot", "Bell pepper", "Potato", "Spinach", "Mushroom", "Zucchini", "Cucumber", "Cabbage", "Asparagus", "Broccoli", "Cauliflower", "Eggplant", "Sweet potato", "Radish"],
+  "Meat & Seafood": ["Chicken breast", "Chicken", "Ground beef", "Beef", "Pork", "Bacon", "Sausage", "Shrimp", "Salmon", "Anchovy", "Prosciutto"],
+  "Dairy & Eggs": ["Egg", "Milk", "Butter", "Parmesan cheese", "Cheddar cheese", "Heavy cream", "Mozzarella cheese", "Sour cream", "Cream cheese", "Yogurt", "Feta cheese", "Ghee"],
+  "Oils & Liquids": ["Olive oil", "Vegetable oil", "Soy sauce", "Water", "Lemon juice", "Balsamic vinegar", "White wine", "Chicken broth", "Vinegar", "Sesame oil", "Apple cider vinegar", "Red wine vinegar", "Lime juice", "Beef broth", "Canola oil", "Coconut oil", "Avocado oil"],
+  "Spices & Herbs": ["Salt", "Black pepper", "Parsley", "Cumin", "Paprika", "Oregano", "Cilantro", "Cinnamon", "Red pepper flakes", "Chili powder", "Basil", "Garlic powder", "Ginger", "Thyme", "Cayenne pepper", "Nutmeg", "Coriander", "Rosemary", "Mint", "Clove", "White pepper", "Allspice", "Turmeric", "Dill", "Fennel", "Cardamom", "Saffron", "Garam masala", "Curry powder"],
+  "Pantry & Others": ["Sugar", "Flour", "Brown sugar", "Vanilla extract", "Mayonnaise", "Baking powder", "Honey", "Baking soda", "Cornstarch", "Mustard", "Almonds", "Peanut butter", "Maple syrup", "Tomato paste", "Bread crumbs", "Walnut", "Chocolate chips", "Peanuts", "Cocoa powder", "Oats", "Coconut milk", "Sesame seeds", "Ketchup", "Rice", "Pasta", "Chickpeas", "Bread"]
+};
+const COMMON_INGREDIENTS = Object.values(CATEGORIZED_INGREDIENTS).flat();
 
 const UNSPLASH_CACHE = {
     "Curry": ["1585937421612-70a008356fbe", "1603894584373-5ac82b2ae398", "1565557623262-b51c2513a641", "1618160702438-9b02ab6515c9", "1631452180519-c014fe946bc7"],
@@ -168,7 +174,43 @@ function MultiSelectIngredient({ selected, setSelected }) {
           }}
         />
       </div>
-      {showSuggestions && (inputValue.trim() || filtered.length > 0) && (
+      {/* Show categorical view when input is empty */}
+      {showSuggestions && !inputValue.trim() && (
+        <div style={{
+          position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff',
+          border: '1px solid #e5e7eb', borderRadius: '8px', marginTop: '0.5rem',
+          maxHeight: '350px', overflowY: 'auto', zIndex: 50, padding: '1rem',
+          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1.5rem'
+        }}>
+          {Object.entries(CATEGORIZED_INGREDIENTS).map(([cat, items]) => (
+            <div key={cat}>
+              <h4 style={{ color: '#6b7280', fontSize: '0.75rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.2rem', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{cat}</h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {items.map(ing => {
+                  const isSelected = selected.includes(ing);
+                  return (
+                    <li key={ing} onMouseDown={(e) => { e.preventDefault(); isSelected ? removeIngredient(ing) : addIngredient(ing); }} 
+                        style={{ 
+                          fontSize: '0.85rem', padding: '0.25rem 0.5rem', cursor: 'pointer', borderRadius: '4px', 
+                          color: isSelected ? '#ef4444' : '#1f2937', 
+                          background: isSelected ? '#fee2e2' : 'transparent',
+                          transition: 'all 0.2s', marginBottom: '2px', display: 'flex', justifyContent: 'space-between'
+                        }}
+                        onMouseOver={(e) => { if(!isSelected) e.target.style.background = '#f3f4f6' }} 
+                        onMouseOut={(e) => { if(!isSelected) e.target.style.background = 'transparent' }}>
+                      {ing} {isSelected && <span>✓</span>}
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Show search suggestions when user is typing */}
+      {showSuggestions && inputValue.trim() && (
         <ul style={{
           position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff',
           border: '1px solid #e5e7eb', borderRadius: '8px', marginTop: '0.5rem',
@@ -177,12 +219,10 @@ function MultiSelectIngredient({ selected, setSelected }) {
         }}>
           {filtered.length > 0 && <li style={{ padding: '0.2rem 1rem', fontSize: '0.75rem', color: '#9ca3af', textTransform: 'uppercase', fontWeight: 'bold' }}>Smart Suggestions</li>}
           {filtered.map((sug, idx) => {
-            // Highlight matching part
             const matchIndex = sug.toLowerCase().indexOf(trimmedInput);
             const beforeMatch = sug.slice(0, matchIndex);
             const matchText = sug.slice(matchIndex, matchIndex + trimmedInput.length);
             const afterMatch = sug.slice(matchIndex + trimmedInput.length);
-            
             return (
               <li key={idx} onMouseDown={(e) => { e.preventDefault(); addIngredient(sug); }} style={{
                 padding: '0.5rem 1rem', cursor: 'pointer', transition: 'background 0.2s', display: 'flex', alignItems: 'center'
@@ -197,7 +237,7 @@ function MultiSelectIngredient({ selected, setSelected }) {
               </li>
             );
           })}
-          {inputValue.trim() && !filtered.some(f => f.toLowerCase() === trimmedInput) && (
+          {!filtered.some(f => f.toLowerCase() === trimmedInput) && (
              <li onMouseDown={(e) => { e.preventDefault(); addIngredient(inputValue); }} style={{
               padding: '0.5rem 1rem', cursor: 'pointer', color: '#3b82f6', borderTop: filtered.length > 0 ? '1px solid #e5e7eb' : 'none'
             }} onMouseOver={(e) => e.target.style.background = '#f3f4f6'} onMouseOut={(e) => e.target.style.background = 'transparent'}>
