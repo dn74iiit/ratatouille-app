@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
 import { Search, X, ShoppingBasket, QrCode, Link as LinkIcon } from 'lucide-react';
-import QwenDashboard from './QwenDashboard';
-import ReportsTab from './ReportsTab';
 
-const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8000' : 'https://ratatouille-backend.onrender.com';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8000' : 'https://ratatouille-backend.onrender.com');
 
 const INDIAN_STATES = [
   "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar",
@@ -26,49 +24,126 @@ const CATEGORIZED_INGREDIENTS = {
 const COMMON_INGREDIENTS = Object.values(CATEGORIZED_INGREDIENTS).flat();
 
 const UNSPLASH_CACHE = {
-    "Curry": ["1585937421612-70a008356fbe", "1603894584373-5ac82b2ae398", "1565557623262-b51c2513a641", "1618160702438-9b02ab6515c9", "1631452180519-c014fe946bc7"],
-    "Salad": ["1512621776951-a57141f2eefd", "1490645935967-10de6ba17061", "1546069901-ba9599a7e63c"],
-    "Dessert": ["1488477181946-6428a0291777", "1550617931-e17a7b70dce2", "1551024506-0cb4a1cb3689"],
-    "Bread": ["1509440159596-0249088772ff", "1608198093002-ad4e005484ec"],
-    "Soup": ["1547592166-23ac45744acd", "1604152135912-04a022e23696", "1578020190125-f4f7c18bc9cb"],
-    "Rice_Dish": ["1596797038530-2c107229654b", "1565557623262-b51c2513a641"],
-    "Dry_Sabzi": ["1546833999-b9f581a1996d", "1565557623262-b51c2513a641", "1604152135912-04a022e23696"],
-    "NonVegan": ["1512058564366-18510be2db19"],
-    "Vegan": ["1512621776951-a57141f2eefd", "1490645935967-10de6ba17061", "1546069901-ba9599a7e63c"]
+    "Chicken": [
+        "1598515214211-89d3c73ae83b", // Golden tandoori / grilled spiced chicken
+        "1604908176997-125f25cc6f3d", // Crispy golden roasted spiced chicken bowl
+        "1626082927389-6cd097cdc6ec", // Rich aromatic butter chicken curry
+        "1562967914-608f82629710"  // Savory spiced chicken dish
+    ],
+    "Egg": [
+        "1525351484163-7529414344d8", // Skillet egg breakfast / sunny side up
+        "1565299585323-38d6b0865b47", // Shakshuka / spicy egg curry pan
+        "1587314168485-3236d6710814"  // Farmhouse egg skillet
+    ],
+    "Biryani": [
+        "1563379091339-03b21ab4a4f8", // Royal saffron dum biryani platter
+        "1541832676-9b763b0239ab", // Hyderabadi chicken biryani bowl
+        "1589302168068-964664d93dc0"  // Fragrant Indian pulao / basmati biryani
+    ],
+    "NonVegan": [
+        "1598515214211-89d3c73ae83b",
+        "1604908176997-125f25cc6f3d",
+        "1626082927389-6cd097cdc6ec",
+        "1565299585323-38d6b0865b47",
+        "1541832676-9b763b0239ab"
+    ],
+    "Curry": [
+        "1585937421612-70a008356fbe", // Indian masala curry in handi
+        "1603894584373-5ac82b2ae398", // Rich gravy curry dish
+        "1565557623262-b51c2513a641", // Dal makhani & curry spread
+        "1618160702438-9b02ab6515c9", // Warm Indian spiced curry
+        "1631452180519-c014fe946bc7"  // Paneer butter masala
+    ],
+    "Salad": [
+        "1512621776951-a57141f2eefd",
+        "1490645935967-10de6ba17061",
+        "1546069901-ba9599a7e63c"
+    ],
+    "Dessert": [
+        "1488477181946-6428a0291777",
+        "1550617931-e17a7b70dce2",
+        "1578985545062-69928b1d9587",
+        "1551024601-bec78aea704b"
+    ],
+    "Bread": [
+        "1509440159596-0249088772ff",
+        "1608198093002-ad4e005484ec"
+    ],
+    "Soup": [
+        "1547592166-23ac45744acd",
+        "1604152135912-04a022e23696",
+        "1578020190125-f4f7c18bc9cb"
+    ],
+    "Rice_Dish": [
+        "1596797038530-2c107229654b",
+        "1563379091339-03b21ab4a4f8",
+        "1589302168068-964664d93dc0"
+    ],
+    "Dry_Sabzi": [
+        "1546833999-b9f581a1996d",
+        "1565557623262-b51c2513a641",
+        "1604152135912-04a022e23696"
+    ],
+    "Vegan": [
+        "1512621776951-a57141f2eefd",
+        "1490645935967-10de6ba17061",
+        "1546069901-ba9599a7e63c",
+        "1547592166-23ac45744acd",
+        "1546833999-b9f581a1996d"
+    ]
 };
 
 const getRandomBanner = (archetype, isVegan = false, recipeTitle = "") => {
     let arch = archetype;
     const t = (recipeTitle || "").toLowerCase();
     
-    // Attempt title parsing for better relevance
-    if (t.includes("salad")) arch = "Salad";
-    else if (t.includes("curry") || t.includes("masala")) arch = "Curry";
-    else if (t.includes("soup") || t.includes("stew") || t.includes("broth")) arch = "Soup";
-    else if (t.includes("rice") || t.includes("pilaf") || t.includes("biryani")) arch = "Rice_Dish";
-    else if (t.includes("bread") || t.includes("roti") || t.includes("naan")) arch = "Bread";
-    else if (t.includes("cake") || t.includes("sweet") || t.includes("cookie") || t.includes("dessert")) arch = "Dessert";
+    // Title-based culinary categorization
+    if (!isVegan && (t.includes("biryani") || (t.includes("rice") && (t.includes("chicken") || t.includes("meat"))))) {
+        arch = "Biryani";
+    } else if (!isVegan && (t.includes("chicken") || t.includes("mutton") || t.includes("meat") || t.includes("lamb") || t.includes("tikka") || t.includes("kebab"))) {
+        arch = "Chicken";
+    } else if (!isVegan && (t.includes("egg") || t.includes("omelette") || t.includes("anda") || t.includes("bhurji"))) {
+        arch = "Egg";
+    } else if (!isVegan && (t.includes("fish") || t.includes("pork") || t.includes("beef") || t.includes("sausage") || t.includes("bacon"))) {
+        arch = "NonVegan";
+    } else if (t.includes("salad")) {
+        arch = "Salad";
+    } else if (t.includes("biryani") || t.includes("pulao")) {
+        arch = "Biryani";
+    } else if (t.includes("rice") || t.includes("pilaf") || t.includes("fried rice")) {
+        arch = "Rice_Dish";
+    } else if (t.includes("soup") || t.includes("stew") || t.includes("broth")) {
+        arch = "Soup";
+    } else if (t.includes("bread") || t.includes("roti") || t.includes("naan") || t.includes("paratha")) {
+        arch = "Bread";
+    } else if (t.includes("cake") || t.includes("sweet") || t.includes("cookie") || t.includes("dessert") || t.includes("halwa")) {
+        arch = "Dessert";
+    } else if (t.includes("curry") || t.includes("masala") || t.includes("gravy") || t.includes("dal")) {
+        arch = "Curry";
+    } else if (t.includes("sabzi") || t.includes("roast") || t.includes("fry") || t.includes("dry") || t.includes("gobi") || t.includes("aloo")) {
+        arch = "Dry_Sabzi";
+    }
     
-    // Fallback if the pipeline passed a generic archetype (like "Fast Qwen")
+    // Fallback if archetype not found
     if (!UNSPLASH_CACHE[arch]) {
         arch = isVegan ? "Vegan" : "Curry";
     }
 
-    // Safety check to ensure we don't accidentally return meat images for vegan dishes
-    if (isVegan && arch === "NonVegan") {
+    // Vegan safety guard
+    if (isVegan && (arch === "Chicken" || arch === "Egg" || arch === "Biryani" || arch === "NonVegan")) {
         arch = "Vegan";
-    } else if (!isVegan && (t.includes("chicken") || t.includes("meat") || t.includes("beef") || t.includes("egg") || t.includes("fish") || t.includes("shrimp") || t.includes("pork") || t.includes("lamb") || t.includes("bacon") || t.includes("sausage") || t.includes("salmon"))) {
-        arch = "NonVegan";
     }
-    
-    // Override logic from original
-    if (isVegan && arch === "Rice_Dish") {
-        arch = "Dry_Sabzi"; 
-    }
-    
-    // Guarantee fallback
+
     const photos = UNSPLASH_CACHE[arch] || UNSPLASH_CACHE["Curry"];
-    const photoId = photos[Math.floor(Math.random() * photos.length)];
+    
+    // Deterministic selection based on recipe title hash so banner never flickers on re-render
+    let hash = 0;
+    for (let i = 0; i < t.length; i++) {
+        hash = (hash << 5) - hash + t.charCodeAt(i);
+        hash |= 0;
+    }
+    const idx = Math.abs(hash) % photos.length;
+    const photoId = photos[idx];
     return `https://images.unsplash.com/photo-${photoId}?q=80&w=1632&auto=format&fit=crop`;
 };
 
@@ -250,8 +325,185 @@ function MultiSelectIngredient({ selected, setSelected }) {
   );
 }
 
+const CURATED_FEATURED_RECIPES = [
+  {
+    username: "chef_aditya",
+    created_at: 1728800000,
+    recipe: {
+      recipe: "### TITLE: Royal Saffron Dum Biryani\n1. Rinse basmati rice and parboil with whole spices (cardamom, clove, bay leaf) until 70% cooked.\n2. Layer marinated spiced vegetables and aromatic saffron-infused milk in a heavy-bottomed handi.\n3. Top with golden fried onions, fresh mint, and coriander leaves.\n4. Seal the handi lid with dough and cook on low dum heat for 25 minutes.\n5. Gently fluff the grains and serve hot with cooling cucumber raita.",
+      calculated_ingredients: ["250g Basmati Rice", "100g Onion", "80g Tomato", "50g Green Peas", "2g Saffron", "15g Ghee", "5g Garam Masala"],
+      archetype: "Biryani",
+      is_vegan: false,
+      budget: 160,
+      model: "qwen-2.5-32b",
+      image_url: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=1632&auto=format&fit=crop"
+    }
+  },
+  {
+    username: "chef_ananya",
+    created_at: 1728801000,
+    recipe: {
+      recipe: "### TITLE: Spiced Butter Chicken Handi\n1. Marinate tender chicken pieces in thick yogurt, Kashmiri red chili, ginger-garlic paste, and lemon juice for 30 minutes.\n2. Pan-sear the chicken until lightly charred and smoky.\n3. In a pan, simmer pureed ripe tomatoes, cashews, butter, and fragrant whole spices into a silky gravy.\n4. Add the seared chicken pieces and simmer gently for 10 minutes.\n5. Finish with fresh cream, crushed kasuri methi, and serve with warm butter naan.",
+      calculated_ingredients: ["200g Chicken breast", "120g Tomato", "50g Butter", "40g Cream", "20g Ginger", "15g Garlic", "5g Kasuri Methi"],
+      archetype: "Chicken",
+      is_vegan: false,
+      budget: 185,
+      model: "qwen-2.5-32b",
+      image_url: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=1632&auto=format&fit=crop"
+    }
+  },
+  {
+    username: "chef_rohit",
+    created_at: 1728802000,
+    recipe: {
+      recipe: "### TITLE: Homestyle Dhaba Egg Curry\n1. Hard-boil 4 farm eggs, peel, make light slits, and shallow-fry with turmeric and chili powder until golden.\n2. Finely dice onions and sauté in mustard oil with cumin seeds until deeply caramelized.\n3. Add ginger-garlic paste, pureed tomatoes, coriander, and garam masala; cook until oil releases.\n4. Pour in warm water to form a robust curry gravy and simmer for 5 minutes.\n5. Lower the fried eggs into the gravy, simmer for 3 minutes, and garnish with fresh cilantro.",
+      calculated_ingredients: ["4 Eggs", "150g Onion", "120g Tomato", "15g Mustard oil", "10g Ginger", "5g Garam masala", "5g Turmeric"],
+      archetype: "Egg",
+      is_vegan: false,
+      budget: 110,
+      model: "qwen-2.5-32b",
+      image_url: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=1632&auto=format&fit=crop"
+    }
+  },
+  {
+    username: "vegan_master",
+    created_at: 1728803000,
+    recipe: {
+      recipe: "### TITLE: Agentic Crispy Tofu Tikka Masala\n1. Press firm tofu to drain excess moisture, cut into cubes, and toss with smoked paprika, nutritional yeast, and soy yogurt.\n2. Roast in oven or pan-sear until crispy and golden brown.\n3. Prepare a rich aromatic onion-tomato gravy with coconut oil, cumin, ground coriander, and turmeric.\n4. Stir in silky coconut cream to recreate the classic velvety texture without dairy.\n5. Fold in the roasted tofu cubes, simmer for 4 minutes, and finish with fresh cilantro.",
+      calculated_ingredients: ["200g Firm Tofu", "140g Tomato", "80g Onion", "40g Coconut cream", "15g Coconut oil", "5g Smoked Paprika", "5g Garam Masala"],
+      archetype: "Agentic Vegan",
+      is_vegan: true,
+      agentic_attempts: 1,
+      budget: 140,
+      model: "qwen-2.5-32b",
+      image_url: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1632&auto=format&fit=crop"
+    }
+  },
+  {
+    username: "chef_priya",
+    created_at: 1728804000,
+    recipe: {
+      recipe: "### TITLE: Fragrant Basmati Vegetable Pulao\n1. Wash aged long-grain basmati rice and soak in water for 20 minutes.\n2. Heat vegetable oil with cloves, cinnamon stick, cumin, and sliced onions until fragrant.\n3. Add diced carrots, green peas, and potatoes; sauté on medium heat for 3 minutes.\n4. Add drained rice, 2 cups of water, and salt; bring to a rolling boil.\n5. Cover with tight lid, reduce flame to low, and cook for 12 minutes until all water is absorbed.",
+      calculated_ingredients: ["200g Basmati Rice", "70g Carrot", "60g Green Peas", "70g Potato", "50g Onion", "15g Vegetable oil", "5g Cumin"],
+      archetype: "Rice_Dish",
+      is_vegan: true,
+      budget: 85,
+      model: "qwen-2.5-32b",
+      image_url: "https://images.unsplash.com/photo-1596797038530-2c107229654b?q=80&w=1632&auto=format&fit=crop"
+    }
+  },
+  {
+    username: "chef_karan",
+    created_at: 1728805000,
+    recipe: {
+      recipe: "### TITLE: Spiced Aloo Gobi Matar\n1. Cut fresh cauliflower into bite-sized florets and peel potatoes into small cubes.\n2. Heat mustard oil in a kadai and crackle cumin seeds with a pinch of hing.\n3. Sauté diced onions, ginger, and green chilies until translucent.\n4. Add potatoes and cauliflower with turmeric, coriander powder, and red chili; stir-fry for 5 minutes.\n5. Cover and cook on low heat until tender, adding green peas in the last 4 minutes. Garnish with cilantro.",
+      calculated_ingredients: ["180g Cauliflower", "150g Potato", "60g Green Peas", "60g Onion", "15g Mustard oil", "5g Turmeric", "5g Coriander powder"],
+      archetype: "Dry_Sabzi",
+      is_vegan: true,
+      budget: 70,
+      model: "qwen-2.5-32b",
+      image_url: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=1632&auto=format&fit=crop"
+    }
+  },
+  {
+    username: "chef_vikram",
+    created_at: 1728806000,
+    recipe: {
+      recipe: "### TITLE: Dal Makhani Amritsari Handi\n1. Soak whole black urad dal and kidney beans overnight in abundant water.\n2. Pressure-cook with water, salt, and garlic paste until exceptionally soft and velvety.\n3. In a separate heavy handi, cook pureed tomatoes with Kashmiri chili powder and butter until glossy.\n4. Combine cooked dal with the tomato reduction and slow-simmer on lowest flame for 45 minutes.\n5. Stir in butter and fresh cream, garnish with fresh ginger juliennes.",
+      calculated_ingredients: ["150g Whole Urad Dal", "40g Kidney Beans", "120g Tomato", "40g Butter", "30g Cream", "10g Ginger", "10g Garlic"],
+      archetype: "Curry",
+      is_vegan: false,
+      budget: 95,
+      model: "qwen-2.5-32b",
+      image_url: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1632&auto=format&fit=crop"
+    }
+  },
+  {
+    username: "vegan_master",
+    created_at: 1728807000,
+    recipe: {
+      recipe: "### TITLE: Agentic Soy Keema Masala\n1. Rehydrate textured soy granules in warm vegetable broth with a splash of soy sauce, then squeeze dry.\n2. Sauté chopped onions, garlic, and grated ginger in vegetable oil until golden.\n3. Add pureed tomatoes, garam masala, cumin, and a dash of smoked paprika to replicate savoury depth.\n4. Fold in the rehydrated soy granules and green peas; simmer on medium flame for 8 minutes.\n5. Squeeze fresh lemon juice over the hot keema and serve with warm pav or roti.",
+      calculated_ingredients: ["100g Soya granules", "120g Onion", "100g Tomato", "50g Green Peas", "15g Vegetable oil", "5g Smoked Paprika", "5g Garam Masala"],
+      archetype: "Agentic Vegan",
+      is_vegan: true,
+      agentic_attempts: 1,
+      budget: 65,
+      model: "qwen-2.5-32b",
+      image_url: "https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=1632&auto=format&fit=crop"
+    }
+  },
+  {
+    username: "chef_tanya",
+    created_at: 1728808000,
+    recipe: {
+      recipe: "### TITLE: Golden Egg Fried Rice\n1. Use cold cooked day-old basmati or jasmine rice for the best grain separation.\n2. Heat sesame and vegetable oil in a smoking wok; scramble 2 eggs lightly and set aside.\n3. Toss finely diced garlic, scallions, carrots, and bell peppers on high heat for 2 minutes.\n4. Add rice, soy sauce, white pepper, and toasted sesame oil; toss vigorously until fragrant.\n5. Fold back the scrambled eggs, garnish with spring onion greens, and serve immediately.",
+      calculated_ingredients: ["200g Cooked Rice", "2 Eggs", "40g Bell pepper", "30g Carrot", "20g Spring onion", "15g Soy sauce", "10g Sesame oil"],
+      archetype: "Rice_Dish",
+      is_vegan: false,
+      budget: 80,
+      model: "qwen-2.5-32b",
+      image_url: "https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=1632&auto=format&fit=crop"
+    }
+  },
+  {
+    username: "chef_kavita",
+    created_at: 1728809000,
+    recipe: {
+      recipe: "### TITLE: South Indian Tangy Lemon Rice\n1. Cook basmati rice until fluffy and spread on a wide plate to cool completely.\n2. Heat sesame oil in a pan; crackle mustard seeds, urad dal, chana dal, dried red chilies, and curry leaves.\n3. Add roasted peanuts, grated ginger, and turmeric powder for the vibrant yellow color.\n4. Pour freshly squeezed lemon juice with salt into the tempering.\n5. Gently toss the cooled rice into the spiced lemon tempering until evenly coated. Serve with crispy papad.",
+      calculated_ingredients: ["200g Rice", "30g Peanuts", "20ml Lemon juice", "15g Sesame oil", "5g Mustard seeds", "5g Urad dal", "3g Turmeric"],
+      archetype: "Rice_Dish",
+      is_vegan: true,
+      budget: 55,
+      model: "qwen-2.5-32b",
+      image_url: "https://images.unsplash.com/photo-1589302168068-964664d93dc0?q=80&w=1632&auto=format&fit=crop"
+    }
+  },
+  {
+    username: "chef_rahul",
+    created_at: 1728810000,
+    recipe: {
+      recipe: "### TITLE: Amritsari Chana Masala\n1. Soak chickpeas overnight and boil with tea bag and whole spices until tender.\n2. In a kadai, sauté finely chopped onions until deep golden brown.\n3. Add ginger-garlic paste, pureed tomatoes, dry mango powder (amchur), and chana masala.\n4. Add boiled chickpeas along with cooking liquor and simmer for 15 minutes, mashing a few for body.\n5. Temper with ghee, cumin seeds, and slit green chilies; serve with fluffy bhature.",
+      calculated_ingredients: ["180g Chickpeas", "120g Onion", "100g Tomato", "15g Ghee", "10g Ginger", "5g Amchur", "5g Chana Masala"],
+      archetype: "Curry",
+      is_vegan: false,
+      budget: 85,
+      model: "qwen-2.5-32b",
+      image_url: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?q=80&w=1632&auto=format&fit=crop"
+    }
+  },
+  {
+    username: "chef_meera",
+    created_at: 1728811000,
+    recipe: {
+      recipe: "### TITLE: Creamy Shahi Paneer\n1. Cut fresh cottage cheese (paneer) into triangular pieces and soak in warm water for softness.\n2. Simmer onions, cashew nuts, green cardamom, and ginger in water until soft; blend into a white paste.\n3. Cook tomato puree in butter until reduced, then fold in the cashew-onion gravy.\n4. Season with saffron strands, crushed kasuri methi, and cardamom powder.\n5. Gently slide in the paneer triangles, simmer for 3 minutes, and stir in fresh cream.",
+      calculated_ingredients: ["200g Paneer", "30g Cashew nuts", "100g Tomato", "60g Onion", "30g Butter", "30g Cream", "3g Cardamom"],
+      archetype: "Curry",
+      is_vegan: false,
+      budget: 155,
+      model: "qwen-2.5-32b",
+      image_url: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?q=80&w=1632&auto=format&fit=crop"
+    }
+  }
+];
+
+const isGroqRecipe = (doc) => {
+  if (!doc || !doc.recipe) return false;
+  const rec = doc.recipe;
+  const arch = rec.archetype || '';
+  const model = rec.model || '';
+  const user = doc.username || '';
+  const allowed = ['Agentic Vegan', 'Budget Qwen', 'Fast Qwen', 'Groq Guardrails', 'Groq Budget'];
+  return allowed.includes(arch) ||
+         arch.toLowerCase().includes('qwen') ||
+         arch.toLowerCase().includes('groq') ||
+         model.toLowerCase().includes('qwen') ||
+         model.toLowerCase().includes('groq') ||
+         user.toLowerCase().includes('groq') ||
+         rec.agentic_attempts !== undefined;
+};
+
 function App() {
-  const [viewMode, setViewMode] = useState('generate'); // 'generate' | 'vegan' | 'history'
+  const [viewMode, setViewMode] = useState('generate'); // 'generate' | 'community' | 'history'
   const [username, setUsername] = useState('');
   
   // Form State
@@ -259,9 +511,9 @@ function App() {
   const [budget, setBudget] = useState(150);
   const [servings, setServings] = useState(1);
   const [stateName, setStateName] = useState('Delhi');
-  const [modelVersion, setModelVersion] = useState('v10');  // 'v8' | 'v10' | 'qwen'
-  const [isVegan, setIsVegan] = useState(false);
+  const [modelVersion, setModelVersion] = useState('qwen');  // 'qwen' (Guardrails) | 'qwen_budget' (Budget Only)
   const [agenticVegan, setAgenticVegan] = useState(false);
+  const [communityFilter, setCommunityFilter] = useState('all'); // 'all' | 'vegan' | 'guardrails' | 'budget'
   
   // Response State
   const [loading, setLoading] = useState(false);
@@ -269,6 +521,9 @@ function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [saveMessage, setSaveMessage] = useState('');
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [usernameError, setUsernameError] = useState(false);
   
   // History State
   const [history, setHistory] = useState([]);
@@ -280,8 +535,9 @@ function App() {
   const [veganLoading, setVeganLoading] = useState(false);
   const [veganError, setVeganError] = useState('');
 
+
   // Community State
-  const [globalRecipes, setGlobalRecipes] = useState([]);
+  const [globalRecipes, setGlobalRecipes] = useState(CURATED_FEATURED_RECIPES);
   const [globalLoading, setGlobalLoading] = useState(false);
 
   // Vegan DB State (Kept for reference but not rendered)
@@ -318,11 +574,21 @@ function App() {
       try {
         const response = await fetch(`${BACKEND_URL}/all-recipes`);
         const data = await response.json();
-        if (data.status === 'success') {
-          setGlobalRecipes(data.recipes);
+        if (data.status === 'success' && Array.isArray(data.recipes) && data.recipes.length > 0) {
+          const liveGroqs = data.recipes.filter(isGroqRecipe);
+          const seen = new Set();
+          const merged = [];
+          for (const r of [...liveGroqs, ...CURATED_FEATURED_RECIPES]) {
+            const title = (r.recipe?.recipe || '').split('\n')[0].replace(/^###\s*(TITLE:)?\s*/i, '').trim().toLowerCase();
+            if (title && !seen.has(title)) {
+              seen.add(title);
+              merged.push(r);
+            }
+          }
+          setGlobalRecipes(merged);
         }
       } catch (err) {
-        console.error("Failed to load global recipes", err);
+        console.warn("Using offline curated recipes", err);
       }
     };
     loadCommunityData();
@@ -334,63 +600,27 @@ function App() {
     setError('');
     setResult(null);
     setSaveMessage('');
+    setSaveSuccess(false);
+    setUsernameError(false);
     setStepMessage('Initializing...');
 
     const ingList = Array.isArray(ingredients) ? ingredients : ingredients.split(',').map(i => i.trim()).filter(i => i);
 
     try {
-      let endpoint = `${BACKEND_URL}/generate-recipe`;
+      let endpoint = modelVersion === 'qwen_budget' 
+        ? `${BACKEND_URL}/generate-fast-budget` 
+        : `${BACKEND_URL}/generate-fast-qwen`;
+
       let payload = {
         ingredients: ingList,
         budget: parseFloat(budget),
         servings: parseInt(servings),
         state: stateName,
-        model_version: modelVersion,
-        is_vegan: isVegan
+        archetype: agenticVegan ? "Agentic Vegan" : (modelVersion === 'qwen_budget' ? "Budget Qwen" : "Fast Qwen"),
+        is_vegan: agenticVegan,
+        agentic_vegan: agenticVegan,
+        model_version: modelVersion
       };
-
-      if (agenticVegan) {
-        endpoint = `${BACKEND_URL}/generate-agentic-vegan`;
-        payload = {
-          ingredients: ingList,
-          budget: parseFloat(budget),
-          servings: parseInt(servings),
-          state: stateName,
-          archetype: "Agentic Vegan",
-          is_vegan: true,
-          model_version: modelVersion
-        };
-      } else if (modelVersion === 'qwen') {
-        endpoint = `${BACKEND_URL}/generate-fast-qwen`;
-        payload = {
-          ingredients: ingList,
-          budget: parseFloat(budget),
-          servings: parseInt(servings),
-          state: stateName,
-          archetype: "Fast Qwen",
-          is_vegan: isVegan
-        };
-      } else if (modelVersion === 'qwen_bare') {
-        endpoint = `${BACKEND_URL}/generate-fast-bare`;
-        payload = {
-          ingredients: ingList,
-          budget: parseFloat(budget),
-          servings: parseInt(servings),
-          state: stateName,
-          archetype: "Bare Qwen",
-          is_vegan: isVegan
-        };
-      } else if (modelVersion === 'qwen_budget') {
-        endpoint = `${BACKEND_URL}/generate-fast-budget`;
-        payload = {
-          ingredients: ingList,
-          budget: parseFloat(budget),
-          servings: parseInt(servings),
-          state: stateName,
-          archetype: "Budget Qwen",
-          is_vegan: isVegan
-        };
-      }
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -414,18 +644,22 @@ function App() {
             try {
               const data = JSON.parse(dataStr);
               if (data.step === 'complete' || data.step === 'final_recipe') {
-                // Map agentic backend keys to standard frontend expected keys
                 if (data.step === 'final_recipe') {
+                  const imgUrl = getRandomBanner(data.archetype, data.is_vegan, data.recipe);
                   setResult({
                     recipe: data.recipe,
                     calculated_ingredients: data.calculated_ingredients,
                     archetype: data.archetype,
                     is_vegan: data.is_vegan,
                     agentic_attempts: data.attempts,
-                    image_url: ""
+                    image_url: imgUrl,
+                    budget: data.budget,
+                    model: data.model
                   });
                 } else {
-                  setResult(data.result);
+                  const resWithBanner = { ...data.result };
+                  resWithBanner.image_url = resWithBanner.image_url || getRandomBanner(resWithBanner.archetype, resWithBanner.is_vegan, resWithBanner.recipe);
+                  setResult(resWithBanner);
                 }
                 setStepMessage('');
               } else if (data.step === 'error') {
@@ -449,29 +683,46 @@ function App() {
   };
 
   const handleSaveRecipe = async () => {
-    if (!username) {
-      alert("Please enter a username to save this recipe!");
+    if (!username || !username.trim()) {
+      setUsernameError(true);
       return;
     }
     
+    setSaveLoading(true);
+    setUsernameError(false);
+
     try {
       const response = await fetch(`${BACKEND_URL}/save-recipe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: username,
+          username: username.trim(),
           recipe_data: result
         })
       });
       
       const data = await response.json();
       if (data.status === 'success') {
+        setSaveSuccess(true);
         setSaveMessage('✅ Recipe saved successfully!');
+        if (result) {
+          setGlobalRecipes(prev => [
+            {
+              _id: data.recipe_id || String(Date.now()),
+              username: username.trim(),
+              created_at: Math.floor(Date.now() / 1000),
+              recipe: result
+            },
+            ...prev
+          ]);
+        }
       } else {
-        alert(data.message);
+        alert(data.message || "Failed to save recipe");
       }
     } catch (err) {
       alert("Failed to connect to database.");
+    } finally {
+      setSaveLoading(false);
     }
   };
 
@@ -509,7 +760,7 @@ function App() {
       const data = await response.json();
       
       if (data.status === 'success') {
-        setGlobalRecipes(data.recipes);
+        setGlobalRecipes((data.recipes || []).filter(isGroqRecipe));
       } else {
         alert(data.message);
       }
@@ -553,13 +804,14 @@ function App() {
   };
 
   const handleSurpriseMe = () => {
-    if (globalRecipes.length === 0) {
-      alert("Community recipes are still loading. Please try again in a moment.");
-      return;
-    }
-    const randomDoc = globalRecipes[Math.floor(Math.random() * globalRecipes.length)];
+    const pool = globalRecipes.filter(isGroqRecipe);
+    const candidates = pool.length > 0 ? pool : CURATED_FEATURED_RECIPES;
+    const randomDoc = candidates[Math.floor(Math.random() * candidates.length)];
+    const rec = randomDoc.recipe;
+    const imgUrl = rec.image_url || getRandomBanner(rec.archetype, rec.is_vegan, rec.recipe);
     setResult({
-      ...randomDoc.recipe,
+      ...rec,
+      image_url: imgUrl,
       isSurprise: true
     });
   };
@@ -594,21 +846,7 @@ function App() {
                 className={`nav-tab ${viewMode === 'community' ? 'active' : ''}`}
                 onClick={() => fetchGlobalRecipes()}
               >
-                Community
-              </button>
-              <button 
-                className={`nav-tab ${viewMode === 'compare' ? 'active' : ''}`}
-                onClick={() => setViewMode('compare')}
-                style={{ color: '#4ade80' }}
-              >
-                vs Qwen ⚡
-              </button>
-              <button 
-                className={`nav-tab ${viewMode === 'reports' ? 'active' : ''}`}
-                onClick={() => setViewMode('reports')}
-                style={{ color: '#818cf8', fontWeight: 'bold' }}
-              >
-                Analysis & Reports 📊
+                Community 🌍
               </button>
             </div>
           </div>
@@ -682,33 +920,63 @@ function App() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', marginTop: '0', flexWrap: 'wrap', alignItems: 'center' }}>
-              <label className="vegan-toggle" style={{ background: '#ffffff', padding: '0.5rem 1rem', borderRadius: '9999px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input 
-                  type="checkbox" 
-                  checked={isVegan} 
-                  onChange={(e) => setIsVegan(e.target.checked)} 
-                  disabled={agenticVegan}
-                />
-                Make it Vegan
-              </label>
-              <label className="vegan-toggle" style={{ background: agenticVegan ? 'rgba(74, 222, 128, 0.1)' : '#ffffff', padding: '0.5rem 1rem', borderRadius: '9999px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: agenticVegan ? '1px solid #4ade80' : '1px solid #f3f4f6', color: agenticVegan ? '#166534' : 'inherit', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '1.25rem', justifyContent: 'center', marginTop: '0', flexWrap: 'wrap', alignItems: 'center' }}>
+              <label className="vegan-toggle" style={{ 
+                background: agenticVegan ? 'rgba(74, 222, 128, 0.15)' : '#ffffff', 
+                padding: '0.6rem 1.25rem', 
+                borderRadius: '9999px', 
+                boxShadow: '0 2px 6px rgba(0,0,0,0.06)', 
+                border: agenticVegan ? '2px solid #22c55e' : '1px solid #e5e7eb', 
+                color: agenticVegan ? '#15803d' : '#374151', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.5rem',
+                cursor: 'pointer',
+                fontWeight: agenticVegan ? '700' : '500',
+                transition: 'all 0.2s ease'
+              }}>
                 <input 
                   type="checkbox" 
                   checked={agenticVegan} 
-                  onChange={(e) => {
-                    setAgenticVegan(e.target.checked);
-                    if (e.target.checked) setIsVegan(false); // Make it Vegan is mutually exclusive with Agentic Vegan
-                  }} 
+                  onChange={(e) => setAgenticVegan(e.target.checked)} 
+                  style={{ accentColor: '#22c55e', width: '18px', height: '18px', cursor: 'pointer' }}
                 />
-                Agentic Vegan 🚀
+                🌱 Agentic Vegan
               </label>
-              <div className="model-toggle" style={{ background: '#ffffff', borderRadius: '9999px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: '1px solid #f3f4f6', overflow: 'hidden' }}>
-                <button type="button" className={modelVersion === 'v8' ? 'active' : ''} onClick={() => setModelVersion('v8')}>V8</button>
-                <button type="button" className={modelVersion === 'v10' ? 'active' : ''} onClick={() => setModelVersion('v10')}>V10</button>
-                <button type="button" className={modelVersion === 'qwen' ? 'active' : ''} onClick={() => setModelVersion('qwen')} style={{ color: modelVersion === 'qwen' ? '#3b82f6' : 'inherit' }}>Groq (Full) ⚡</button>
-                <button type="button" className={modelVersion === 'qwen_budget' ? 'active' : ''} onClick={() => setModelVersion('qwen_budget')} style={{ color: modelVersion === 'qwen_budget' ? '#10b981' : 'inherit' }}>Groq (Budget) 💰</button>
-                <button type="button" className={modelVersion === 'qwen_bare' ? 'active' : ''} onClick={() => setModelVersion('qwen_bare')} style={{ color: modelVersion === 'qwen_bare' ? '#ef4444' : 'inherit' }}>Groq (Bare) 🚀</button>
+
+              <div className="model-toggle" style={{ background: '#ffffff', borderRadius: '9999px', boxShadow: '0 2px 6px rgba(0,0,0,0.06)', border: '1px solid #e5e7eb', overflow: 'hidden', display: 'flex' }}>
+                <button 
+                  type="button" 
+                  className={modelVersion === 'qwen' ? 'active' : ''} 
+                  onClick={() => setModelVersion('qwen')}
+                  style={{ 
+                    padding: '0.6rem 1.25rem',
+                    border: 'none',
+                    fontWeight: modelVersion === 'qwen' ? '700' : '500',
+                    background: modelVersion === 'qwen' ? '#3b82f6' : 'transparent',
+                    color: modelVersion === 'qwen' ? '#ffffff' : '#4b5563',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  ⚡ Groq with Guardrails
+                </button>
+                <button 
+                  type="button" 
+                  className={modelVersion === 'qwen_budget' ? 'active' : ''} 
+                  onClick={() => setModelVersion('qwen_budget')}
+                  style={{ 
+                    padding: '0.6rem 1.25rem',
+                    border: 'none',
+                    fontWeight: modelVersion === 'qwen_budget' ? '700' : '500',
+                    background: modelVersion === 'qwen_budget' ? '#10b981' : 'transparent',
+                    color: modelVersion === 'qwen_budget' ? '#ffffff' : '#4b5563',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  💰 Groq (Budget Only)
+                </button>
               </div>
             </div>
 
@@ -746,11 +1014,11 @@ function App() {
               <div className="chip highlight" onClick={handleSurpriseMe} style={{ flexShrink: 0, zIndex: 10, boxShadow: '0 4px 6px -1px rgba(250, 204, 21, 0.4)' }}>✨ Random</div>
               <div className="marquee-wrapper" style={{ marginTop: 0, flex: 1 }}>
                 <div className="chips-container marquee-content">
-                  {globalRecipes.slice(0, 10).map((doc, idx) => {
-                     const title = doc.recipe.recipe.split('\n')[0].replace(/^###\s*(TITLE:)?\s*/i, '').trim();
+                  {globalRecipes.filter(isGroqRecipe).slice(0, 20).map((doc, idx) => {
+                     const title = doc.recipe?.recipe ? doc.recipe.recipe.split('\n')[0].replace(/^###\s*(TITLE:)?\s*/i, '').trim() : 'Delicious Dish';
                      return (
                        <div key={`a-${idx}`} className="chip" onClick={() => {
-                         const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype, doc.recipe.is_vegan);
+                         const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype, doc.recipe.is_vegan, doc.recipe.recipe);
                          setResult({...doc.recipe, image_url: imgUrl, isSurprise: true});
                        }} style={{ flexShrink: 0 }}>
                          {title}
@@ -758,11 +1026,11 @@ function App() {
                      );
                   })}
                   {/* Duplicated for infinite scrolling effect */}
-                  {globalRecipes.slice(0, 10).map((doc, idx) => {
-                     const title = doc.recipe.recipe.split('\n')[0].replace(/^###\\s*(TITLE:)?\\s*/i, '').trim();
+                  {globalRecipes.filter(isGroqRecipe).slice(0, 20).map((doc, idx) => {
+                     const title = doc.recipe?.recipe ? doc.recipe.recipe.split('\n')[0].replace(/^###\s*(TITLE:)?\s*/i, '').trim() : 'Delicious Dish';
                      return (
                        <div key={`b-${idx}`} className="chip" onClick={() => {
-                         const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype, doc.recipe.is_vegan);
+                         const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype, doc.recipe.is_vegan, doc.recipe.recipe);
                          setResult({...doc.recipe, image_url: imgUrl, isSurprise: true});
                        }} style={{ flexShrink: 0 }}>
                          {title}
@@ -775,8 +1043,10 @@ function App() {
           </div>
 
           {error && <div style={{ color: 'red', marginTop: '1rem' }}>⚠️ {error}</div>}
+        </div>
+      )}
 
-          {result && (
+      {result && (
             <div className="modal-overlay">
               <div className="modal-content fade-in">
                 <div className="modal-header">
@@ -793,7 +1063,17 @@ function App() {
                 
                 {(result.image_url || result.isSurprise || result.archetype) ? (
                   <div className="modal-image-container">
-                    <img src={result.image_url} alt="Recipe" className="modal-image" />
+                    <img 
+                      src={result.image_url || getRandomBanner(result.archetype, result.is_vegan, result.recipe)} 
+                      alt="Recipe" 
+                      className="modal-image" 
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1632&auto=format&fit=crop";
+                      }}
+                    />
                   </div>
                 ) : (
                   <div style={{ marginTop: '70px' }}></div>
@@ -838,24 +1118,67 @@ function App() {
                 </div>
 
                 <div className="modal-footer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-                  <button className="btn-regenerate" onClick={() => { setResult(null); setSaveMessage(''); }}>Regenerate Recipe</button>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    {saveMessage ? (
-                      <span style={{ color: '#10b981', fontWeight: 'bold' }}>{saveMessage}</span>
+                  <button 
+                    className="btn-regenerate" 
+                    onClick={() => { 
+                      setResult(null); 
+                      setSaveMessage(''); 
+                      setSaveSuccess(false); 
+                      setUsernameError(false); 
+                    }}
+                  >
+                    {result.isSurprise ? "← Close Recipe" : "Regenerate Recipe"}
+                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                    {saveSuccess ? (
+                      <div className="save-success-badge">
+                        <span style={{ fontSize: '1.15rem' }}>✓</span> Saved to Profile ({username})!
+                      </div>
                     ) : (
                       <>
-                        <input 
-                          type="text" 
-                          placeholder="Enter your username..." 
-                          value={username} 
-                          onChange={(e) => setUsername(e.target.value)} 
-                          style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #e5e7eb', outline: 'none', fontSize: '0.95rem' }}
-                        />
+                        <div style={{ position: 'relative' }}>
+                          <input 
+                            type="text" 
+                            placeholder="Enter username to save..." 
+                            value={username} 
+                            onChange={(e) => {
+                              setUsername(e.target.value);
+                              if (usernameError) setUsernameError(false);
+                            }} 
+                            className={usernameError ? "input-error-shake" : ""}
+                            style={{ 
+                              padding: '0.75rem 1rem', 
+                              borderRadius: '10px', 
+                              border: usernameError ? '2px solid #ef4444' : '1px solid #d1d5db', 
+                              outline: 'none', 
+                              fontSize: '0.95rem',
+                              backgroundColor: usernameError ? '#fef2f2' : 'white',
+                              minWidth: '210px',
+                              transition: 'all 0.2s ease'
+                            }}
+                          />
+                          {usernameError && (
+                            <span style={{ position: 'absolute', bottom: '-19px', left: '4px', fontSize: '0.75rem', color: '#ef4444', fontWeight: '600' }}>
+                              Username required to save!
+                            </span>
+                          )}
+                        </div>
                         <button 
-                          style={{ background: '#3b82f6', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }} 
+                          className="btn-save-recipe"
+                          disabled={saveLoading}
                           onClick={handleSaveRecipe}
                         >
-                          Save Recipe
+                          {saveLoading ? (
+                            <>
+                              <span className="spinner-mini"></span>
+                              <span>Saving...</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>💾</span>
+                              <span>Save Recipe</span>
+                            </>
+                          )}
                         </button>
                       </>
                     )}
@@ -864,8 +1187,6 @@ function App() {
               </div>
             </div>
           )}
-        </div>
-      )}
 
       {viewMode === 'vegan' && (
         <>
@@ -1063,7 +1384,17 @@ function App() {
                    <details key={idx} className="history-card">
                      <summary className="history-summary">
                        <div style={{display: 'flex', gap: '1.25rem', alignItems: 'center'}}>
-                         <img src={rec.image_url || getRandomBanner(rec.archetype, rec.is_vegan)} alt="Thumbnail" style={{width: '70px', height: '70px', objectFit: 'cover', borderRadius: '12px'}} />
+                         <img 
+                           src={rec.image_url || getRandomBanner(rec.archetype, rec.is_vegan, rec.recipe)} 
+                           alt="Thumbnail" 
+                           style={{width: '70px', height: '70px', objectFit: 'cover', borderRadius: '12px'}} 
+                           loading="lazy"
+                           referrerPolicy="no-referrer"
+                           onError={(e) => {
+                             e.currentTarget.onerror = null;
+                             e.currentTarget.src = "https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1632&auto=format&fit=crop";
+                           }}
+                         />
                          <div>
                            <h4>{rec.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h4>
                            <span className="badge">{rec.archetype}</span>
@@ -1102,81 +1433,137 @@ function App() {
         </div>
       )}
 
-      {viewMode === 'compare' && (
-        <QwenDashboard />
-      )}
-
       {viewMode === 'community' && (
-        <div className="glass-panel main-panel fade-in">
-          <header>
-            <h1 className="title">Community Recipes 🌍</h1>
-            <p className="subtitle">Explore all user-generated recipes</p>
-          </header>
+        <div className="community-section fade-in">
+          <div className="community-header">
+            <h1 className="title" style={{ fontSize: '2.2rem', marginBottom: '0.4rem' }}>Community Kitchen 🍲</h1>
+            <p className="subtitle" style={{ fontSize: '1rem' }}>Recent High-Quality Groq AI Recipes with Live Mandi Pricing</p>
+          </div>
+
+          <div className="community-filter-bar">
+            <button 
+              className={`community-filter-btn ${communityFilter === 'all' ? 'active' : ''}`}
+              onClick={() => setCommunityFilter('all')}
+            >
+              All Recipes ({globalRecipes.filter(isGroqRecipe).length})
+            </button>
+            <button 
+              className={`community-filter-btn ${communityFilter === 'vegan' ? 'active' : ''}`}
+              onClick={() => setCommunityFilter('vegan')}
+            >
+              🌱 Vegan ({globalRecipes.filter(isGroqRecipe).filter(d => d.recipe?.is_vegan).length})
+            </button>
+            <button 
+              className={`community-filter-btn ${communityFilter === 'guardrails' ? 'active' : ''}`}
+              onClick={() => setCommunityFilter('guardrails')}
+            >
+              ⚡ Guardrails ({globalRecipes.filter(isGroqRecipe).filter(d => d.recipe?.archetype === 'Fast Qwen' || d.recipe?.final_cvs_score !== undefined).length})
+            </button>
+            <button 
+              className={`community-filter-btn ${communityFilter === 'budget' ? 'active' : ''}`}
+              onClick={() => setCommunityFilter('budget')}
+            >
+              💰 Budget ({globalRecipes.filter(isGroqRecipe).filter(d => d.recipe?.archetype === 'Budget Qwen').length})
+            </button>
+          </div>
           
           {globalLoading ? (
-             <div className="loader" style={{margin: '0 auto'}}></div>
-          ) : globalRecipes.length === 0 ? (
-             <p style={{textAlign: 'center', color: '#ccc'}}>No recipes found in the community.</p>
+             <div className="loader" style={{ margin: '3rem auto', display: 'block' }}></div>
+          ) : globalRecipes.filter(isGroqRecipe).length === 0 ? (
+             <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>
+               <p style={{ fontSize: '1.2rem', fontWeight: 600 }}>No recipes found matching this filter.</p>
+             </div>
           ) : (
-            <div className="history-list">
-              {globalRecipes.map((doc, idx) => {
+            <div className="recipe-grid">
+              {globalRecipes.filter(isGroqRecipe).filter(doc => {
+                const rec = doc.recipe;
+                if (communityFilter === 'vegan') return rec.is_vegan;
+                if (communityFilter === 'guardrails') return rec.archetype === 'Fast Qwen' || rec.final_cvs_score !== undefined;
+                if (communityFilter === 'budget') return rec.archetype === 'Budget Qwen';
+                return true;
+              }).map((doc, idx) => {
                  const rec = doc.recipe;
+                 const title = rec.recipe.split('\n')[0].replace(/^###\s*(TITLE:)?\s*/i, '').trim();
+                 const bannerImg = rec.image_url || getRandomBanner(rec.archetype, rec.is_vegan, rec.recipe);
+                 const dateStr = doc.created_at ? new Date(doc.created_at * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
+                 
                  return (
-                   <details key={idx} className="history-card" style={{border: rec.is_vegan ? '2px solid #4ade80' : 'none', position: 'relative'}}>
-                     <summary className="history-summary">
-                       <div style={{display: 'flex', gap: '1.25rem', alignItems: 'center'}}>
-                         <img src={rec.image_url || getRandomBanner(rec.archetype, rec.is_vegan)} alt="Thumbnail" style={{width: '70px', height: '70px', objectFit: 'cover', borderRadius: '12px'}} />
-                         <div>
-                           <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
-                             <h4>{rec.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h4>
-                             {rec.is_vegan && (
-                               <span style={{background: '#4ade80', color: '#064e3b', padding: '2px 8px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold'}}>
-                                 🌱 VEGAN
-                               </span>
-                             )}
-                           </div>
-                           <span className="badge">{rec.archetype}</span>
-                           <span style={{marginLeft: '10px', fontSize: '0.85rem', color: '#9ca3af'}}>
-                             by <strong>{doc.username}</strong>
+                   <div key={idx} className="cute-recipe-card">
+                     <div className="card-banner-wrapper">
+                       <img 
+                         src={bannerImg} 
+                         alt={title} 
+                         className="card-banner-img"
+                         loading="lazy"
+                         referrerPolicy="no-referrer"
+                         onError={(e) => {
+                           e.currentTarget.onerror = null;
+                           e.currentTarget.src = "https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1632&auto=format&fit=crop";
+                         }}
+                       />
+                       <div className="badge-float-left">
+                         {rec.is_vegan && (
+                           <span className="badge-cute badge-vegan">🌱 VEGAN</span>
+                         )}
+                         {rec.archetype === 'Fast Qwen' && (
+                           <span className="badge-cute badge-guardrails">⚡ Guardrails</span>
+                         )}
+                         {rec.archetype === 'Budget Qwen' && (
+                           <span className="badge-cute badge-budget">💰 Budget</span>
+                         )}
+                       </div>
+                       {rec.agentic_attempts !== undefined && rec.agentic_attempts > 0 && (
+                         <div className="badge-float-right">
+                           <span className="badge-cute" style={{ background: 'rgba(255,255,255,0.9)', color: '#0f172a' }}>
+                             🔄 {rec.agentic_attempts} Check{rec.agentic_attempts > 1 ? 's' : ''}
                            </span>
-                           <p className="date-text">Saved: {new Date(doc.created_at * 1000).toLocaleString()}</p>
+                         </div>
+                       )}
+                       {rec.budget && (
+                         <span className="badge-cost">₹{rec.budget} Budget</span>
+                       )}
+                     </div>
+
+                     <div className="card-content">
+                       <div>
+                         <div className="card-meta">
+                           <span>🧑‍🍳 <strong>@{doc.username || 'chef'}</strong></span>
+                           <span>{dateStr}</span>
+                         </div>
+                         <h3 className="card-title" title={title}>{title}</h3>
+                         
+                         <div className="card-ingredients-row">
+                           {(rec.calculated_ingredients || []).slice(0, 4).map((ing, i) => (
+                             <span key={i} className="card-ing-chip">
+                               {ing.replace(/^\d+(\.\d+)?g\s+/i, '')}
+                             </span>
+                           ))}
+                           {(rec.calculated_ingredients || []).length > 4 && (
+                             <span className="card-ing-chip" style={{ background: '#f1f5f9', fontWeight: 600 }}>
+                               +{(rec.calculated_ingredients.length - 4)} more
+                             </span>
+                           )}
                          </div>
                        </div>
-                       <div className="expand-hint">Click to view ▾</div>
-                     </summary>
-                     
-                     <div className="history-expanded-content">
-                        <div className="ingredients-box" style={{marginTop: '1rem'}}>
-                          <h4>Ingredients</h4>
-                          <ul>
-                            {rec.calculated_ingredients.map((ing, i) => (
-                              <li key={i}>✓ {ing}</li>
-                            ))}
-                          </ul>
-                        </div>
-                        
-                        <div className="directions-box" style={{marginTop: '1rem'}}>
-                          <h4>Directions</h4>
-                          <div className="recipe-text" style={{fontSize: '0.95rem'}}>
-                            {rec.recipe.includes('### DIRECTIONS:') 
-                              ? rec.recipe.split('### DIRECTIONS:')[1].trim().split('\n').map((step, i) => (
-                                  <p key={i} className="step-text" style={{padding: '0.8rem', marginBottom: '0.5rem'}}>{step}</p>
-                                ))
-                              : <p className="step-text">{rec.recipe}</p>}
-                          </div>
-                        </div>
+
+                       <button 
+                         className="card-view-btn"
+                         onClick={() => {
+                           setResult({
+                             ...rec,
+                             image_url: bannerImg,
+                             isSurprise: true
+                           });
+                         }}
+                       >
+                         View Recipe & Method ✨
+                       </button>
                      </div>
-                   </details>
-                 )
+                   </div>
+                 );
               })}
             </div>
           )}
-        </div>
-      )}
-
-      {viewMode === 'reports' && (
-        <div className="main-panel fade-in" style={{ padding: '2rem 1rem' }}>
-          <ReportsTab backendUrl={BACKEND_URL} />
         </div>
       )}
 

@@ -19,8 +19,12 @@ from groq import Groq
 from motor.motor_asyncio import AsyncIOMotorClient
 
 # Agentic Modules
-from graph_retriever import GraphRetriever
-from llm_judge import RecipeJudge
+try:
+    from graph_retriever import GraphRetriever
+    from llm_judge import RecipeJudge
+except ImportError:
+    GraphRetriever = None
+    RecipeJudge = None
 
 import os
 nltk_dir = os.path.join(os.getcwd(), "nltk_data")
@@ -274,6 +278,22 @@ UNSPLASH_CACHE = {
         "1618160702438-9b02ab6515c9",
         "1631452180519-c014fe946bc7"
     ],
+    "Chicken": [
+        "1598515214211-89d3c73ae83b",
+        "1604908176997-125f25cc6f3d",
+        "1626082927389-6cd097cdc6ec",
+        "1562967914-608f82629710"
+    ],
+    "Egg": [
+        "1525351484163-7529414344d8",
+        "1565299585323-38d6b0865b47",
+        "1587314168485-3236d6710814"
+    ],
+    "Biryani": [
+        "1563379091339-03b21ab4a4f8",
+        "1541832676-9b763b0239ab",
+        "1589302168068-964664d93dc0"
+    ],
     "Salad": [
         "1512621776951-a57141f2eefd",
         "1490645935967-10de6ba17061",
@@ -282,7 +302,8 @@ UNSPLASH_CACHE = {
     "Dessert": [
         "1488477181946-6428a0291777",
         "1550617931-e17a7b70dce2",
-        "1551024506-0cb4a1cb3689"
+        "1578985545062-69928b1d9587",
+        "1551024601-bec78aea704b"
     ],
     "Bread": [
         "1509440159596-0249088772ff",
@@ -294,13 +315,28 @@ UNSPLASH_CACHE = {
         "1578020190125-f4f7c18bc9cb"
     ],
     "Rice_Dish": [
-        "1512058564366-18510be2db19",
-        "1596797038530-2c107229654b"
+        "1596797038530-2c107229654b",
+        "1563379091339-03b21ab4a4f8",
+        "1589302168068-964664d93dc0"
     ],
     "Dry_Sabzi": [
         "1546833999-b9f581a1996d",
         "1565557623262-b51c2513a641",
         "1604152135912-04a022e23696"
+    ],
+    "NonVegan": [
+        "1598515214211-89d3c73ae83b",
+        "1604908176997-125f25cc6f3d",
+        "1626082927389-6cd097cdc6ec",
+        "1565299585323-38d6b0865b47",
+        "1541832676-9b763b0239ab"
+    ],
+    "Vegan": [
+        "1512621776951-a57141f2eefd",
+        "1490645935967-10de6ba17061",
+        "1546069901-ba9599a7e63c",
+        "1547592166-23ac45744acd",
+        "1546833999-b9f581a1996d"
     ]
 }
 
@@ -743,8 +779,16 @@ async def get_all_recipes():
     if recipes_collection is None:
         return {"status": "error", "message": "Database not connected on the server."}
     
-    # Fetch top 100 most recent saved recipes globally
-    cursor = recipes_collection.find({}).sort("created_at", -1)
+    # Fetch recent high-quality Groq model generated recipes only (excluding old legacy V8/V10 runs)
+    query = {
+        "$or": [
+            {"recipe.archetype": {"$in": ["Agentic Vegan", "Budget Qwen", "Fast Qwen", "Groq Guardrails", "Groq Budget"]}},
+            {"recipe.agentic_attempts": {"$exists": True, "$ne": None}},
+            {"username": {"$regex": "groq", "$options": "i"}},
+            {"recipe.model": {"$regex": "qwen|groq|mixtral|llama", "$options": "i"}}
+        ]
+    }
+    cursor = recipes_collection.find(query).sort("created_at", -1)
     recipes = await cursor.to_list(length=100)
     
     for r in recipes:
@@ -1738,6 +1782,51 @@ async def generate_fast_budget(request: RecipeRequest):
     def generate():
         yield f"data: {json.dumps({'step': 'starting', 'message': 'Initializing Budget Pipeline...'})}\n\n"
         time.sleep(0.5)
+        if request.is_vegan:
+            yield f"data: {json.dumps({'step': 'veganizing', 'message': 'Running Vegan Substitution Engine...'})}\n\n"
+            step_start = time.time()
+            import vegan_engine
+            archetype_fast = _classify_archetype_fast([parse_ingredient_input(i)[1] for i in clean_ingredients])
+            veganized_ingredients = []
+            for raw_ing in clean_ingredients:
+                qty, name = parse_ingredient_input(raw_ing)
+                name_lower = name.lower().strip()
+                canonical_name = canonicalize_ingredient(name_lower)
+                blueprint = None
+                if vegan_alternatives_sync is not None:
+                    try:
+                        db_doc = vegan_alternatives_sync.find_one({"_id": canonical_name})
+                        if db_doc and db_doc.get("best_vegan_substitute"):
+                            blueprint = {
+                                "status": "success",
+                                "original_ingredient": name,
+                                "best_vegan_substitute": db_doc["best_vegan_substitute"],
+                                "compensation_blueprint": db_doc.get("compensation_blueprint", {
+                                    "auxiliary_additions": [], "techniques": [], "spice_bridge": []
+                                })
+                            }
+                    except Exception as e:
+                        pass
+                if blueprint is None:
+                    try:
+                        features = vegan_engine.load_features()
+                        if canonical_name in features or vegan_engine.classify_by_keyword(canonical_name) is not None:
+                            blueprint = vegan_engine.generate_vegan_blueprint(canonical_name, archetype=archetype_fast)
+                    except Exception as e:
+                        blueprint = {"status": "error"}
+
+                if blueprint and blueprint.get("status") == "success" and \
+                   blueprint.get("original_ingredient") != blueprint.get("best_vegan_substitute"):
+                    substitute = blueprint["best_vegan_substitute"]
+                    veganized_ingredients.append(f"{qty}g {substitute}" if qty is not None else substitute)
+                    for add in blueprint.get("compensation_blueprint", {}).get("auxiliary_additions", []):
+                        veganized_ingredients.append(f"{add['amount']} {add['name']}")
+                    for spice in blueprint.get("compensation_blueprint", {}).get("spice_bridge", []):
+                        veganized_ingredients.append(spice["spice"])
+                else:
+                    veganized_ingredients.append(raw_ing)
+            clean_ingredients = veganized_ingredients
+
         yield f"data: {json.dumps({'step': 'optimizing', 'message': f'Running Cost Constraint Optimization (Budget: ₹{request.budget})...'})}\n\n"
         
         calculated_ingredients, archetype = optimize_recipe_v2(clean_ingredients, request.budget, request.servings, request.state)
@@ -1778,7 +1867,8 @@ async def generate_fast_budget(request: RecipeRequest):
         actual_model = res.model if hasattr(res, "model") else qwen_model
         
         latency = time.time() - start_time
-        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': calculated_ingredients, 'archetype': 'Budget Qwen', 'is_vegan': request.is_vegan, 'attempts': 0, 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
+        final_archetype = "Agentic Vegan" if request.is_vegan else "Budget Qwen"
+        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': calculated_ingredients, 'archetype': final_archetype, 'is_vegan': request.is_vegan, 'attempts': 0, 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
         
     return StreamingResponse(generate(), media_type="text/event-stream")
 
