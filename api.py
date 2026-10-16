@@ -169,6 +169,48 @@ def query_serverless_llm(messages: list, max_tokens: int = 250, temperature: flo
         print(f"[WARN] Groq API query failed: {e}")
         return ""
 
+def get_groq_recipe_model(client) -> str:
+    default_model = "qwen/qwen3.8-27b"
+    try:
+        models = [m.id for m in client.models.list().data]
+        for m in models:
+            if 'qwen' in m.lower():
+                return m
+        for fb in ["openai/gpt-oss-20b", "allam-2-7b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant"]:
+            if fb in models:
+                return fb
+    except Exception as e:
+        print(f"[WARN] Failed to list Groq models: {e}")
+    return default_model
+
+def call_groq_with_fallback(client, messages, preferred_model=None, max_tokens=500, temperature=0.7):
+    if not preferred_model:
+        preferred_model = get_groq_recipe_model(client)
+    
+    candidate_models = [preferred_model, "qwen/qwen3.8-27b", "openai/gpt-oss-20b", "allam-2-7b"]
+    seen = set()
+    models_to_try = []
+    for m in candidate_models:
+        if m and m not in seen:
+            seen.add(m)
+            models_to_try.append(m)
+            
+    last_err = None
+    for model_name in models_to_try:
+        try:
+            res = client.chat.completions.create(
+                messages=messages,
+                model=model_name,
+                max_completion_tokens=max_tokens,
+                temperature=temperature
+            )
+            return res, model_name
+        except Exception as e:
+            last_err = e
+            print(f"[WARN] Groq model '{model_name}' failed: {e}. Trying fallback...")
+            continue
+    raise last_err or RuntimeError("All Groq models failed")
+
 def query_hf_model(prompt: str, max_new_tokens: int = 350,
                    temperature: float = 0.7, top_p: float = 0.9,
                    repetition_penalty: float = 1.1,
@@ -1413,23 +1455,18 @@ async def generate_agentic_vegan(request: RecipeRequest):
     attempts = 0
     
     client = get_inference_client()
-    target_model = "qwen/qwen3.8-27b"
-    if request.model_version == 'qwen':
-        try:
-            available_models = [m.id for m in client.models.list().data]
-            target_model = next((m for m in available_models if 'qwen' in m.lower()), "mixtral-8x7b-32768")
-        except:
-            target_model = "qwen-2.5-32b"
+    target_model = get_groq_recipe_model(client)
+    actual_model = target_model
             
     for attempt in range(3):
-        res = client.chat.completions.create(
+        res, actual_model = call_groq_with_fallback(
+            client=client,
             messages=[{"role": "user", "content": current_prompt}],
-            model=target_model,
-            max_completion_tokens=500,
+            preferred_model=target_model,
+            max_tokens=500,
             temperature=0.6
         )
         recipe_text = res.choices[0].message.content.strip()
-        actual_model = res.model if hasattr(res, "model") else target_model
         
         judge_result = vegan_judge.evaluate_recipe(recipe_text)
         
@@ -1589,29 +1626,22 @@ def generate_fast_qwen(request: RecipeRequest):
         all_critiques = []
         
         client = get_inference_client()
-        qwen_model = "qwen-2.5-32b"
-        try:
-            available_models = [m.id for m in client.models.list().data]
-            qwen_model = next((m for m in available_models if 'qwen' in m.lower()), "mixtral-8x7b-32768")
-        except:
-            pass
-            
+        qwen_model = get_groq_recipe_model(client)
         actual_model = qwen_model
         
         for attempt in range(1, max_retries + 1):
             yield f"data: {json.dumps({'step': 'generating', 'message': f'Generating AI Recipe (Attempt {attempt}/{max_retries})...'})}\n\n"
             step_start = time.time()
             
-            res = client.chat.completions.create(
+            res, actual_model = call_groq_with_fallback(
+                client=client,
                 messages=[{"role": "user", "content": current_prompt}],
-                model=qwen_model,
-                max_completion_tokens=500,
+                preferred_model=qwen_model,
+                max_tokens=500,
                 temperature=0.6
             )
             
             ai_text = res.choices[0].message.content.strip()
-            if hasattr(res, "model"):
-                actual_model = res.model
                 
             times[f'generation_sec_attempt_{attempt}'] = time.time() - step_start
             
@@ -1723,153 +1753,153 @@ def generate_fast_qwen(request: RecipeRequest):
 
 
 @app.post("/generate-fast-bare")
-async def generate_fast_bare(request: RecipeRequest):
+def generate_fast_bare(request: RecipeRequest):
     """
     Groq (Bare) 🚀 Pipeline — Zero agentic features.
     No graph, no FAISS, no judge, no SciPy. Just raw LLM generation.
     """
-    start_time = time.time()
-    ingr_text = "\n".join(f"- {i}" for i in request.ingredients)
-    
-    client = get_inference_client()
-    qwen_model = "qwen-2.5-32b"
-    try:
-        available_models = [m.id for m in client.models.list().data]
-        qwen_model = next((m for m in available_models if 'qwen' in m.lower()), "mixtral-8x7b-32768")
-    except:
-        pass
-        
-    vegan_directive = "YOU MUST ENSURE THIS RECIPE IS 100% STRICTLY VEGAN. DO NOT USE ANY ANIMAL PRODUCTS." if request.is_vegan else ""
-    
-    prompt = (
-        f"You are a master chef. Create a delicious recipe using these ingredients:\n"
-        f"{ingr_text}\n\n"
-        f"{vegan_directive}\n"
-        f"Output ONLY the title on the first line starting with '### TITLE:' and the numbered instructions.\n"
-    )
-    
-    res = client.chat.completions.create(
-        messages=[{"role": "user", "content": prompt}],
-        model=qwen_model,
-        max_completion_tokens=500,
-        temperature=0.7
-    )
-    
-    recipe_text = res.choices[0].message.content.strip()
-    actual_model = res.model if hasattr(res, "model") else qwen_model
-    
     def generate():
-        yield f"data: {json.dumps({'step': 'generating', 'message': f'Turbo Generating Bare with {actual_model}...'})}\n\n"
-        time.sleep(0.5)
-        latency = time.time() - start_time
-        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': request.ingredients, 'archetype': 'Bare Qwen', 'is_vegan': request.is_vegan, 'attempts': 0, 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
-        
+        try:
+            start_time = time.time()
+            ingr_text = "\n".join(f"- {i}" for i in request.ingredients)
+            
+            client = get_inference_client()
+            chosen_model = get_groq_recipe_model(client)
+                
+            vegan_directive = "YOU MUST ENSURE THIS RECIPE IS 100% STRICTLY VEGAN. DO NOT USE ANY ANIMAL PRODUCTS." if request.is_vegan else ""
+            
+            prompt = (
+                f"You are a master chef. Create a delicious recipe using these ingredients:\n"
+                f"{ingr_text}\n\n"
+                f"{vegan_directive}\n"
+                f"Output ONLY the title on the first line starting with '### TITLE:' and the numbered instructions.\n"
+            )
+            
+            yield f"data: {json.dumps({'step': 'generating', 'message': f'Turbo Generating Bare with {chosen_model}...'})}\n\n"
+            
+            res, actual_model = call_groq_with_fallback(
+                client=client,
+                messages=[{"role": "user", "content": prompt}],
+                preferred_model=chosen_model,
+                max_tokens=500,
+                temperature=0.7
+            )
+            
+            recipe_text = res.choices[0].message.content.strip()
+            latency = time.time() - start_time
+            yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': request.ingredients, 'archetype': 'Bare Qwen', 'is_vegan': request.is_vegan, 'attempts': 0, 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
+        except Exception as e:
+            print(f"[ERROR in generate_fast_bare] {e}")
+            import traceback
+            traceback.print_exc()
+            yield f"data: {json.dumps({'step': 'error', 'message': f'Bare generation failed: {str(e)}'})}\n\n"
+            
     return StreamingResponse(generate(), media_type="text/event-stream")
 
 
 @app.post("/generate-fast-budget")
-async def generate_fast_budget(request: RecipeRequest):
+def generate_fast_budget(request: RecipeRequest):
     """
     Groq (Budget) 💰 Pipeline — SciPy optimization only.
     No graph, no FAISS, no judge. Just budget optimization + LLM generation.
     """
-    start_time = time.time()
-    
     clean_ingredients = []
     for item in request.ingredients:
         clean_ingredients.extend([i.strip() for i in item.split(',') if i.strip()])
         
     def generate():
-        yield f"data: {json.dumps({'step': 'starting', 'message': 'Initializing Budget Pipeline...'})}\n\n"
-        time.sleep(0.5)
-        if request.is_vegan:
-            yield f"data: {json.dumps({'step': 'veganizing', 'message': 'Running Vegan Substitution Engine...'})}\n\n"
-            step_start = time.time()
-            import vegan_engine
-            archetype_fast = _classify_archetype_fast([parse_ingredient_input(i)[1] for i in clean_ingredients])
-            veganized_ingredients = []
-            for raw_ing in clean_ingredients:
-                qty, name = parse_ingredient_input(raw_ing)
-                name_lower = name.lower().strip()
-                canonical_name = canonicalize_ingredient(name_lower)
-                blueprint = None
-                if vegan_alternatives_sync is not None:
-                    try:
-                        db_doc = vegan_alternatives_sync.find_one({"_id": canonical_name})
-                        if db_doc and db_doc.get("best_vegan_substitute"):
-                            blueprint = {
-                                "status": "success",
-                                "original_ingredient": name,
-                                "best_vegan_substitute": db_doc["best_vegan_substitute"],
-                                "compensation_blueprint": db_doc.get("compensation_blueprint", {
-                                    "auxiliary_additions": [], "techniques": [], "spice_bridge": []
-                                })
-                            }
-                    except Exception as e:
-                        pass
-                if blueprint is None:
-                    try:
-                        features = vegan_engine.load_features()
-                        if canonical_name in features or vegan_engine.classify_by_keyword(canonical_name) is not None:
-                            blueprint = vegan_engine.generate_vegan_blueprint(canonical_name, archetype=archetype_fast)
-                    except Exception as e:
-                        blueprint = {"status": "error"}
-
-                if blueprint and blueprint.get("status") == "success" and \
-                   blueprint.get("original_ingredient") != blueprint.get("best_vegan_substitute"):
-                    substitute = blueprint["best_vegan_substitute"]
-                    veganized_ingredients.append(f"{qty}g {substitute}" if qty is not None else substitute)
-                    for add in blueprint.get("compensation_blueprint", {}).get("auxiliary_additions", []):
-                        veganized_ingredients.append(f"{add['amount']} {add['name']}")
-                    for spice in blueprint.get("compensation_blueprint", {}).get("spice_bridge", []):
-                        veganized_ingredients.append(spice["spice"])
-                else:
-                    veganized_ingredients.append(raw_ing)
-            clean_ingredients = veganized_ingredients
-
-        yield f"data: {json.dumps({'step': 'optimizing', 'message': f'Running Cost Constraint Optimization (Budget: ₹{request.budget})...'})}\n\n"
-        
-        calculated_ingredients, archetype = optimize_recipe_v2(clean_ingredients, request.budget, request.servings, request.state)
-        
-        if not calculated_ingredients:
-            yield f"data: {json.dumps({'step': 'error', 'message': 'The provided budget is mathematically impossible for these ingredients at current market prices.'})}\n\n"
-            return
-            
-        ingr_text = "\n".join(f"- {i}" for i in calculated_ingredients)
-        
-        client = get_inference_client()
-        qwen_model = "qwen-2.5-32b"
         try:
-            available_models = [m.id for m in client.models.list().data]
-            qwen_model = next((m for m in available_models if 'qwen' in m.lower()), "mixtral-8x7b-32768")
-        except:
-            pass
+            start_time = time.time()
+            active_ingredients = list(clean_ingredients)
+            yield f"data: {json.dumps({'step': 'starting', 'message': 'Initializing Budget Pipeline...'})}\n\n"
+            time.sleep(0.3)
             
-        vegan_directive = "YOU MUST ENSURE THIS RECIPE IS 100% STRICTLY VEGAN. DO NOT USE ANY ANIMAL PRODUCTS." if request.is_vegan else ""
-        
-        prompt = (
-            f"You are a master chef. Create a delicious budget recipe using these calculated ingredient quantities:\n"
-            f"{ingr_text}\n\n"
-            f"{vegan_directive}\n"
-            f"Output ONLY the title on the first line starting with '### TITLE:' and the numbered instructions.\n"
-        )
-        
-        yield f"data: {json.dumps({'step': 'generating', 'message': f'Generating Budget Recipe with {qwen_model}...'})}\n\n"
-        
-        res = client.chat.completions.create(
-            messages=[{"role": "user", "content": prompt}],
-            model=qwen_model,
-            max_completion_tokens=500,
-            temperature=0.7
-        )
-        
-        recipe_text = res.choices[0].message.content.strip()
-        actual_model = res.model if hasattr(res, "model") else qwen_model
-        
-        latency = time.time() - start_time
-        final_archetype = "Agentic Vegan" if request.is_vegan else "Budget Qwen"
-        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': calculated_ingredients, 'archetype': final_archetype, 'is_vegan': request.is_vegan, 'attempts': 0, 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
-        
+            if request.is_vegan:
+                yield f"data: {json.dumps({'step': 'veganizing', 'message': 'Running Vegan Substitution Engine...'})}\n\n"
+                import vegan_engine
+                archetype_fast = _classify_archetype_fast([parse_ingredient_input(i)[1] for i in active_ingredients])
+                veganized_ingredients = []
+                for raw_ing in active_ingredients:
+                    qty, name = parse_ingredient_input(raw_ing)
+                    name_lower = name.lower().strip()
+                    canonical_name = canonicalize_ingredient(name_lower)
+                    blueprint = None
+                    if vegan_alternatives_sync is not None:
+                        try:
+                            db_doc = vegan_alternatives_sync.find_one({"_id": canonical_name})
+                            if db_doc and db_doc.get("best_vegan_substitute"):
+                                blueprint = {
+                                    "status": "success",
+                                    "original_ingredient": name,
+                                    "best_vegan_substitute": db_doc["best_vegan_substitute"],
+                                    "compensation_blueprint": db_doc.get("compensation_blueprint", {
+                                        "auxiliary_additions": [], "techniques": [], "spice_bridge": []
+                                    })
+                                }
+                        except Exception as e:
+                            pass
+                    if blueprint is None:
+                        try:
+                            features = vegan_engine.load_features()
+                            if canonical_name in features or vegan_engine.classify_by_keyword(canonical_name) is not None:
+                                blueprint = vegan_engine.generate_vegan_blueprint(canonical_name, archetype=archetype_fast)
+                        except Exception as e:
+                            blueprint = {"status": "error"}
+
+                    if blueprint and blueprint.get("status") == "success" and \
+                       blueprint.get("original_ingredient") != blueprint.get("best_vegan_substitute"):
+                        substitute = blueprint["best_vegan_substitute"]
+                        veganized_ingredients.append(f"{qty}g {substitute}" if qty is not None else substitute)
+                        for add in blueprint.get("compensation_blueprint", {}).get("auxiliary_additions", []):
+                            veganized_ingredients.append(f"{add['amount']} {add['name']}")
+                        for spice in blueprint.get("compensation_blueprint", {}).get("spice_bridge", []):
+                            veganized_ingredients.append(spice["spice"])
+                    else:
+                        veganized_ingredients.append(raw_ing)
+                active_ingredients = veganized_ingredients
+
+            yield f"data: {json.dumps({'step': 'optimizing', 'message': f'Running Cost Constraint Optimization (Budget: ₹{request.budget})...'})}\n\n"
+            
+            calculated_ingredients, archetype = optimize_recipe_v2(active_ingredients, request.budget, request.servings, request.state)
+            
+            if not calculated_ingredients:
+                yield f"data: {json.dumps({'step': 'error', 'message': 'The provided budget is mathematically impossible for these ingredients at current market prices.'})}\n\n"
+                return
+                
+            ingr_text = "\n".join(f"- {i}" for i in calculated_ingredients)
+            
+            client = get_inference_client()
+            chosen_model = get_groq_recipe_model(client)
+                
+            vegan_directive = "YOU MUST ENSURE THIS RECIPE IS 100% STRICTLY VEGAN. DO NOT USE ANY ANIMAL PRODUCTS." if request.is_vegan else ""
+            
+            prompt = (
+                f"You are a master chef. Create a delicious budget recipe using these calculated ingredient quantities:\n"
+                f"{ingr_text}\n\n"
+                f"{vegan_directive}\n"
+                f"Output ONLY the title on the first line starting with '### TITLE:' and the numbered instructions.\n"
+            )
+            
+            yield f"data: {json.dumps({'step': 'generating', 'message': f'Generating Budget Recipe with {chosen_model}...'})}\n\n"
+            
+            res, actual_model = call_groq_with_fallback(
+                client=client,
+                messages=[{"role": "user", "content": prompt}],
+                preferred_model=chosen_model,
+                max_tokens=500,
+                temperature=0.7
+            )
+            
+            recipe_text = res.choices[0].message.content.strip()
+            latency = time.time() - start_time
+            final_archetype = "Agentic Vegan" if request.is_vegan else (archetype or "Budget Qwen")
+            yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': calculated_ingredients, 'archetype': final_archetype, 'is_vegan': request.is_vegan, 'attempts': 0, 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
+        except Exception as e:
+            print(f"[ERROR in generate_fast_budget] {e}")
+            import traceback
+            traceback.print_exc()
+            yield f"data: {json.dumps({'step': 'error', 'message': f'Budget recipe generation error: {str(e)}'})}\n\n"
+            
     return StreamingResponse(generate(), media_type="text/event-stream")
 
 @app.get("/benchmark-reports")

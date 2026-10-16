@@ -628,8 +628,15 @@ function App() {
         body: JSON.stringify(payload)
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server returned error ${response.status}: ${errorText || response.statusText}`);
+      }
+
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
+      let hasResult = false;
+      let hasError = false;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -644,6 +651,7 @@ function App() {
             try {
               const data = JSON.parse(dataStr);
               if (data.step === 'complete' || data.step === 'final_recipe') {
+                hasResult = true;
                 if (data.step === 'final_recipe') {
                   const imgUrl = getRandomBanner(data.archetype, data.is_vegan, data.recipe);
                   setResult({
@@ -651,10 +659,12 @@ function App() {
                     calculated_ingredients: data.calculated_ingredients,
                     archetype: data.archetype,
                     is_vegan: data.is_vegan,
-                    agentic_attempts: data.attempts,
+                    agentic_attempts: data.attempts || 0,
                     image_url: imgUrl,
                     budget: data.budget,
-                    model: data.model
+                    model: data.model,
+                    latency: data.latency,
+                    city: data.city
                   });
                 } else {
                   const resWithBanner = { ...data.result };
@@ -663,6 +673,7 @@ function App() {
                 }
                 setStepMessage('');
               } else if (data.step === 'error') {
+                hasError = true;
                 setError(data.message);
                 setStepMessage('');
               } else {
@@ -675,8 +686,12 @@ function App() {
         }
       }
 
+      if (!hasResult && !hasError) {
+        setError('Recipe generation ended unexpectedly. Please try again.');
+      }
+
     } catch (err) {
-      setError('Connection to backend failed. Please try again.');
+      setError(err.message || 'Connection to backend failed. Please try again.');
     } finally {
       setLoading(false);
     }
