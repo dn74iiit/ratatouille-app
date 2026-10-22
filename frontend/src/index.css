@@ -708,8 +708,15 @@ body {
   border-radius: 12px;
 }
 
-.card-view-btn {
+.card-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
+}
+
+.card-view-btn {
+  flex: 1;
   padding: 0.7rem;
   background: #fff1f2;
   color: #e11d48;
@@ -730,6 +737,334 @@ body {
   color: #ffffff;
   border-color: #e11d48;
   transform: translateY(-1px);
+}
+
+.card-share-btn {
+  padding: 0.7rem;
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.card-share-btn:hover {
+  background: #f1f5f9;
+  color: #7a1d41;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.card-share-btn:active {
+  transform: scale(0.95);
+}
+
+.btn-share-recipe {
+  background: #7a1d41;
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.4rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(122, 29, 65, 0.25);
+  user-select: none;
+}
+
+.btn-share-recipe:hover {
+  background: #631433;
+  box-shadow: 0 4px 12px rgba(122, 29, 65, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-share-recipe:active {
+  transform: scale(0.96);
+}
+
+/* Recipe Share Popup Modal */
+.share-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1.25rem;
+  animation: fadeInModal 0.2s ease-out;
+}
+
+.share-modal-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 460px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25);
+  padding: 1.75rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  animation: scaleUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUpModal {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.share-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.share-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.share-modal-close {
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.share-modal-close:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.share-recipe-preview {
+  display: flex;
+  gap: 1rem;
+  padding: 0.85rem;
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  align-items: center;
+}
+
+.share-preview-thumb {
+  width: 58px;
+  height: 58px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.share-preview-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.share-preview-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.share-preview-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #059669;
+  background: #d1fae5;
+  padding: 2px 8px;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.share-platform-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.share-platform-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  justify-content: flex-start;
+}
+
+.share-platform-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.share-platform-btn:active {
+  transform: scale(0.97);
+}
+
+.share-btn-x {
+  background: #000000;
+  color: #ffffff;
+}
+.share-btn-x:hover {
+  background: #1a1a1a;
+}
+
+.share-btn-linkedin {
+  background: #0A66C2;
+  color: #ffffff;
+}
+.share-btn-linkedin:hover {
+  background: #08529d;
+}
+
+.share-btn-facebook {
+  background: #1877F2;
+  color: #ffffff;
+}
+.share-btn-facebook:hover {
+  background: #1464cc;
+}
+
+.share-btn-whatsapp {
+  background: #25D366;
+  color: #ffffff;
+}
+.share-btn-whatsapp:hover {
+  background: #20ba59;
+}
+
+.share-btn-instagram {
+  grid-column: span 2;
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  color: #ffffff;
+  justify-content: center;
+}
+.share-btn-instagram:hover {
+  opacity: 0.95;
+}
+
+.share-copy-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.share-copy-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.share-copy-input-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.share-copy-input {
+  flex: 1;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.85rem;
+  color: #475569;
+  outline: none;
+  font-family: inherit;
+}
+
+.share-copy-btn {
+  background: #7a1d41;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.share-copy-btn:hover {
+  background: #631433;
+}
+
+.share-copy-btn.copied {
+  background: #059669;
+}
+
+.share-toast {
+  position: absolute;
+  bottom: -42px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: popInToast 0.2s ease;
+}
+
+@keyframes popInToast {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
 }
 
 /* Recipe Save Button Feedback & Animations */

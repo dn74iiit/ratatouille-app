@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
-import { Search, X, ShoppingBasket, QrCode, Link as LinkIcon } from 'lucide-react';
+import { Search, X, ShoppingBasket, QrCode, Link as LinkIcon, Share2, Globe, Check } from 'lucide-react';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8000' : 'https://ratatouille-backend.onrender.com');
 
@@ -846,6 +846,37 @@ function App() {
   // History State
   const [history, setHistory] = useState([]);
 
+  // Share Modal State
+  const [shareModalRecipe, setShareModalRecipe] = useState(null);
+  const [shareCopiedToast, setShareCopiedToast] = useState('');
+
+  // Close share modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && shareModalRecipe) {
+        setShareModalRecipe(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [shareModalRecipe]);
+
+  const handleCopyShareLink = (url) => {
+    navigator.clipboard.writeText(url);
+    setShareCopiedToast('link');
+    setTimeout(() => setShareCopiedToast(''), 2500);
+  };
+
+  const handleCopyInstagramCaption = (rec) => {
+    const title = cleanRecipeTitle(rec.recipe || rec.title);
+    const ingredients = (rec.calculated_ingredients || []).slice(0, 5).map(i => typeof i === 'string' ? i.replace(/^\d+(\.\d+)?g\s+/i, '') : i).join(', ');
+    const shareUrl = typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://cosylab.iiitd.edu.in/ratatouille';
+    const caption = `🍽️ Made this recipe: ${title}!\n\n✨ Key Ingredients: ${ingredients}\n\n🤖 Powered by Ratatouille AI - Computational Gastronomy at CoSyLaB, IIIT Delhi.\n🔗 Try it out: ${shareUrl}\n\n#RatatouilleAI #ComputationalGastronomy #IIITDelhi #FoodAI #Recipe`;
+    navigator.clipboard.writeText(caption);
+    setShareCopiedToast('insta');
+    setTimeout(() => setShareCopiedToast(''), 2500);
+  };
+
   // Vegan Engine State
   const [veganIngredients, setVeganIngredients] = useState('paneer, chicken');
   const [veganArchetype, setVeganArchetype] = useState('Curry');
@@ -1203,18 +1234,46 @@ function App() {
 
           <div className="nav-right">
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-              <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fcosylab.iiitd.edu.in%2Fratatouille&text=AI-Generated%20Recipes%20using%20%23Ratatouille.%0A%0AComputational%20Gastronomy%2C%20a%20data%20science%20of%20food%2C%20flavors%2C%20nutritions%2C%20health%2C%20and%20sustainability.%0A%0AMaking%20Food%20Computable.%20Complex%20Systems%20Laboratory%2C%20IIIIT-Delhi%0A%0A" target="_blank" rel="noopener noreferrer" className="social-icon" style={{ display: 'flex' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#1DA1F2"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+              <a 
+                href="https://cosylab.iiitd.edu.in/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                title="CoSyLaB Portal (IIIT Delhi)" 
+                className="social-icon" 
+                style={{ display: 'flex', color: '#7a1d41' }}
+              >
+                <Globe size={22} />
               </a>
-              <a href="https://www.facebook.com/sharer/sharer.php?u=https://cosylab.iiitd.edu.in/ratatouille&t=AI-Generated%20Recipes%20using%20%23Ratatouille.%0A%0AComputational%20Gastronomy%2C%20a%20data%20science%20of%20food%2C%20flavors%2C%20nutritions%2C%20health%2C%20and%20sustainability.%0A%0AMaking%20Food%20Computable.%20Complex%20Systems%20Laboratory%2C%20IIIIT-Delhi%0A%0A" target="_blank" rel="noopener noreferrer" className="social-icon" style={{ display: 'flex' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              <a 
+                href="https://twitter.com/gansbags" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                title="Prof. Ganesh Bagler on X" 
+                className="social-icon" 
+                style={{ display: 'flex' }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#000000"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
               </a>
-              <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fcosylab.iiitd.edu.in%2Fratatouille" target="_blank" rel="noopener noreferrer" className="social-icon" style={{ display: 'flex' }}>
+              <a 
+                href="https://www.linkedin.com/company/cosylab-iiit-delhi/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                title="CoSyLaB on LinkedIn" 
+                className="social-icon" 
+                style={{ display: 'flex' }}
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
               </a>
-              <div onClick={() => navigator.clipboard.writeText('https://cosylab.iiitd.edu.in/ratatouille')} title="Copy Link">
-                <LinkIcon className="social-icon" style={{ color: '#ef4444', cursor: 'pointer' }} size={22} />
-              </div>
+              <a 
+                href="https://www.facebook.com/iiitdelhi" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                title="IIIT Delhi on Facebook" 
+                className="social-icon" 
+                style={{ display: 'flex' }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </a>
             </div>
           </div>
         </nav>
@@ -1638,6 +1697,19 @@ function App() {
                         </button>
                       </>
                     )}
+                    <button 
+                      type="button"
+                      className="btn-share-recipe"
+                      onClick={() => {
+                        const isVeg = result.is_vegan || isPlantBased(result.calculated_ingredients, result.recipe);
+                        const bannerImg = resolveRecipeImage(result.image_url, result.archetype, isVeg, result.recipe, result.calculated_ingredients);
+                        const title = cleanRecipeTitle(result.recipe);
+                        setShareModalRecipe({ ...result, bannerImg, title });
+                      }}
+                    >
+                      <Share2 size={16} />
+                      <span>Share Recipe</span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1809,81 +1881,128 @@ function App() {
       )}
 
       {viewMode === 'history' && (
-        <div className="glass-panel main-panel fade-in">
-          <header>
-            <h1 className="title">My Recipes 📖</h1>
-            <p className="subtitle">View saved recipes for your profile</p>
-            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginBottom: '2rem' }}>
+        <div className="community-section fade-in">
+          <div className="community-header">
+            <h1 className="title" style={{ fontSize: '2.2rem', marginBottom: '0.4rem' }}>My Recipes 📖</h1>
+            <p className="subtitle" style={{ fontSize: '1rem' }}>Saved recipes and computational gastronomy dishes for your profile</p>
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginTop: '1.25rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
               <input 
                 type="text" 
                 placeholder="Enter username..." 
                 value={username} 
                 onChange={(e) => setUsername(e.target.value)} 
                 onKeyDown={(e) => e.key === 'Enter' && fetchHistory()}
-                style={{ padding: '0.6rem 1rem', borderRadius: '20px', border: '1px solid #ccc', outline: 'none', width: '250px' }}
+                style={{ padding: '0.65rem 1.2rem', borderRadius: '25px', border: '1px solid #cbd5e1', outline: 'none', width: '260px', fontSize: '0.95rem' }}
               />
-              <button onClick={fetchHistory} style={{ padding: '0.6rem 1.5rem', borderRadius: '20px', background: '#7a1d41', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+              <button 
+                onClick={fetchHistory} 
+                style={{ padding: '0.65rem 1.6rem', borderRadius: '25px', background: '#7a1d41', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.95rem', boxShadow: '0 2px 6px rgba(122, 29, 65, 0.25)' }}
+              >
                 Load History
               </button>
             </div>
-          </header>
+          </div>
           
           {loading ? (
-             <div className="loader" style={{margin: '0 auto'}}></div>
+             <div className="loader" style={{ margin: '3rem auto', display: 'block' }}></div>
           ) : history.length === 0 ? (
-             <p style={{textAlign: 'center', color: '#ccc'}}>No recipes saved yet!</p>
+             <div style={{ textAlign: 'center', padding: '3.5rem', color: '#64748b' }}>
+               <p style={{ fontSize: '1.2rem', fontWeight: 600 }}>No recipes saved yet for "{username || 'this user'}"!</p>
+               <p style={{ fontSize: '0.95rem', marginTop: '0.5rem' }}>Generate a dish in the Create tab and click "Save Recipe" to build your collection.</p>
+             </div>
           ) : (
-            <div className="history-list">
+            <div className="recipe-grid">
               {history.map((doc, idx) => {
-                 const rec = doc.recipe;
+                 const rec = doc.recipe || {};
+                 const title = cleanRecipeTitle(rec.recipe);
+                 const isVeg = rec.is_vegan || isPlantBased(rec.calculated_ingredients, rec.recipe);
+                 const bannerImg = resolveRecipeImage(rec.image_url, rec.archetype, isVeg, rec.recipe, rec.calculated_ingredients);
+                 const dateStr = doc.created_at ? new Date(doc.created_at * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+                 
                  return (
-                   <details key={idx} className="history-card">
-                     <summary className="history-summary">
-                       <div style={{display: 'flex', gap: '1.25rem', alignItems: 'center'}}>
-                         <img 
-                           src={resolveRecipeImage(rec.image_url, rec.archetype, rec.is_vegan || isPlantBased(rec.calculated_ingredients, rec.recipe), rec.recipe, rec.calculated_ingredients)}
-                           alt="Thumbnail" 
-                           style={{width: '70px', height: '70px', objectFit: 'cover', borderRadius: '12px'}} 
-                           loading="lazy"
-                           referrerPolicy="no-referrer"
-                           onError={(e) => {
-                             e.currentTarget.onerror = null;
-                             e.currentTarget.src = "https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1632&auto=format&fit=crop";
-                           }}
-                         />
-                         <div>
-                           <h4>{cleanRecipeTitle(rec.recipe)}</h4>
-                           <span className="badge">{rec.archetype}</span>
-                           <p className="date-text">Saved: {new Date(doc.created_at * 1000).toLocaleString()}</p>
+                   <div key={idx} className="cute-recipe-card">
+                     <div className="card-banner-wrapper">
+                       <img 
+                         src={bannerImg} 
+                         alt={title} 
+                         className="card-banner-img"
+                         loading="lazy"
+                         referrerPolicy="no-referrer"
+                         onError={(e) => {
+                           e.currentTarget.onerror = null;
+                           e.currentTarget.src = "https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1632&auto=format&fit=crop";
+                         }}
+                       />
+                       <div className="badge-float-left">
+                         {isVeg && (
+                           <span className="badge-cute badge-vegan">🌱 VEGAN</span>
+                         )}
+                         {(rec.archetype === 'Fast Qwen' || rec.archetype === 'Groq Guardrails' || rec.final_cvs_score !== undefined) && (
+                           <span className="badge-cute badge-guardrails">⚡ Guardrails</span>
+                         )}
+                         {(rec.archetype === 'Budget Qwen' || rec.archetype === 'Groq Budget') && (
+                           <span className="badge-cute badge-budget">💰 Budget</span>
+                         )}
+                         {!isVeg && rec.archetype && (
+                           <span className="badge-cute" style={{ background: 'rgba(122, 29, 65, 0.85)', color: '#fff' }}>
+                             {rec.archetype}
+                           </span>
+                         )}
+                       </div>
+                       {rec.budget && (
+                         <span className="badge-cost">₹{rec.budget} Budget</span>
+                       )}
+                     </div>
+
+                     <div className="card-content">
+                       <div>
+                         <div className="card-meta">
+                           <span className="card-date">{dateStr ? `Saved: ${dateStr}` : 'Saved Recipe'}</span>
+                         </div>
+                         <h3 className="card-title" title={title}>{title}</h3>
+                         
+                         <div className="card-ingredients-row">
+                           {(rec.calculated_ingredients || []).slice(0, 4).map((ing, i) => (
+                             <span key={i} className="card-ing-chip">
+                               {typeof ing === 'string' ? ing.replace(/^\d+(\.\d+)?g\s+/i, '') : ing}
+                             </span>
+                           ))}
+                           {(rec.calculated_ingredients || []).length > 4 && (
+                             <span className="card-ing-chip" style={{ background: '#f1f5f9', fontWeight: 600 }}>
+                               +{(rec.calculated_ingredients.length - 4)} more
+                             </span>
+                           )}
                          </div>
                        </div>
-                       <div className="expand-hint">Click to view ▾</div>
-                     </summary>
-                     
-                     <div className="history-expanded-content">
-                        <div className="ingredients-box" style={{marginTop: '1rem'}}>
-                          <h4>Ingredients</h4>
-                          <ul>
-                            {rec.calculated_ingredients.map((ing, i) => (
-                              <li key={i}>✓ {ing}</li>
-                            ))}
-                          </ul>
-                        </div>
-                        
-                        <div className="directions-box" style={{marginTop: '1rem'}}>
-                          <h4>Directions</h4>
-                          <div className="recipe-text" style={{fontSize: '0.95rem'}}>
-                            {cleanRecipeInstructions(rec.recipe).map((step, i) => (
-                              <p key={i} className="step-text" style={{padding: '0.8rem', marginBottom: '0.5rem'}}>
-                                {step.num ? <strong>{step.num}. </strong> : null}
-                                {step.text}
-                              </p>
-                            ))}
-                          </div>
-                        </div>
+
+                       <div className="card-actions-row">
+                         <button 
+                           className="card-view-btn"
+                           onClick={() => {
+                             setResult({
+                               ...rec,
+                               image_url: bannerImg,
+                               isSurprise: true
+                             });
+                           }}
+                         >
+                           View Recipe & Method ✨
+                         </button>
+                         <button
+                           type="button"
+                           className="card-share-btn"
+                           title="Share Recipe"
+                           onClick={(e) => {
+                             e.stopPropagation();
+                             setShareModalRecipe({ ...rec, bannerImg, title });
+                           }}
+                         >
+                           <Share2 size={16} />
+                         </button>
+                       </div>
                      </div>
-                   </details>
-                 )
+                   </div>
+                 );
               })}
             </div>
           )}
@@ -2009,18 +2128,31 @@ function App() {
                          </div>
                        </div>
 
-                       <button 
-                         className="card-view-btn"
-                         onClick={() => {
-                           setResult({
-                             ...rec,
-                             image_url: bannerImg,
-                             isSurprise: true
-                           });
-                         }}
-                       >
-                         View Recipe & Method ✨
-                       </button>
+                       <div className="card-actions-row">
+                         <button 
+                           className="card-view-btn"
+                           onClick={() => {
+                             setResult({
+                               ...rec,
+                               image_url: bannerImg,
+                               isSurprise: true
+                             });
+                           }}
+                         >
+                           View Recipe & Method ✨
+                         </button>
+                         <button
+                           type="button"
+                           className="card-share-btn"
+                           title="Share Recipe"
+                           onClick={(e) => {
+                             e.stopPropagation();
+                             setShareModalRecipe({ ...rec, bannerImg, title });
+                           }}
+                         >
+                           <Share2 size={16} />
+                         </button>
+                       </div>
                      </div>
                    </div>
                  );
@@ -2028,6 +2160,149 @@ function App() {
               })()}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Recipe Share Popup Modal */}
+      {shareModalRecipe && (
+        <div 
+          className="share-modal-overlay" 
+          onClick={() => setShareModalRecipe(null)}
+        >
+          <div 
+            className="share-modal-card" 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="share-modal-header">
+              <h3>
+                <Share2 size={20} style={{ color: '#7a1d41' }} />
+                Share Recipe
+              </h3>
+              <button 
+                className="share-modal-close"
+                onClick={() => setShareModalRecipe(null)}
+                title="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="share-recipe-preview">
+              <img 
+                src={shareModalRecipe.bannerImg || "https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1632&auto=format&fit=crop"} 
+                alt="Recipe Preview" 
+                className="share-preview-thumb" 
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1632&auto=format&fit=crop";
+                }}
+              />
+              <div className="share-preview-info">
+                <span className="share-preview-title">{shareModalRecipe.title || cleanRecipeTitle(shareModalRecipe.recipe)}</span>
+                <span className="share-preview-badge">
+                  {shareModalRecipe.is_vegan || isPlantBased(shareModalRecipe.calculated_ingredients, shareModalRecipe.recipe) ? '🌱 Vegan' : (shareModalRecipe.archetype || 'AI Recipe')}
+                </span>
+              </div>
+            </div>
+
+            <div className="share-platform-grid">
+              {/* X / Twitter */}
+              <a 
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out this recipe: "${shareModalRecipe.title || cleanRecipeTitle(shareModalRecipe.recipe)}" generated with Ratatouille AI! 🍳 #ComputationalGastronomy #IIITDelhi`)}&url=${encodeURIComponent(typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://cosylab.iiitd.edu.in/ratatouille')}`}
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="share-platform-btn share-btn-x"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#ffffff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                <span>Twitter / X</span>
+              </a>
+
+              {/* LinkedIn */}
+              <a 
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://cosylab.iiitd.edu.in/ratatouille')}`}
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="share-platform-btn share-btn-linkedin"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#ffffff"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                <span>LinkedIn</span>
+              </a>
+
+              {/* Facebook */}
+              <a 
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://cosylab.iiitd.edu.in/ratatouille')}`}
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="share-platform-btn share-btn-facebook"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#ffffff"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                <span>Facebook</span>
+              </a>
+
+              {/* WhatsApp */}
+              <a 
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out this recipe: *${shareModalRecipe.title || cleanRecipeTitle(shareModalRecipe.recipe)}* generated with Ratatouille AI!\n${typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://cosylab.iiitd.edu.in/ratatouille'}`)}`}
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="share-platform-btn share-btn-whatsapp"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#ffffff"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                <span>WhatsApp</span>
+              </a>
+
+              {/* Instagram Copy */}
+              <button 
+                type="button"
+                className="share-platform-btn share-btn-instagram"
+                onClick={() => handleCopyInstagramCaption(shareModalRecipe)}
+              >
+                <span>📸 Copy Instagram Caption / Story</span>
+              </button>
+            </div>
+
+            <div className="share-copy-box">
+              <span className="share-copy-label">Direct Recipe Link</span>
+              <div className="share-copy-input-row">
+                <input 
+                  type="text" 
+                  readOnly 
+                  value={typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://cosylab.iiitd.edu.in/ratatouille'} 
+                  className="share-copy-input"
+                  onClick={(e) => e.target.select()}
+                />
+                <button 
+                  type="button"
+                  className={`share-copy-btn ${shareCopiedToast === 'link' ? 'copied' : ''}`}
+                  onClick={() => handleCopyShareLink(typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://cosylab.iiitd.edu.in/ratatouille')}
+                >
+                  {shareCopiedToast === 'link' ? (
+                    <>
+                      <Check size={15} />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <LinkIcon size={15} />
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {shareCopiedToast === 'insta' && (
+              <div className="share-toast">
+                <Check size={16} style={{ color: '#10b981' }} />
+                <span>Instagram caption copied to clipboard!</span>
+              </div>
+            )}
+            {shareCopiedToast === 'link' && (
+              <div className="share-toast">
+                <Check size={16} style={{ color: '#10b981' }} />
+                <span>Link copied to clipboard!</span>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
