@@ -524,6 +524,7 @@ function App() {
   const [saveLoading, setSaveLoading] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [usernameError, setUsernameError] = useState(false);
+  const [showBudgetBreakdown, setShowBudgetBreakdown] = useState(false);
   
   // History State
   const [history, setHistory] = useState([]);
@@ -603,13 +604,16 @@ function App() {
     setSaveSuccess(false);
     setUsernameError(false);
     setStepMessage('Initializing...');
+    setShowBudgetBreakdown(false);
 
     const ingList = Array.isArray(ingredients) ? ingredients : ingredients.split(',').map(i => i.trim()).filter(i => i);
 
     try {
-      let endpoint = modelVersion === 'qwen_budget' 
-        ? `${BACKEND_URL}/generate-fast-budget` 
-        : `${BACKEND_URL}/generate-fast-qwen`;
+      let endpoint = agenticVegan
+        ? `${BACKEND_URL}/generate-agentic-vegan`
+        : (modelVersion === 'qwen_budget' 
+            ? `${BACKEND_URL}/generate-fast-budget` 
+            : `${BACKEND_URL}/generate-fast-qwen`);
 
       let payload = {
         ingredients: ingList,
@@ -657,9 +661,11 @@ function App() {
                   setResult({
                     recipe: data.recipe,
                     calculated_ingredients: data.calculated_ingredients,
+                    cost_breakdown: data.cost_breakdown,
                     archetype: data.archetype,
                     is_vegan: data.is_vegan,
                     agentic_attempts: data.attempts || 0,
+                    judge_score: data.judge_score,
                     image_url: imgUrl,
                     budget: data.budget,
                     model: data.model,
@@ -1069,7 +1075,7 @@ function App() {
                     <h2 className="modal-title" style={{ margin: 0 }}>{result.recipe.split('\n')[0].replace(/^###\s*(TITLE:)?\s*/i, '').trim()}</h2>
                     {result.is_vegan && (
                       <span style={{background: '#4ade80', color: '#064e3b', padding: '4px 12px', borderRadius: '16px', fontSize: '0.85rem', fontWeight: 'bold', display: 'inline-block'}}>
-                        🌱 VEGAN {result.agentic_attempts !== undefined && `(Agentic Checks: ${result.agentic_attempts})`}
+                        🌱 VEGAN {result.judge_score ? `(Judge: ${(result.judge_score * 100).toFixed(0)}%)` : (result.agentic_attempts !== undefined ? `(Agentic Checks: ${result.agentic_attempts})` : '')}
                       </span>
                     )}
                   </div>
@@ -1105,6 +1111,100 @@ function App() {
                         </li>
                       ))}
                     </ul>
+
+                    {/* Collapsible Budget Breakdown (Hidden by default, shown when cost-constrained) */}
+                    {(result.cost_breakdown || (result.budget && result.calculated_ingredients)) && (
+                      <div className="budget-breakdown-wrapper" style={{ marginTop: '1.25rem' }}>
+                        <button
+                          type="button"
+                          onClick={() => setShowBudgetBreakdown(!showBudgetBreakdown)}
+                          className="budget-toggle-btn"
+                          style={{
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '0.65rem 0.85rem',
+                            background: showBudgetBreakdown ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)',
+                            border: '1px solid rgba(16, 185, 129, 0.35)',
+                            borderRadius: '10px',
+                            color: '#10b981',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            fontSize: '0.88rem',
+                            transition: 'all 0.2s ease',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                          }}
+                        >
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span>💰</span>
+                            <span>Ingredient Cost Breakdown</span>
+                            {result.cost_breakdown && (
+                              <span style={{
+                                fontSize: '0.75rem',
+                                background: '#10b981',
+                                color: '#ffffff',
+                                padding: '2px 7px',
+                                borderRadius: '12px',
+                                fontWeight: '700'
+                              }}>
+                                ₹{result.cost_breakdown.total_cost} / ₹{result.budget || result.cost_breakdown.budget}
+                              </span>
+                            )}
+                          </span>
+                          <span style={{ fontSize: '0.8rem', color: '#6ee7b7' }}>
+                            {showBudgetBreakdown ? '▲ Hide' : '▼ View Breakdown'}
+                          </span>
+                        </button>
+
+                        {showBudgetBreakdown && result.cost_breakdown && (
+                          <div
+                            className="budget-breakdown-details fade-in"
+                            style={{
+                              marginTop: '0.6rem',
+                              padding: '0.85rem',
+                              background: 'rgba(17, 24, 39, 0.75)',
+                              backdropFilter: 'blur(8px)',
+                              border: '1px solid rgba(255, 255, 255, 0.1)',
+                              borderRadius: '10px'
+                            }}
+                          >
+                            <table style={{ width: '100%', fontSize: '0.83rem', borderCollapse: 'collapse', color: '#d1d5db' }}>
+                              <thead>
+                                <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'left', color: '#9ca3af' }}>
+                                  <th style={{ padding: '6px 4px' }}>Ingredient</th>
+                                  <th style={{ padding: '6px 4px' }}>Qty (g)</th>
+                                  <th style={{ padding: '6px 4px' }}>Rate/100g</th>
+                                  <th style={{ padding: '6px 4px', textAlign: 'right' }}>Cost (₹)</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {result.cost_breakdown.items && result.cost_breakdown.items.map((item, idx) => (
+                                  <tr key={idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                                    <td style={{ padding: '6px 4px', textTransform: 'capitalize', color: '#f3f4f6' }}>{item.name}</td>
+                                    <td style={{ padding: '6px 4px' }}>{item.grams}g</td>
+                                    <td style={{ padding: '6px 4px', color: '#9ca3af' }}>₹{item.rate_per_100g}</td>
+                                    <td style={{ padding: '6px 4px', textAlign: 'right', fontWeight: 'bold', color: '#34d399' }}>₹{item.cost}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                            <div style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              marginTop: '0.75rem',
+                              paddingTop: '0.6rem',
+                              borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+                              fontSize: '0.82rem'
+                            }}>
+                              <span>Total Spent: <strong style={{ color: '#34d399' }}>₹{result.cost_breakdown.total_cost}</strong></span>
+                              <span>Headroom: <strong style={{ color: '#60a5fa' }}>₹{result.cost_breakdown.headroom}</strong></span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="instructions-col">

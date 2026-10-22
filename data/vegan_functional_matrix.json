@@ -1,1 +1,207 @@
-{}
+{
+  "milk": {
+    "function": "Liquid base, moisture, and mild sweetness",
+    "substitute": "Chickpea water (Kala Chana ka Paani) or Soya Milk",
+    "context": "Use the liquid from soaked or boiled chickpeas directly for curries and dals to add protein and body. For baking or smoothies, blend soaked soya beans with water and strain for a neutral, protein-rich liquid."
+  },
+  "butter": {
+    "function": "Fat, flavor, and browning agent",
+    "substitute": "Refined Coconut Oil or Ghee (Vegan)",
+    "context": "Use refined coconut oil for saut\u00e9ing and baking as it has a high smoke point and neutral taste. For a ghee-like aroma, infuse coconut oil with mustard seeds and cumin, or use a blend of coconut oil and a small amount of cashew paste."
+  },
+  "ghee": {
+    "function": "Rich fat, high smoke point, and distinct nutty aroma",
+    "substitute": "Coconut Oil infused with Spices or Cashew Ghee",
+    "context": "Heat coconut oil and temper with mustard seeds, cumin, and curry leaves to mimic the aromatic profile of ghee. Alternatively, blend soaked cashews with water and a pinch of salt, then reduce slowly until thick and golden to create a cashew-based 'ghee'."
+  },
+  "paneer": {
+    "function": "Protein source, texture, and structural integrity in curries",
+    "substitute": "Soya Chunks (Nutrela) or Firm Tofu",
+    "context": "For a chewy, meat-like texture, boil soya chunks until soft, squeeze out excess water, and marinate in spices before adding to curries. For a softer, melt-in-mouth texture, press firm tofu, cube it, and pan-fry until golden before simmering in gravy."
+  },
+  "curd": {
+    "function": "Tanginess, creaminess, and thickening agent",
+    "substitute": "Coconut Yogurt or Cashew Yogurt",
+    "context": "Blend soaked cashews or coconut milk with a small amount of lemon juice or vinegar and let it set in a warm place for 4-6 hours to develop tang. Alternatively, use a mixture of blended soaked chana dal and lemon juice for a protein-rich, tangy base in raitas and marinades."
+  },
+  "cream": {
+    "function": "Richness, smoothness, and emulsification",
+    "substitute": "Coconut Cream or Cashew Cream",
+    "context": "For immediate use, separate the thick top layer from a can of full-fat coconut milk. For a lighter, nuttier option, blend soaked cashews with water until completely smooth and strain through a cheesecloth to achieve a silky, dairy-free cream."
+  },
+  "condensed milk": {
+    "function": "Sweetness, thickness, and caramelization",
+    "substitute": "Reduced Coconut Milk or Jaggery Syrup",
+    "context": "Simmer full-fat coconut milk on low heat until it reduces by half and thickens, adding jaggery or sugar to taste. This creates a rich, sweet syrup suitable for desserts like kheer or drizzling over fruits."
+  },
+  "khoa": {
+    "function": "Dense, solid dairy solid for desserts and sweets",
+    "substitute": "Reduced Coconut Milk or Besan Halwa Base",
+    "context": "Reduce full-fat coconut milk over low heat, stirring constantly, until it forms a dense, crumbly solid that can be shaped. Alternatively, roast besan (chickpea flour) with ghee (coconut oil) and sugar to create a dense, fudgy base for sweets like motichoor laddu."
+  },
+  "chicken": {
+    "function": "Primary protein, texture, and umami base for curries and stir-fries",
+    "substitute": "Soya Chunks (Nutrela)",
+    "context": "Boil soya chunks in water with a pinch of salt and turmeric for 10 minutes, squeeze out excess water, and marinate in spices before adding to the curry to mimic the fibrous texture of chicken."
+  },
+  "mutton": {
+    "function": "Rich, fatty protein with strong umami for slow-cooked gravies",
+    "substitute": "Jackfruit (Kathal) or Young Green Jackfruit",
+    "context": "Shred young jackfruit or kathal into thin strips, saut\u00e9 with onions and spices until tender, and simmer in a rich gravy to replicate the shreddable, meaty texture of mutton."
+  },
+  "lamb": {
+    "function": "Tender protein with distinct flavor for roasts and curries",
+    "substitute": "Tofu (Extra Firm)",
+    "context": "Press extra-firm tofu to remove moisture, cube it, and pan-fry until golden brown to create a crispy exterior that holds up well in slow-cooked lamb-style curries."
+  },
+  "beef": {
+    "function": "Dense, hearty protein for stews and braises",
+    "substitute": "Mushrooms (Button or Oyster) or Soya Chunks",
+    "context": "Slice mushrooms thickly and sear in ghee or oil until browned to develop a meaty depth, or use soya chunks for a more affordable, high-protein alternative in hearty stews."
+  },
+  "pork": {
+    "function": "Fatty, tender meat for curries and stir-fries",
+    "substitute": "Soya Chunks or Tofu",
+    "context": "Use soya chunks for a chewier texture or firm tofu for a softer bite, ensuring they are well-marinated in ginger, garlic, and vinegar to mimic the savory profile of pork."
+  },
+  "bacon": {
+    "function": "Salty, fatty, crispy element for garnish or flavoring",
+    "substitute": "Crispy Fried Soya Strips or Tempeh",
+    "context": "Slice soya strips or tempeh thinly, marinate in soy sauce and liquid smoke if available, and deep-fry until crisp to replicate the salty, crunchy bite of bacon."
+  },
+  "keema": {
+    "function": "Minced meat for fillings, kebabs, and curries",
+    "substitute": "Soya Chunks (Minced) or Peanuts",
+    "context": "Pulse boiled soya chunks in a mixer to a coarse mince, or use roasted and ground peanuts for a nutty, protein-rich keema substitute in kebabs and fillings."
+  },
+  "minced meat": {
+    "function": "Ground protein for binding and flavor in dishes like koftas",
+    "substitute": "Soya Chunks (Minced) or Besan (Gram Flour)",
+    "context": "Mix minced soya chunks with besan, spices, and a binder like mashed banana or flaxseed gel to form koftas, then deep-fry until firm and golden."
+  },
+  "fish": {
+    "function": "Protein & Texture (Flaky/Meaty)",
+    "substitute": "Soya Chunks (Nutrela) or Firm Tofu",
+    "context": "For flaky texture, boil soya chunks, drain, and mash slightly with turmeric and salt before frying or adding to curries. For steamed or grilled preparations, use firm tofu pressed and marinated in soy sauce and ginger."
+  },
+  "shrimp": {
+    "function": "Protein & Texture (Chewy/Springy)",
+    "substitute": "Soya Chunks or Firm Tofu",
+    "context": "Cut soya chunks into small, shrimp-sized pieces after boiling to mimic the bite. Alternatively, cut firm tofu into small cubes and pan-fry until golden to achieve a similar chewy exterior."
+  },
+  "prawns": {
+    "function": "Protein & Texture (Sweet/Chewy)",
+    "substitute": "Soya Chunks or Jackfruit (Kathal)",
+    "context": "Use small soya chunks for stir-fries to replicate the quick-cooking nature of prawns. For curries, young jackfruit shreds can mimic the fibrous texture of large prawns when cooked in a sweet-spiced gravy."
+  },
+  "crab": {
+    "function": "Protein & Texture (Fibrous/Flaky)",
+    "substitute": "Young Jackfruit (Kathal) or Mushrooms",
+    "context": "Shred young jackfruit finely and cook in a spicy, tangy gravy to replicate the fibrous pull of crab meat. Sliced oyster or button mushrooms can also be used for a meatier, less fibrous alternative."
+  },
+  "anchovies": {
+    "function": "Umami & Saltiness (Flavor Base)",
+    "substitute": "Soy Sauce or Miso Paste",
+    "context": "Use a small amount of soy sauce or white miso paste to provide the deep, salty umami depth that anchovies typically contribute to sauces and marinades."
+  },
+  "fish sauce": {
+    "function": "Umami & Saltiness (Liquid Seasoning)",
+    "substitute": "Soy Sauce or Miso Paste",
+    "context": "Substitute soy sauce in a 1:1 ratio for general use. For a thicker, more complex umami profile, dissolve a teaspoon of white miso paste in a little warm water to mimic the viscosity and depth of fish sauce."
+  },
+  "oyster sauce": {
+    "function": "Umami, Sweetness & Thickening",
+    "substitute": "Soy Sauce + Sugar + Cornstarch",
+    "context": "Mix equal parts soy sauce and water, add a pinch of sugar for sweetness, and thicken with a slurry of cornstarch and water to replicate the glossy, savory-sweet consistency of oyster sauce."
+  },
+  "egg for baking": {
+    "function": "Leavening, binding, and moisture retention",
+    "substitute": "Flaxseed (Alsi) or Chia Seeds",
+    "context": "Grind 1 tablespoon of flaxseed or chia seeds into a fine powder and mix with 3 tablespoons of water. Let it sit for 5-10 minutes until it forms a gelatinous paste to replace one egg."
+  },
+  "egg for scrambling": {
+    "function": "Protein source and texture mimicry",
+    "substitute": "Chickpea Flour (Besan) or Tofu",
+    "context": "For a crumbly texture, whisk 2 tablespoons of besan with water, turmeric, and salt, then fry in a pan like a thick crepe and crumble. For a softer texture, crumble firm tofu and saut\u00e9 with turmeric and spices."
+  },
+  "egg for binding fritters": {
+    "function": "Structural binder to hold ingredients together",
+    "substitute": "Mashed Banana or Ripe Banana",
+    "context": "Mash half a very ripe banana until smooth and mix it into your batter or patty mixture. The natural pectin and starches will bind the ingredients effectively when fried."
+  },
+  "egg for binding patties": {
+    "function": "Adhesive for ground ingredients",
+    "substitute": "Soya Chunks (Nutrela) Paste",
+    "context": "Boil soya chunks, mash them into a fine paste, and mix with the patty ingredients. The protein structure of the soya acts as a strong glue, holding the patty together during cooking."
+  },
+  "gelatin": {
+    "function": "Gelling agent for desserts and jams",
+    "substitute": "Agar Agar Powder",
+    "context": "Use 1 teaspoon of agar agar powder for every 1 cup of liquid. It must be boiled for at least 5 minutes to activate the gelling properties, then cooled to set into a firm jelly."
+  },
+  "egg wash": {
+    "function": "Gloss and browning for baked goods",
+    "substitute": "Milk (Plant-based) or Oil",
+    "context": "Brush the surface of the pastry or bread with a thin layer of plant-based milk (like soy or almond) or a neutral oil before baking to achieve a similar sheen and color."
+  },
+  "egg for meringue": {
+    "function": "Aeration and structure for foams",
+    "substitute": "Aquafaba (Chickpea Water)",
+    "context": "Use the liquid from a can of chickpeas (about 3 tablespoons per egg white). Whip it with sugar and cream of tartar (or lemon juice) until stiff peaks form, just like egg whites."
+  },
+  "egg for custard": {
+    "function": "Thickening and creamy texture",
+    "substitute": "Cornstarch or Arrowroot Powder",
+    "context": "Mix 1-2 teaspoons of cornstarch with a little cold milk to make a slurry, then whisk it into the hot milk mixture. Cook until it thickens to a custard consistency."
+  },
+  "honey": {
+    "function": "Sweetener & Hygroscopic Binder",
+    "substitute": "Jaggery (Gud) or Date Syrup",
+    "context": "For baking, use a 1:1 ratio of jaggery syrup (melted and strained) or date syrup. For direct sweetening in beverages or chutneys, use grated jaggery or date paste. Reduce other liquids in the recipe by 1 tablespoon per cup of honey to maintain structural integrity."
+  },
+  "carmine": {
+    "function": "Red Colorant",
+    "substitute": "Beetroot Powder or Saffron (Kesar)",
+    "context": "Use beetroot powder for a vibrant red in frostings, glazes, or fruit-based desserts. For a more traditional Indian hue in sweets like Gulab Jamun or Laddus, use a pinch of saffron steeped in warm water or milk substitute, though it yields an orange-red rather than pure red."
+  },
+  "whey": {
+    "function": "Protein & Sweetness (in dairy context)",
+    "substitute": "Soy Milk or Coconut Milk",
+    "context": "Whey is often a byproduct in Indian dairy; for vegan recipes requiring liquid protein and mild sweetness, use unsweetened soy milk or coconut milk. If the recipe specifically calls for whey powder for protein, substitute with a blend of soy flour (sooji/besan mix) and a small amount of jaggery to mimic the flavor profile."
+  },
+  "casein": {
+    "function": "Protein & Emulsifier",
+    "substitute": "Soy Protein Isolate or Mashed Banana",
+    "context": "For emulsification in sauces or dressings, use a small amount of blended soy milk or mashed banana to bind ingredients. For protein enrichment in baked goods, substitute casein powder with soy flour or ground peanuts, adjusting liquid content as needed to prevent dryness."
+  },
+  "milk powder": {
+    "function": "Dairy Solids & Sweetness",
+    "substitute": "Coconut Powder or Soy Milk Powder",
+    "context": "Use unsweetened coconut powder for a rich, creamy texture in Indian sweets like Kheer or Lassi. For a neutral, protein-rich substitute, use soy milk powder reconstituted with water. Ensure the powder is unsweetened to control the final sugar content of the dish."
+  },
+  "egg": {
+    "function": "Binding, moisture, and structure",
+    "substitute": "Besan (gram flour) or Flaxseed gel (Alsi)",
+    "context": "For savory binding or fritters, mix 2 tbsp besan with 2 tbsp water. For baking, mix 1 tbsp ground flaxseed with 3 tbsp warm water and let sit 5 mins. For scrambles (bhurji), use crumbled firm tofu with turmeric."
+  },
+  "eggs": {
+    "function": "Binding, moisture, and structure",
+    "substitute": "Besan (gram flour) or Flaxseed gel (Alsi)",
+    "context": "For savory binding or fritters, mix 2 tbsp besan with 2 tbsp water. For baking, mix 1 tbsp ground flaxseed with 3 tbsp warm water. For scrambles, use crumbled firm tofu."
+  },
+  "cheese": {
+    "function": "Melt, savory saltiness, and richness",
+    "substitute": "Cashew Cheese paste or Tofu",
+    "context": "Blend soaked cashews with lemon juice, nutritional yeast, garlic, and salt for a creamy cheese sauce, or use seasoned firm tofu."
+  },
+  "yogurt": {
+    "function": "Tanginess, creaminess, and marinade base",
+    "substitute": "Coconut Yogurt or Cashew Paste with Lemon",
+    "context": "Blend soaked cashews with warm water, lemon juice, and a pinch of amchur (dry mango powder) to replicate lactic fermentation for marinades and raitas."
+  },
+  "mayonnaise": {
+    "function": "Emulsified creamy dressing and rich fat",
+    "substitute": "Cashew Mayo or Soy Milk Emulsion",
+    "context": "Blend soaked cashews with lemon juice, mustard paste, garlic, and water until silky and thick."
+  }
+}

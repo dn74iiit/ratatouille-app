@@ -9,5 +9,6 @@ nltk
 pydantic
 gradio_client
 motor
+pymongo
 groq
 networkx

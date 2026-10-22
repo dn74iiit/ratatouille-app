@@ -726,6 +726,45 @@ def optimize_recipe_v2(raw_user_ingredients, total_budget, servings, user_state,
         
     return None, archetype
 
+def calculate_cost_breakdown(calculated_ingredients, user_state="Delhi", servings=1, total_budget=150.0):
+    """
+    Computes an itemized cost breakdown for each calculated ingredient.
+    Returns: {
+        'items': [{'name': ..., 'grams': ..., 'rate_per_100g': ..., 'cost': ...}],
+        'total_cost': ...,
+        'budget': ...,
+        'headroom': ...,
+        'servings': ...
+    }
+    """
+    if not calculated_ingredients:
+        return None
+    items = []
+    total_cost = 0.0
+    for raw_ing in calculated_ingredients:
+        qty, name = parse_ingredient_input(raw_ing)
+        clean_name = canonicalize_ingredient(name.lower().strip())
+        unit_price_per_gram = get_dynamic_price(clean_name, user_state, skip_llm=True)
+        grams = float(qty) if qty is not None else 100.0
+        cost = round(grams * unit_price_per_gram, 2)
+        total_cost += cost
+        items.append({
+            "name": clean_name,
+            "grams": round(grams, 1),
+            "rate_per_100g": round(unit_price_per_gram * 100.0, 2),
+            "cost": cost
+        })
+    total_cost = round(total_cost, 2)
+    budget_val = float(total_budget) if total_budget is not None else 0.0
+    headroom = round(max(0.0, budget_val - total_cost), 2)
+    return {
+        "items": items,
+        "total_cost": total_cost,
+        "budget": budget_val,
+        "headroom": headroom,
+        "servings": int(servings)
+    }
+
 # ============================================================
 # REQUEST / RESPONSE MODELS
 # ============================================================
@@ -1317,7 +1356,7 @@ class VeganGraphRetriever:
         self.knowledge_map = []
         self.functional_matrix = {}
         
-        # Load Knowledge Map (The RAG chunks)
+        # Load Knowledge Map (The RAG chunks from scraped + curated database)
         try:
             if os.path.exists(self.map_path):
                 with open(self.map_path, "r", encoding="utf-8") as f:
@@ -1345,38 +1384,46 @@ class VeganGraphRetriever:
                     if rule not in injected_rules:
                         injected_rules.append(rule)
         
-        # 2. Agentic LLM Semantic Retrieval (Zero RAM overhead)
+        # 2. Scraped Knowledge Candidate Matching + LLM Selection
         if self.knowledge_map and ingredients:
+            matched_chunks = []
+            ing_tokens = set()
+            for ing in ingredients:
+                ing_tokens.update(re.findall(r'\b\w+\b', ing.lower()))
+            
+            for chunk in self.knowledge_map:
+                chunk_lower = chunk.lower()
+                if any(t in chunk_lower for t in ing_tokens if len(t) > 2):
+                    matched_chunks.append(chunk)
+            
+            candidates = matched_chunks[:10] if matched_chunks else self.knowledge_map[:10]
+            
             try:
                 client = get_inference_client()
-                # Create an enumerated list of techniques for the LLM to choose from
-                techniques_text = "\n".join([f"[{i}] {chunk}" for i, chunk in enumerate(self.knowledge_map)])
+                techniques_text = "\n".join([f"[{i}] {chunk}" for i, chunk in enumerate(candidates)])
+                system_prompt = "You are a Vegan Culinary Retrieval Agent. Return ONLY the indices of the 2 most relevant cooking techniques/recipes for the ingredients."
+                user_prompt = f"Ingredients: {', '.join(ingredients)}\n\nTechniques:\n{techniques_text}\n\nReturn ONLY a comma-separated list of the 2 best integer indices (e.g., '1, 3'). Do not write any other text."
                 
-                system_prompt = "You are a Retrieval Agent. Your only job is to return the indices of the 2 most relevant cooking techniques for the provided ingredients."
-                user_prompt = f"Ingredients: {', '.join(ingredients)}\n\nTechniques:\n{techniques_text}\n\nReturn ONLY a comma-separated list of the 2 best integer indices (e.g., '3, 7'). Do not write any other text."
-                
-                response = client.chat.completions.create(
-                    model="qwen/qwen3.8-27b",
+                res, _ = call_groq_with_fallback(
+                    client=client,
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
                     ],
-                    temperature=0.0,
-                    max_completion_tokens=10
+                    max_tokens=20,
+                    temperature=0.0
                 )
-                
-                output = response.choices[0].message.content.strip()
-                # Parse the indices out of the response
-                import re
+                output = res.choices[0].message.content.strip()
                 indices = [int(x) for x in re.findall(r'\d+', output)]
-                
                 for idx in indices[:2]:
-                    if 0 <= idx < len(self.knowledge_map):
-                        rule = f"CULINARY RAG TECHNIQUE: {self.knowledge_map[idx]}"
+                    if 0 <= idx < len(candidates):
+                        rule = f"CULINARY RAG TECHNIQUE: {candidates[idx]}"
                         if rule not in injected_rules:
                             injected_rules.append(rule)
             except Exception as e:
-                print(f"Agentic Retrieval failed: {e}")
+                print(f"Agentic Retrieval LLM selection failed: {e}. Falling back to top candidate.")
+                if candidates:
+                    injected_rules.append(f"CULINARY RAG TECHNIQUE: {candidates[0]}")
 
         injected_rules.append("GENERAL RULE: Restrict all substitutions to easily accessible Indian ingredients (e.g., Tofu, Soy Chunks/Nutrela, Besan, Cashews, Coconut, Jackfruit). Avoid expensive or rare Western vegan products.")
 
@@ -1384,26 +1431,51 @@ class VeganGraphRetriever:
 
 class VeganRecipeJudge:
     def __init__(self):
-        self.non_vegan_culprits = ['butter', 'ghee', 'cheese', 'paneer', 'egg', 'eggs', 'honey', 'milk', 'cream', 'chicken', 'meat', 'beef', 'pork', 'mutton', 'fish', 'curd', 'yogurt', 'gelatin', 'whey']
+        self.non_vegan_culprits = [
+            'butter', 'ghee', 'cheese', 'paneer', 'egg', 'eggs', 'honey', 'milk', 
+            'cream', 'chicken', 'meat', 'beef', 'pork', 'mutton', 'fish', 'curd', 
+            'yogurt', 'gelatin', 'whey'
+        ]
+        self.safe_vegan_patterns = [
+            r'\b(?:coconut|almond|cashew|soy|oat|rice|hemp|plant)\s+milk\b',
+            r'\b(?:peanut|almond|cashew|vegan|nut)\s+butter\b',
+            r'\b(?:cashew|coconut|vegan|soy|plant)\s+cream\b',
+            r'\b(?:vegan|dairy-free|plant-based)\s+(?:cheese|paneer|ghee|butter|curd|yogurt|meat|chicken)\b',
+            r'\b(?:soy|tofu)\s+curd\b',
+            r'\bsoya\s+chunks\b',
+            r'\bsoya\s+keema\b',
+            r'\bflaxseed\s+egg\b',
+            r'\bbesan\s+egg\b'
+        ]
         
     def evaluate_recipe(self, recipe_text):
         recipe_lower = recipe_text.lower()
         
         # 1. Zero-Tolerance Hallucination Check (Pass 1)
-        hallucinated = [c for c in self.non_vegan_culprits if re.search(r'\b' + c + r'\b', recipe_lower) and c not in ["coconut milk", "almond milk", "cashew cream", "peanut butter", "soy milk", "cashew milk"]]
+        # Pre-mask safe vegan compound phrases so "coconut milk" isn't flagged as animal "milk"
+        masked_text = recipe_lower
+        for pattern in self.safe_vegan_patterns:
+            masked_text = re.sub(pattern, ' __SAFE_VEGAN__ ', masked_text, flags=re.IGNORECASE)
+            
+        hallucinated = [
+            c for c in self.non_vegan_culprits 
+            if re.search(r'\b' + c + r'\b', masked_text)
+        ]
+        
         if hallucinated:
             return {
                 "score": 0.2,
-                "critique": f"FATAL ERROR: You hallucinated non-vegan ingredients: {', '.join(hallucinated)}. You MUST remove them immediately and substitute with common Indian alternatives."
+                "is_valid": False,
+                "critique": f"FATAL ERROR: Found non-vegan animal ingredient(s): {', '.join(set(hallucinated))}. You MUST remove them immediately and substitute with plant-based alternatives (e.g. tofu for paneer, soya chunks for chicken/meat, coconut milk for cream/milk, mustard or coconut oil for ghee/butter)."
             }
             
         # 2. Structural Physics & Cultural Accessibility Check (Pass 2 - LLM Judge)
         prompt = (
             "You are a strict Vegan Culinary Judge specializing in Indian cuisine.\n"
             "Evaluate the following recipe draft based on these criteria:\n"
-            "1. NO ANIMAL PRODUCTS: Are there any hidden animal products? (If yes, score < 0.5)\n"
-            "2. ACCESSIBILITY: Did they use hard-to-find Western vegan products (like Aquafaba, Seitan, Nutritional Yeast) instead of common Indian ones (like Besan, Soy Chunks, Cashews)? (If yes, score < 0.8)\n"
-            "3. STRUCTURAL PHYSICS: Did the substitutions maintain the fat and moisture balance? (e.g., replacing ghee with water is bad. replacing paneer with tofu is good if they pressed it).\n\n"
+            "1. NO ANIMAL PRODUCTS: Are there any hidden animal products or animal fats? (If yes, score < 0.4)\n"
+            "2. ACCESSIBILITY: Did they use hard-to-find Western vegan products (like Aquafaba, Seitan, Nutritional Yeast) instead of common Indian ones (like Besan, Soy Chunks, Cashews, Mustard Oil)? (If yes, score < 0.75)\n"
+            "3. STRUCTURAL PHYSICS: Did the substitutions maintain the fat and moisture balance? (e.g., replacing ghee with water is bad; replacing paneer with tofu is good if pressed; rehydrating soya chunks properly).\n\n"
             f"[RECIPE DRAFT]:\n{recipe_text}\n\n"
             "Provide a 'Culinary Validity Score' from 0.0 to 1.0.\n"
             "If the score is less than 0.85, provide a strict 1-sentence CRITIQUE explaining what must be fixed.\n"
@@ -1414,10 +1486,10 @@ class VeganRecipeJudge:
         
         try:
             client = get_inference_client()
-            res = client.chat.completions.create(
+            res, _ = call_groq_with_fallback(
+                client=client,
                 messages=[{"role": "user", "content": prompt}],
-                model="qwen/qwen3.8-27b",
-                max_completion_tokens=150,
+                max_tokens=150,
                 temperature=0.1
             )
             response = res.choices[0].message.content.strip()
@@ -1426,9 +1498,11 @@ class VeganRecipeJudge:
             
             score = float(score_match.group(1)) if score_match else 0.5
             critique = critique_match.group(1).strip() if critique_match else "No critique provided."
-            return {"score": score, "critique": critique}
-        except:
-            return {"score": 1.0, "critique": "Passed rules."}
+            is_valid = score >= 0.85
+            return {"score": score, "critique": critique, "is_valid": is_valid}
+        except Exception as e:
+            print(f"[WARN] Vegan LLM Judge fallback: {e}")
+            return {"score": 0.9, "critique": "Passed heuristic checks. LLM judge unavailable.", "is_valid": True}
 
 vegan_retriever = VeganGraphRetriever()
 vegan_judge = VeganRecipeJudge()
@@ -1437,28 +1511,55 @@ vegan_judge = VeganRecipeJudge()
 async def generate_agentic_vegan(request: RecipeRequest):
     start_time = time.time()
     
-    ingr_text = "\n".join(f"- {i}" for i in request.ingredients)
-    vegan_context = vegan_retriever.get_context(request.ingredients)
+    clean_ingredients = []
+    for item in request.ingredients:
+        clean_ingredients.extend([i.strip() for i in item.split(',') if i.strip()])
+
+    # Run Cost Constraint Optimization if budget provided
+    cost_breakdown = None
+    calculated_ingredients = clean_ingredients
+    
+    if request.budget and request.budget > 0:
+        opt_ingredients = []
+        for raw_ing in clean_ingredients:
+            qty, name = parse_ingredient_input(raw_ing)
+            name_lower = name.lower().strip()
+            sub_found = None
+            for key, data in vegan_retriever.functional_matrix.items():
+                if key in name_lower:
+                    sub_found = data['substitute'].split('(')[0].split('or')[0].strip()
+                    break
+            final_sub = sub_found if sub_found else name
+            opt_ingredients.append(f"{qty}g {final_sub}" if qty else final_sub)
+
+        opt_res, arch = optimize_recipe_v2(opt_ingredients, request.budget, request.servings, request.state, archetype="Curry", skip_llm=True)
+        if opt_res:
+            calculated_ingredients = opt_res
+            cost_breakdown = calculate_cost_breakdown(calculated_ingredients, request.state, request.servings, request.budget)
+            
+    ingr_text = "\n".join(f"- {i}" for i in calculated_ingredients)
+    vegan_context = vegan_retriever.get_context(clean_ingredients)
     
     base_prompt = (
-        f"System: You are a strict Indian vegan chef. The user wants to cook a dish using the ingredients below, but some may be animal products.\n"
-        f"YOUR MISSION: You MUST completely remove any animal products and replace them using the exact RAG rules provided below. DO NOT use the original animal products in the final recipe.\n"
+        f"System: You are an expert Indian vegan chef. The user wants to cook a dish using the ingredients below.\n"
+        f"YOUR MISSION: You MUST ensure 100% plant-based compliance and replace any animal products using the exact RAG rules below. DO NOT use animal products (dairy, ghee, meat, eggs) in the final recipe.\n"
         f"CRITICAL RULES:\n"
-        f"1. DO NOT output variations or notes.\n"
-        f"2. Output ONLY the TITLE, an 'Ingredients' list (with the substituted vegan items, NOT the animal ones), and numbered DIRECTIONS.\n\n"
+        f"1. DO NOT output variations or personal notes.\n"
+        f"2. Output ONLY the TITLE, an 'Ingredients' list (with exact quantities from the provided list), and numbered DIRECTIONS.\n\n"
         f"{vegan_context}\n\n"
-        f"### ORIGINAL USER INGREDIENTS (TO BE VEGANIZED):\n{ingr_text}\n\n### TITLE:\n"
+        f"### INGREDIENTS TO USE:\n{ingr_text}\n\n### TITLE:\n"
     )
     
     current_prompt = base_prompt
     final_recipe = ""
     attempts = 0
+    final_judge_result = {"score": 1.0, "critique": "Passed."}
     
     client = get_inference_client()
     target_model = get_groq_recipe_model(client)
     actual_model = target_model
             
-    for attempt in range(3):
+    for attempt in range(1, 4):
         res, actual_model = call_groq_with_fallback(
             client=client,
             messages=[{"role": "user", "content": current_prompt}],
@@ -1469,26 +1570,30 @@ async def generate_agentic_vegan(request: RecipeRequest):
         recipe_text = res.choices[0].message.content.strip()
         
         judge_result = vegan_judge.evaluate_recipe(recipe_text)
+        final_judge_result = judge_result
+        attempts = attempt
         
-        if judge_result['score'] >= 0.8:
+        if judge_result.get('score', 0) >= 0.85:
             final_recipe = recipe_text
-            attempts = attempt
             break
         else:
-            current_prompt = base_prompt + f"\n\n[JUDGE CRITIQUE TO FIX]: {judge_result['critique']}\nRewrite the recipe to fix this error."
+            current_prompt = base_prompt + f"\n\n[JUDGE CRITIQUE TO FIX]: {judge_result.get('critique')}\nRewrite the recipe to fix this error immediately."
             final_recipe = recipe_text
-            attempts = attempt + 1
             
     latency = time.time() - start_time
     
     def generate():
-        yield f"data: {json.dumps({'step': 'retrieving_context', 'message': 'Querying Vegan Structural Graph...'})}\n\n"
-        time.sleep(0.5)
-        if attempts > 0:
-            yield f"data: {json.dumps({'step': 'judging', 'message': f'Vegan Judge Rejected Recipe! Retrying {attempts} times...'})}\n\n"
-            time.sleep(0.5)
+        yield f"data: {json.dumps({'step': 'retrieving_context', 'message': 'Querying Vegan Structural Knowledge Graph...'})}\n\n"
+        time.sleep(0.3)
+        if request.budget and request.budget > 0:
+            yield f"data: {json.dumps({'step': 'optimizing', 'message': f'Optimizing Ingredients for Budget: ₹{request.budget}...'})}\n\n"
+            time.sleep(0.3)
+        if attempts > 1:
+            j_score = final_judge_result.get('score', 0.9)
+            yield f"data: {json.dumps({'step': 'judging', 'message': f'Vegan Judge Self-Corrected in {attempts} iterations (Score: {j_score})...'})}\n\n"
+            time.sleep(0.3)
             
-        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': final_recipe, 'calculated_ingredients': request.ingredients, 'archetype': 'Agentic Vegan', 'is_vegan': True, 'attempts': attempts, 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
+        yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': final_recipe, 'calculated_ingredients': calculated_ingredients, 'cost_breakdown': cost_breakdown, 'archetype': 'Agentic Vegan', 'is_vegan': True, 'attempts': attempts, 'judge_score': final_judge_result.get('score', 0.9), 'judge_critique': final_judge_result.get('critique', ''), 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
         
     return StreamingResponse(generate(), media_type="text/event-stream")
 
@@ -1743,6 +1848,7 @@ def generate_fast_qwen(request: RecipeRequest):
             "budget": request.budget,
             "city": request.state,
             "judge_critiques": all_critiques,
+            "cost_breakdown": calculate_cost_breakdown(calculated_ingredients, request.state, request.servings, request.budget),
             "graph_context": graph_context if 'graph_context' in locals() else {},
             "few_shot_examples": few_shot_examples if 'few_shot_examples' in locals() else [],
             "step_times": times
@@ -1893,7 +1999,8 @@ def generate_fast_budget(request: RecipeRequest):
             recipe_text = res.choices[0].message.content.strip()
             latency = time.time() - start_time
             final_archetype = "Agentic Vegan" if request.is_vegan else (archetype or "Budget Qwen")
-            yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': calculated_ingredients, 'archetype': final_archetype, 'is_vegan': request.is_vegan, 'attempts': 0, 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
+            cost_breakdown = calculate_cost_breakdown(calculated_ingredients, request.state, request.servings, request.budget)
+            yield f"data: {json.dumps({'step': 'final_recipe', 'recipe': recipe_text, 'calculated_ingredients': calculated_ingredients, 'cost_breakdown': cost_breakdown, 'archetype': final_archetype, 'is_vegan': request.is_vegan, 'attempts': 0, 'latency': latency, 'model': actual_model, 'budget': request.budget, 'city': request.state})}\n\n"
         except Exception as e:
             print(f"[ERROR in generate_fast_budget] {e}")
             import traceback
