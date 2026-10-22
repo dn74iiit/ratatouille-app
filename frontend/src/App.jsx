@@ -62,17 +62,18 @@ const UNSPLASH_CACHE = {
     "Dessert": [
         "1488477181946-6428a0291777",
         "1550617931-e17a7b70dce2",
-        "1578985545062-69928b1d9587",
-        "1551024601-bec78aea704b"
+        "1551024601-bec78aea704b",
+        "1563805042-7684c019e1cb"
     ],
     "Bread": [
         "1509440159596-0249088772ff",
         "1608198093002-ad4e005484ec"
     ],
     "Soup": [
-        "1547592166-23ac45744acd",
-        "1604152135912-04a022e23696",
-        "1578020190125-f4f7c18bc9cb"
+        "1547592166-23ac45744acd", // Warm vegetable stew / soup pot
+        "1547592180-85f173990554", // Rich vegetable stew pot
+        "1604152135912-04a022e23696", // Savory vegetable soup bowl
+        "1578020190125-f4f7c18bc9cb"  // Hearty stew dish
     ],
     "Rice_Dish": [
         "1596797038530-2c107229654b",
@@ -94,36 +95,46 @@ const UNSPLASH_CACHE = {
 };
 
 const getRandomBanner = (archetype, isVegan = false, recipeTitle = "") => {
+    let raw = (recipeTitle || "");
+    const titleMatch = raw.match(/### TITLE:\s*([^\n\r]+)/i);
+    let title = titleMatch ? titleMatch[1] : raw.split(/\r?\n/)[0];
+    const t = title.toLowerCase().replace(/[*_#"`]/g, '').trim();
     let arch = archetype;
-    const t = (recipeTitle || "").toLowerCase();
     
-    // Title-based culinary categorization
-    if (!isVegan && (t.includes("biryani") || (t.includes("rice") && (t.includes("chicken") || t.includes("meat"))))) {
-        arch = "Biryani";
-    } else if (!isVegan && (t.includes("chicken") || t.includes("mutton") || t.includes("meat") || t.includes("lamb") || t.includes("tikka") || t.includes("kebab"))) {
-        arch = "Chicken";
-    } else if (!isVegan && (t.includes("egg") || t.includes("omelette") || t.includes("anda") || t.includes("bhurji"))) {
-        arch = "Egg";
-    } else if (!isVegan && (t.includes("fish") || t.includes("pork") || t.includes("beef") || t.includes("sausage") || t.includes("bacon"))) {
-        arch = "NonVegan";
-    } else if (t.includes("salad")) {
-        arch = "Salad";
-    } else if (t.includes("biryani") || t.includes("pulao")) {
-        arch = "Biryani";
-    } else if (t.includes("rice") || t.includes("pilaf") || t.includes("fried rice")) {
-        arch = "Rice_Dish";
-    } else if (t.includes("soup") || t.includes("stew") || t.includes("broth")) {
+    // Title-based culinary categorization with savory protection
+    const isSavoryTitle = /\b(stew|soup|broth|shorba|chowder|potage|laksa|curry|gravy|masala|korma|tikka|dal|sambar|rasam|sabzi|stir-fry|roast|fry|bhaji|dry|poriyal|sukka|aloo|gobi|paneer|tofu|rice|khichdi|biryani|pulao|pilaf|bowl|bread|roti|naan|paratha|salad|chaat|vegetable|veggie|chana|besan|chickpea|mushroom|tomato|onion|garlic|pepper)\b/.test(t);
+
+    if (/\b(stew|soup|broth|shorba|chowder|potage|laksa)\b/.test(t)) {
         arch = "Soup";
-    } else if (t.includes("bread") || t.includes("roti") || t.includes("naan") || t.includes("paratha")) {
+    } else if (!isVegan && (/\b(biryani)\b/.test(t) || (t.includes("rice") && /\b(chicken|meat|mutton)\b/.test(t)))) {
+        arch = "Biryani";
+    } else if (!isVegan && /\b(chicken|mutton|meat|lamb|tikka|kebab)\b/.test(t)) {
+        arch = "Chicken";
+    } else if (!isVegan && /\b(egg|omelette|anda|bhurji)\b/.test(t)) {
+        arch = "Egg";
+    } else if (!isVegan && /\b(fish|pork|beef|sausage|bacon|prawn|shrimp)\b/.test(t)) {
+        arch = "NonVegan";
+    } else if (/\b(salad|chaat|slaw)\b/.test(t)) {
+        arch = "Salad";
+    } else if (/\b(biryani|pulao)\b/.test(t)) {
+        arch = isVegan ? "Vegan" : "Biryani";
+    } else if (/\b(fried rice|khichdi|rice bowl|pilaf|rice)\b/.test(t)) {
+        arch = "Rice_Dish";
+    } else if (/\b(bread|roti|naan|paratha|puri|chapati)\b/.test(t)) {
         arch = "Bread";
-    } else if (t.includes("cake") || t.includes("sweet") || t.includes("cookie") || t.includes("dessert") || t.includes("halwa")) {
+    } else if (!isSavoryTitle && /\b(cake|kheer|halwa|pudding|cookie|brownie|dessert|pastry|muffin)\b/.test(t)) {
         arch = "Dessert";
-    } else if (t.includes("curry") || t.includes("masala") || t.includes("gravy") || t.includes("dal")) {
+    } else if (/\b(curry|gravy|masala|korma|dal|sambar|rasam)\b/.test(t)) {
         arch = "Curry";
-    } else if (t.includes("sabzi") || t.includes("roast") || t.includes("fry") || t.includes("dry") || t.includes("gobi") || t.includes("aloo")) {
+    } else if (/\b(sabzi|stir-fry|roast|fry|dry|poriyal|sukka)\b/.test(t)) {
         arch = "Dry_Sabzi";
     }
     
+    // Savory override against accidental Dessert classification
+    if (arch === "Dessert" && isSavoryTitle) {
+        arch = /\b(stew|soup|broth)\b/.test(t) ? "Soup" : (isVegan ? "Vegan" : "Curry");
+    }
+
     // Fallback if archetype not found
     if (!UNSPLASH_CACHE[arch]) {
         arch = isVegan ? "Vegan" : "Curry";
@@ -145,6 +156,26 @@ const getRandomBanner = (archetype, isVegan = false, recipeTitle = "") => {
     const idx = Math.abs(hash) % photos.length;
     const photoId = photos[idx];
     return `https://images.unsplash.com/photo-${photoId}?q=80&w=1632&auto=format&fit=crop`;
+};
+
+const resolveRecipeImage = (imageUrl, archetype, isVegan, recipeText) => {
+    // If imageUrl contains the banned toy birthday cake photo ID, reject it
+    if (imageUrl && imageUrl.includes("1578985545062")) {
+        return getRandomBanner(archetype, isVegan, recipeText);
+    }
+    // If imageUrl is already a dessert image but recipe is savory, override
+    if (imageUrl) {
+        const raw = recipeText || "";
+        const titleMatch = raw.match(/### TITLE:\s*([^\n\r]+)/i);
+        const title = (titleMatch ? titleMatch[1] : raw.split(/\r?\n/)[0]).toLowerCase();
+        const isSavory = /\b(stew|soup|broth|curry|gravy|masala|sabzi|dal|sambar|rasam|rice|khichdi|biryani|pulao|vegetable|veggie|potato|pepper|onion|garlic)\b/.test(title);
+        const isDessertImg = UNSPLASH_CACHE["Dessert"]?.some(id => imageUrl.includes(id));
+        if (isSavory && isDessertImg) {
+            return getRandomBanner(archetype, isVegan, recipeText);
+        }
+        return imageUrl;
+    }
+    return getRandomBanner(archetype, isVegan, recipeText);
 };
 
 function MultiSelectIngredient({ selected, setSelected }) {
@@ -742,7 +773,7 @@ function App() {
               if (data.step === 'complete' || data.step === 'final_recipe') {
                 hasResult = true;
                 if (data.step === 'final_recipe') {
-                  const imgUrl = getRandomBanner(data.archetype, data.is_vegan, data.recipe);
+                  const imgUrl = resolveRecipeImage(data.image_url, data.archetype, data.is_vegan, data.recipe);
                   setResult({
                     recipe: data.recipe,
                     calculated_ingredients: data.calculated_ingredients,
@@ -759,7 +790,7 @@ function App() {
                   });
                 } else {
                   const resWithBanner = { ...data.result };
-                  resWithBanner.image_url = resWithBanner.image_url || getRandomBanner(resWithBanner.archetype, resWithBanner.is_vegan, resWithBanner.recipe);
+                  resWithBanner.image_url = resolveRecipeImage(resWithBanner.image_url, resWithBanner.archetype, resWithBanner.is_vegan, resWithBanner.recipe);
                   setResult(resWithBanner);
                 }
                 setStepMessage('');
@@ -914,7 +945,7 @@ function App() {
     const candidates = pool.length > 0 ? pool : CURATED_FEATURED_RECIPES;
     const randomDoc = candidates[Math.floor(Math.random() * candidates.length)];
     const rec = randomDoc.recipe;
-    const imgUrl = rec.image_url || getRandomBanner(rec.archetype, rec.is_vegan, rec.recipe);
+    const imgUrl = resolveRecipeImage(rec.image_url, rec.archetype, rec.is_vegan, rec.recipe);
     setResult({
       ...rec,
       image_url: imgUrl,
@@ -1124,7 +1155,7 @@ function App() {
                      const title = cleanRecipeTitle(doc.recipe?.recipe);
                      return (
                        <div key={`a-${idx}`} className="chip" onClick={() => {
-                         const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype, doc.recipe.is_vegan, doc.recipe.recipe);
+                         const imgUrl = resolveRecipeImage(doc.recipe.image_url, doc.recipe.archetype, doc.recipe.is_vegan, doc.recipe.recipe);
                          setResult({...doc.recipe, image_url: imgUrl, isSurprise: true});
                        }} style={{ flexShrink: 0 }}>
                          {title}
@@ -1136,7 +1167,7 @@ function App() {
                      const title = cleanRecipeTitle(doc.recipe?.recipe);
                      return (
                        <div key={`b-${idx}`} className="chip" onClick={() => {
-                         const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype, doc.recipe.is_vegan, doc.recipe.recipe);
+                         const imgUrl = resolveRecipeImage(doc.recipe.image_url, doc.recipe.archetype, doc.recipe.is_vegan, doc.recipe.recipe);
                          setResult({...doc.recipe, image_url: imgUrl, isSurprise: true});
                        }} style={{ flexShrink: 0 }}>
                          {title}
@@ -1170,7 +1201,7 @@ function App() {
                 {(result.image_url || result.isSurprise || result.archetype) ? (
                   <div className="modal-image-container">
                     <img 
-                      src={result.image_url || getRandomBanner(result.archetype, result.is_vegan, result.recipe)} 
+                      src={resolveRecipeImage(result.image_url, result.archetype, result.is_vegan, result.recipe)} 
                       alt="Recipe" 
                       className="modal-image" 
                       loading="lazy"
@@ -1573,7 +1604,7 @@ function App() {
                      <summary className="history-summary">
                        <div style={{display: 'flex', gap: '1.25rem', alignItems: 'center'}}>
                          <img 
-                           src={rec.image_url || getRandomBanner(rec.archetype, rec.is_vegan, rec.recipe)} 
+                           src={resolveRecipeImage(rec.image_url, rec.archetype, rec.is_vegan, rec.recipe)}
                            alt="Thumbnail" 
                            style={{width: '70px', height: '70px', objectFit: 'cover', borderRadius: '12px'}} 
                            loading="lazy"
@@ -1673,7 +1704,7 @@ function App() {
               }).map((doc, idx) => {
                  const rec = doc.recipe;
                  const title = cleanRecipeTitle(rec.recipe);
-                 const bannerImg = rec.image_url || getRandomBanner(rec.archetype, rec.is_vegan, rec.recipe);
+                 const bannerImg = resolveRecipeImage(rec.image_url, rec.archetype, rec.is_vegan, rec.recipe);
                  const dateStr = doc.created_at ? new Date(doc.created_at * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
                  
                  return (

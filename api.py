@@ -295,10 +295,18 @@ bounds_dict = bounds_response.json() if bounds_response.status_code == 200 else 
 
 pantry_prices = {
     "vanilla extract": 4.50, "dark chocolate": 1.20, "soy sauce": 0.40,
-    "olive oil": 0.80, "macaroni": 0.30, "vegan cashew mozzarella": 2.50,
-    "sugar": 0.05, "salt": 0.02, "egg": 0.12, "chicken": 0.25, "milk": 0.06,
-    "mutton": 0.80, "fish": 0.30, "paneer": 0.40, "pork": 0.30, "beef": 0.30,
-    "cheese": 0.50, "butter": 0.60, "yogurt": 0.10, "curd": 0.10
+    "olive oil": 0.80, "vegetable oil": 0.25, "oil": 0.25, "macaroni": 0.30,
+    "vegan cashew mozzarella": 2.50, "sugar": 0.05, "salt": 0.02, "egg": 0.12,
+    "chicken": 0.25, "milk": 0.06, "mutton": 0.80, "fish": 0.30, "paneer": 0.40,
+    "pork": 0.30, "beef": 0.30, "cheese": 0.50, "butter": 0.60, "yogurt": 0.10, "curd": 0.10,
+    # Common seasonings, spices & pantry staples
+    "coconut milk": 0.15, "coconut cream": 0.18, "garlic powder": 0.20, "onion powder": 0.18, "ginger powder": 0.25,
+    "cocoa powder": 0.40, "mustard": 0.08, "black pepper": 0.80, "white pepper": 0.70,
+    "chili powder": 0.30, "turmeric": 0.25, "cumin": 0.40, "coriander": 0.25,
+    "garam masala": 0.50, "curry powder": 0.45, "paprika": 0.35, "cinnamon": 0.50,
+    "cardamom": 1.50, "clove": 1.20, "basil": 0.35, "oregano": 0.35, "thyme": 0.35,
+    "rosemary": 0.40, "parsley": 0.30, "cilantro": 0.08, "baking powder": 0.15,
+    "baking soda": 0.08, "ketchup": 0.15, "vinegar": 0.08, "zucchini": 0.06, "mushroom": 0.15
 }
 pantry_response = requests.get(pantry_url, headers=headers)
 if pantry_response.status_code == 200:
@@ -308,17 +316,27 @@ if pantry_response.status_code == 200:
         pass
 print("[OK] Market Data Loaded.")
 
+DECONSTRUCTION_MAP = {}
+try:
+    map_file = os.path.join(os.path.dirname(__file__), "deconstruction_map.json")
+    if os.path.exists(map_file):
+        with open(map_file, "r") as f:
+            DECONSTRUCTION_MAP = json.load(f)
+        print(f"[OK] Loaded local deconstruction_map.json ({len(DECONSTRUCTION_MAP)} entries).")
+except Exception as e:
+    print(f"[WARN] Could not load deconstruction_map.json: {e}")
+
 # ============================================================
 # UNSPLASH IMAGE CACHE (By Archetype)
 # ============================================================
 import random
 UNSPLASH_CACHE = {
     "Curry": [
-        "1585937421612-70a008356fbe",
-        "1603894584373-5ac82b2ae398",
-        "1565557623262-b51c2513a641",
-        "1618160702438-9b02ab6515c9",
-        "1631452180519-c014fe946bc7"
+        "1585937421612-70a008356fbe",  # Indian masala curry in handi
+        "1603894584373-5ac82b2ae398",  # Rich gravy curry dish
+        "1565557623262-b51c2513a641",  # Dal makhani & curry spread
+        "1618160702438-9b02ab6515c9",  # Warm Indian spiced curry
+        "1631452180519-c014fe946bc7"   # Paneer butter masala
     ],
     "Chicken": [
         "1598515214211-89d3c73ae83b",
@@ -344,17 +362,18 @@ UNSPLASH_CACHE = {
     "Dessert": [
         "1488477181946-6428a0291777",
         "1550617931-e17a7b70dce2",
-        "1578985545062-69928b1d9587",
-        "1551024601-bec78aea704b"
+        "1551024601-bec78aea704b",
+        "1563805042-7684c019e1cb"
     ],
     "Bread": [
         "1509440159596-0249088772ff",
         "1608198093002-ad4e005484ec"
     ],
     "Soup": [
-        "1547592166-23ac45744acd",
-        "1604152135912-04a022e23696",
-        "1578020190125-f4f7c18bc9cb"
+        "1547592166-23ac45744acd",  # Warm vegetable stew / soup pot
+        "1547592180-85f173990554",  # Rich vegetable stew pot
+        "1604152135912-04a022e23696",  # Savory vegetable soup bowl
+        "1578020190125-f4f7c18bc9cb"   # Hearty stew dish
     ],
     "Rice_Dish": [
         "1596797038530-2c107229654b",
@@ -382,8 +401,31 @@ UNSPLASH_CACHE = {
     ]
 }
 
-def get_random_banner(archetype):
-    arch = archetype if archetype in UNSPLASH_CACHE else "Curry"
+def get_random_banner(archetype, recipe_title=None, is_vegan=False):
+    arch = archetype
+    if recipe_title:
+        t = recipe_title.lower()
+        if re.search(r'\b(stew|soup|broth|shorba|chowder|potage|laksa)\b', t):
+            arch = "Soup"
+        elif re.search(r'\b(biryani|pulao|pilaf)\b', t):
+            arch = "Biryani"
+        elif re.search(r'\b(fried rice|khichdi|rice bowl|rice)\b', t):
+            arch = "Rice_Dish"
+        elif re.search(r'\b(curry|gravy|masala|korma|tikka|dal|sambar|rasam|paneer)\b', t):
+            arch = "Curry"
+        elif re.search(r'\b(sabzi|stir-fry|roast|fry|bhaji|dry|poriyal|sukka)\b', t):
+            arch = "Dry_Sabzi"
+        elif re.search(r'\b(naan|roti|paratha|puri|bread|chapati)\b', t):
+            arch = "Bread"
+        elif re.search(r'\b(salad|chaat|slaw)\b', t):
+            arch = "Salad"
+        elif re.search(r'\b(cake|kheer|halwa|pudding|cookie|brownie|dessert|sweet)\b', t):
+            arch = "Dessert"
+            
+    if is_vegan and arch in ["Chicken", "Egg", "NonVegan"]:
+        arch = "Vegan"
+        
+    arch = arch if arch in UNSPLASH_CACHE else "Curry"
     photo_id = random.choice(UNSPLASH_CACHE[arch])
     return f"https://images.unsplash.com/photo-{photo_id}?q=80&w=1632&auto=format&fit=crop"
 
@@ -674,27 +716,155 @@ def get_dynamic_price(clean_ingredient, user_state, skip_llm=False):
     nat_data = current_mandi[current_mandi['Processed_Ingredient'] == lemmatized_ing]
     if not nat_data.empty: return nat_data['Price_per_Gram'].median()
     if clean_ingredient in pantry_prices: return pantry_prices[clean_ingredient]
+    
+    # Check local precomputed deconstruction map
+    if clean_ingredient in DECONSTRUCTION_MAP:
+        decomp = DECONSTRUCTION_MAP[clean_ingredient]
+        if isinstance(decomp, dict):
+            avg_price = 0
+            tot_w = sum(decomp.values())
+            if tot_w > 0:
+                for sub_ing, weight in decomp.items():
+                    sub_lem = lemmatizer.lemmatize(sub_ing.lower())
+                    sub_p = current_mandi[current_mandi['Processed_Ingredient'] == sub_lem]['Price_per_Gram'].median()
+                    if pd.isna(sub_p): sub_p = pantry_prices.get(sub_ing, 0.2)
+                    avg_price += sub_p * (weight / tot_w)
+                return round(avg_price * 1.2, 4)
+
     if skip_llm:
-        return 0.5  # default fallback price — avoids LLM call in /optimize-only
+        # Check cache before generic fallback
+        cache_id = f"deconstruct_{clean_ingredient.strip().lower()}"
+        if llm_cache_sync is not None:
+            try:
+                cached = llm_cache_sync.find_one({"_id": cache_id})
+                if cached and "result" in cached and isinstance(cached["result"], dict):
+                    deconstructed = cached["result"]
+                    avg_price = 0
+                    total_weight = sum(deconstructed.values())
+                    if total_weight > 0:
+                        for sub_ing, weight in deconstructed.items():
+                            sub_lem = lemmatizer.lemmatize(sub_ing.lower())
+                            sub_price = current_mandi[current_mandi['Processed_Ingredient'] == sub_lem]['Price_per_Gram'].median()
+                            if pd.isna(sub_price): sub_price = pantry_prices.get(sub_ing, 0.2)
+                            avg_price += sub_price * (weight / total_weight)
+                        return round(avg_price * 1.2, 4)
+            except Exception:
+                pass
+        return pantry_prices.get(clean_ingredient, 0.25)
+        
     deconstructed = deconstruct_ingredient(clean_ingredient)
     if deconstructed and isinstance(deconstructed, dict):
-        # Prevent crash if the AI hallucinates nested dictionaries
         if not all(isinstance(v, (int, float)) for v in deconstructed.values()):
-            return 0.5
+            return 0.25
 
         avg_price = 0
         total_weight = sum(deconstructed.values())
         if total_weight == 0:
-            return 0.5  # Fallback if AI gives invalid weights
+            return 0.25
         for sub_ing, weight in deconstructed.items():
             sub_lem = lemmatizer.lemmatize(sub_ing.lower())
             sub_price = current_mandi[current_mandi['Processed_Ingredient'] == sub_lem]['Price_per_Gram'].median()
-            if pd.isna(sub_price): sub_price = pantry_prices.get(sub_ing, 0.5)
+            if pd.isna(sub_price): sub_price = pantry_prices.get(sub_ing, 0.2)
             avg_price += sub_price * (weight / total_weight)
-        return avg_price * 1.3
-    return 0.5
+        return round(avg_price * 1.2, 4)
+    return 0.25
+
+# ============================================================
+# CULINARY CONDIMENT CATEGORIZATION & DYNAMIC DOSAGE
+# ============================================================
+CONDIMENT_CLASSES = {
+    "intense_spice": {
+        "items": ["salt", "black pepper", "white pepper", "chili powder", "cayenne pepper",
+                  "red pepper flakes", "clove", "cinnamon", "cardamom", "nutmeg", "saffron"],
+        "base_lower": 0.5,
+        "base_upper": 2.5
+    },
+    "aromatic_spice": {
+        "items": ["garlic powder", "onion powder", "ginger powder", "cumin", "turmeric",
+                  "coriander", "coriander powder", "paprika", "garam masala", "curry powder",
+                  "oregano", "basil", "thyme", "rosemary", "dill", "fennel", "allspice", "mint"],
+        "base_lower": 1.0,
+        "base_upper": 4.0
+    },
+    "flavor_powder": {
+        "items": ["cocoa powder", "baking powder", "baking soda", "vanilla extract"],
+        "base_lower": 1.0,
+        "base_upper": 5.0
+    },
+    "wet_condiment": {
+        "items": ["mustard", "ketchup", "soy sauce", "vinegar", "balsamic vinegar",
+                  "apple cider vinegar", "red wine vinegar", "lemon juice", "lime juice"],
+        "base_lower": 3.0,
+        "base_upper": 10.0
+    }
+}
+
+ARCHETYPE_CONDIMENT_MODIFIERS = {
+    "Curry": {
+        "intense_spice": 1.0,
+        "aromatic_spice": 1.2,
+        "flavor_powder": 0.8,
+        "wet_condiment": 0.8
+    },
+    "Soup": {  # Covers stews, soups, broths
+        "intense_spice": 1.1,
+        "aromatic_spice": 0.8,
+        "flavor_powder": 0.8,
+        "wet_condiment": 0.9
+    },
+    "Dry_Sabzi": {
+        "intense_spice": 0.85,
+        "aromatic_spice": 1.0,
+        "flavor_powder": 0.5,
+        "wet_condiment": 0.7
+    },
+    "Salad": {
+        "intense_spice": 0.8,
+        "aromatic_spice": 0.5,
+        "flavor_powder": 0.5,
+        "wet_condiment": 1.3
+    },
+    "Rice_Dish": {
+        "intense_spice": 1.1,
+        "aromatic_spice": 1.0,
+        "flavor_powder": 0.5,
+        "wet_condiment": 0.6
+    },
+    "Dessert": {
+        "intense_spice": 0.8,
+        "aromatic_spice": 0.3,
+        "flavor_powder": 1.4,
+        "wet_condiment": 0.3
+    }
+}
+
+def get_condiment_category(clean_name: str):
+    clean = clean_name.lower().strip()
+    for cat, data in CONDIMENT_CLASSES.items():
+        for item in data["items"]:
+            if item == clean or clean.endswith(" " + item):
+                return cat
+    return None
+
+def get_condiment_bounds(clean_name: str, archetype: str = "Curry", servings: int = 1):
+    category = get_condiment_category(clean_name)
+    if not category:
+        return None
+    cfg = CONDIMENT_CLASSES[category]
+    arch_mod = ARCHETYPE_CONDIMENT_MODIFIERS.get(archetype, {}).get(category, 1.0)
+    
+    # Sub-linear serving scaling: seasonings scale with batch size, not pure linear
+    serving_scale = float(servings) ** 0.82
+    lower = round(cfg["base_lower"] * (float(servings) ** 0.75), 1)
+    upper = round(cfg["base_upper"] * serving_scale * arch_mod, 1)
+    if lower > upper:
+        lower = upper
+    return (max(0.5, lower), max(1.0, upper))
 
 def tag_ingredient(ing_name):
+    # Check if it's a condiment or seasoning first!
+    if get_condiment_category(ing_name) is not None:
+        return 'condiment'
     proteins = ['paneer', 'chicken', 'soya', 'tofu', 'dal', 'lentil', 'egg', 'meat', 'fish']
     bases = ['onion', 'tomato', 'garlic', 'ginger', 'puree']
     sweets = ['sugar', 'jaggery', 'chocolate', 'vanilla', 'syrup']
@@ -706,133 +876,239 @@ def tag_ingredient(ing_name):
     return 'veggie'
 
 # ============================================================
-# FAST KEYWORD-BASED ARCHETYPE CLASSIFIER (no LLM)
+# SMART MULTI-FACTOR ARCHETYPE CLASSIFIER (no LLM)
 # ============================================================
 def _classify_archetype_fast(ingredients: list) -> str:
-    """Classify dish archetype using keyword matching — instant, no LLM needed."""
-    s = " ".join(ingredients).lower()
-    if any(w in s for w in ["rice", "biryani", "pulao", "fried rice"]):
-        return "Rice_Dish"
-    if any(w in s for w in ["pasta", "noodle", "macaroni", "spaghetti", "basil"]):
-        return "Rice_Dish"  # similar ratio constraints
-    if any(w in s for w in ["oat", "banana", "sugar", "flour", "chocolate", "cake", "honey", "cream", "milk", "vanilla"]):
-        return "Dessert"
-    if any(w in s for w in ["mushroom", "soup", "broth", "carrot", "ginger", "coconut milk"]):
-        return "Soup"
-    if any(w in s for w in ["lettuce", "salad", "cucumber", "olive"]):
-        return "Salad"
-    if any(w in s for w in ["bread", "dough", "yeast"]):
-        return "Bread"
-    return "Curry"  # default for most Indian dishes
-
-# ============================================================
-# SCIPY LINEAR PROGRAMMING OPTIMIZER  (unchanged from V10)
-# ============================================================
-def optimize_recipe_v2(raw_user_ingredients, total_budget, servings, user_state, archetype=None, skip_llm=False):
-    if archetype is None:
-        archetype = get_recipe_archetype(raw_user_ingredients)  # LLM call (used by /generate-recipe)
-    n = len(raw_user_ingredients)
-    c = [-1] * n
-    prices, bounds, tags = [], [], []
-
-    for raw_ing in raw_user_ingredients:
-        user_qty, clean_name = parse_ingredient_input(raw_ing)
-        prices.append(get_dynamic_price(clean_name, user_state, skip_llm=skip_llm))
-        tags.append(tag_ingredient(clean_name))
-
-        if user_qty is not None:
-            bounds.append((user_qty / servings, user_qty / servings))
-        else:
-            # RELAXED BOUNDS: Increased the max limit so the solver has more breathing room.
-            lower, upper = bounds_dict.get(lemmatizer.lemmatize(clean_name.split()[-1]), (10, 400))
-            if clean_name not in ['garlic', 'ginger', 'chili', 'salt', 'pepper']: lower = max(lower, 15.0)
-            else: lower = max(lower, 2.0)
-            upper = min(upper, 250.0) # Allow up to 250g per ingredient per serving max
-            if lower > upper: lower = upper
-            bounds.append((lower, upper))
-
-    A_ub = [prices]
-    b_ub = [total_budget / servings]
-
-    if archetype == "Curry":
-        if 'protein' in tags and 'base' in tags:
-            A_ub.append([0.8 if t == 'protein' else -1.0 if t == 'base' else 0.0 for t in tags])
-            b_ub.append(0)
-            A_ub.append([-3.0 if t == 'protein' else 1.0 if t == 'base' else 0.0 for t in tags])
-            b_ub.append(0)
-    elif archetype == "Dry_Sabzi":
-        if 'protein' in tags and 'base' in tags:
-            A_ub.append([-0.8 if t == 'protein' else 1.0 if t == 'base' else 0.0 for t in tags])
-            b_ub.append(0)
-    elif archetype == "Salad":
-        if ('protein' in tags or 'neutral' in tags) and 'veggie' in tags:
-            A_ub.append([2.0 if t in ['protein', 'neutral'] else -1.0 if t == 'veggie' else 0.0 for t in tags])
-            b_ub.append(0)
-    elif archetype == "Rice_Dish":
-        if 'neutral' in tags and 'protein' in tags:
-            A_ub.append([1.0 if t == 'protein' else -1.0 if t == 'neutral' else 0.0 for t in tags])
-            b_ub.append(0)
-    elif archetype == "Soup":
-        if 'protein' in tags and 'base' in tags:
-            A_ub.append([4.0 if t == 'protein' else -1.0 if t == 'base' else 0.0 for t in tags])
-            b_ub.append(0)
-    elif archetype == "Dessert":
-        if 'sweet' in tags:
-            A_ub.append([-0.4 if t in ['neutral', 'protein', 'base'] else 1.0 if t == 'sweet' else 0.0 for t in tags])
-            b_ub.append(0)
-
-    # First Attempt: With Archetype Constraints
-    result = linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method='highs')
+    """Classify dish archetype using robust multi-factor token semantics."""
+    cleaned = [parse_ingredient_input(i)[1].lower().strip() for i in ingredients]
+    all_text = " " + " ".join(cleaned) + " "
     
-    # Fallback: If the constraints are too strict (infeasible), drop the archetype constraints and just optimize for budget
-    if not result.success:
-        print(f"[*] Strict archetype constraints failed ({result.message}). Relaxing constraints and retrying...")
-        A_ub_fallback = [prices]
-        b_ub_fallback = [total_budget / servings]
-        result = linprog(c, A_ub=A_ub_fallback, b_ub=b_ub_fallback, bounds=bounds, method='highs')
-
-    # Super Fallback: If it STILL fails, the minimum gram bounds are too high for the user's budget.
-    # Force lower bounds to 5g to guarantee a mathematical solution.
-    if not result.success:
-        print(f"[*] Budget mathematically too low for default bounds! Forcing lower bounds to 5g...")
-        emergency_bounds = [(5.0, max(b[1], 5.0)) for b in bounds]
-        result = linprog(c, A_ub=A_ub_fallback, b_ub=b_ub_fallback, bounds=emergency_bounds, method='highs')
-
-    # Nuclear Fallback: If it fails due to some impossible matrix constraint, remove ALL limits.
-    if not result.success:
-        print(f"[*] Nuclear Fallback activated: Overriding all bounds to (1g, 300g)...")
-        nuclear_bounds = [(1.0, 300.0) for _ in bounds]
-        result = linprog(c, A_ub=A_ub_fallback, b_ub=b_ub_fallback, bounds=nuclear_bounds, method='highs')
-
-    if result.success:
-        estimated_grams_per_serving = np.round(result.x, 1)
-        final_quantities = estimated_grams_per_serving * servings
-        return [f"{qty}g {parse_ingredient_input(r)[1]}" for qty, r in zip(final_quantities, raw_user_ingredients)], archetype
-    else:
-        print(f"[!] linprog failed even without constraints! {result.message}")
-        print(f"[*] prices={prices}, bounds={bounds}")
+    # 1. Detect Compound tokens & avoid substring collisions
+    has_coconut_milk = "coconut milk" in all_text or "coconut cream" in all_text
+    has_sweet_potato = "sweet potato" in all_text
+    
+    # 2. Check for savory staples (vegetables, proteins, bases)
+    savory_veg = ["potato", "zucchini", "mushroom", "tomato", "onion", "garlic", "spinach", 
+                  "cabbage", "carrot", "bell pepper", "eggplant", "cauliflower", "broccoli", "radish"]
+    has_savory_veg = any(re.search(r'\b' + re.escape(v) + r'\b', all_text) for v in savory_veg) or has_sweet_potato
+    
+    proteins = ["chicken", "paneer", "tofu", "egg", "fish", "meat", "mutton", "pork", "beef", "shrimp", "dal", "lentil", "chickpea"]
+    has_protein = any(re.search(r'\b' + re.escape(p) + r'\b', all_text) for p in proteins)
+    
+    # 3. Rice Dishes
+    if any(re.search(r'\b' + re.escape(r) + r'\b', all_text) for r in ["rice", "biryani", "pulao", "fried rice", "pasta", "noodle", "macaroni"]):
+        return "Rice_Dish"
         
-    return None, archetype
+    # 4. Stews / Soups
+    # If coconut milk is paired with savory veggies or if soup/broth words are present:
+    if any(re.search(r'\b' + re.escape(w) + r'\b', all_text) for w in ["soup", "broth", "stew"]):
+        return "Soup"
+    if has_coconut_milk and has_savory_veg:
+        return "Soup"
+        
+    # 5. Salads
+    if any(re.search(r'\b' + re.escape(w) + r'\b', all_text) for w in ["lettuce", "salad", "cucumber", "olive"]):
+        return "Salad"
+        
+    # 6. Desserts (STRICT: only if savory veg and proteins are absent!)
+    has_sweet = any(re.search(r'\b' + re.escape(w) + r'\b', all_text) for w in ["sugar", "chocolate", "cocoa powder", "cocoa", "honey", "jaggery", "vanilla", "cake", "kheer", "halwa"])
+    if has_sweet and not (has_savory_veg or has_protein):
+        return "Dessert"
 
-def calculate_cost_breakdown(calculated_ingredients, user_state="Delhi", servings=1, total_budget=150.0):
+    # 7. Breads
+    if any(re.search(r'\b' + re.escape(w) + r'\b', all_text) for w in ["bread", "dough", "yeast", "flour", "atta", "maida"]) and not (has_savory_veg or has_protein):
+        return "Bread"
+        
+    if not (has_savory_veg or has_protein):
+        # Exclude coconut milk from milk check
+        text_without_coconut = all_text.replace("coconut milk", "").replace("coconut cream", "")
+        if any(re.search(r'\b' + re.escape(w) + r'\b', text_without_coconut) for w in ["oat", "banana", "milk"]):
+            return "Dessert"
+            
+    # 8. Dry Sabzi
+    if has_savory_veg and not has_coconut_milk and not any(w in all_text for w in ["curry", "gravy"]):
+        return "Dry_Sabzi"
+        
+    return "Curry"
+
+# ============================================================
+# SCIPY LINEAR PROGRAMMING OPTIMIZER WITH DYNAMIC HEADROOM
+# ============================================================
+def optimize_recipe_v2(raw_user_ingredients, total_budget, servings, user_state, archetype=None, skip_llm=False, return_prices=False):
+    if archetype is None:
+        archetype = _classify_archetype_fast(raw_user_ingredients)
+        
+    servings_int = max(1, int(servings))
+    total_budget_float = float(total_budget)
+    
+    # 1. Parse and price all ingredients
+    parsed_items = []
+    prices = []
+    tags = []
+    unit_prices = {}
+    
+    bulk_indices = []
+    condiment_indices = []
+    
+    for idx, raw_ing in enumerate(raw_user_ingredients):
+        user_qty, clean_name = parse_ingredient_input(raw_ing)
+        p = get_dynamic_price(clean_name, user_state, skip_llm=skip_llm)
+        t = tag_ingredient(clean_name)
+        
+        parsed_items.append((user_qty, clean_name, raw_ing))
+        prices.append(p)
+        tags.append(t)
+        unit_prices[clean_name] = p
+        
+        if t == 'condiment':
+            condiment_indices.append(idx)
+        else:
+            bulk_indices.append(idx)
+
+    # 2. Dynamic Condiment Sizing & Headroom Calculation
+    condiment_results = {}
+    condiment_headroom = 0.0
+    
+    for c_idx in condiment_indices:
+        user_qty, clean_name, _ = parsed_items[c_idx]
+        p = prices[c_idx]
+        cond_b = get_condiment_bounds(clean_name, archetype=archetype, servings=servings_int)
+        
+        if user_qty is not None:
+            assigned_qty = float(user_qty)
+        elif cond_b is not None:
+            assigned_qty = round((cond_b[0] + cond_b[1]) / 2.0, 1)
+        else:
+            assigned_qty = round(3.0 * (servings_int ** 0.8), 1)
+            
+        max_b = cond_b[1] if cond_b else assigned_qty * 1.5
+        condiment_headroom += max_b * p
+        condiment_results[c_idx] = assigned_qty
+
+    # 3. Reserve Condiment Headroom from Total Budget
+    reserved_headroom = round(min(condiment_headroom, total_budget_float * 0.35), 2)
+    available_bulk_budget = max(10.0, total_budget_float - reserved_headroom)
+    
+    # 4. Optimize Bulk Ingredients with SciPy linprog
+    final_quantities_by_idx = {}
+    
+    if bulk_indices:
+        bulk_prices = [prices[i] for i in bulk_indices]
+        bulk_tags = [tags[i] for i in bulk_indices]
+        bulk_bounds = []
+        
+        for b_idx in bulk_indices:
+            user_qty, clean_name, _ = parsed_items[b_idx]
+            if user_qty is not None:
+                bulk_bounds.append((user_qty / servings_int, user_qty / servings_int))
+            else:
+                lower, upper = bounds_dict.get(lemmatizer.lemmatize(clean_name.split()[-1]), (15, 300))
+                lower = max(lower, 15.0)
+                upper = min(upper, 250.0)
+                if lower > upper:
+                    lower = upper
+                bulk_bounds.append((lower, upper))
+                
+        c_obj = [-1] * len(bulk_indices)
+        A_ub = [bulk_prices]
+        b_ub = [available_bulk_budget / servings_int]
+        
+        if archetype == "Curry":
+            if 'protein' in bulk_tags and 'base' in bulk_tags:
+                A_ub.append([0.8 if t == 'protein' else -1.0 if t == 'base' else 0.0 for t in bulk_tags])
+                b_ub.append(0)
+                A_ub.append([-3.0 if t == 'protein' else 1.0 if t == 'base' else 0.0 for t in bulk_tags])
+                b_ub.append(0)
+        elif archetype == "Dry_Sabzi":
+            if 'protein' in bulk_tags and 'base' in bulk_tags:
+                A_ub.append([-0.8 if t == 'protein' else 1.0 if t == 'base' else 0.0 for t in bulk_tags])
+                b_ub.append(0)
+        elif archetype == "Salad":
+            if ('protein' in bulk_tags or 'neutral' in bulk_tags) and 'veggie' in bulk_tags:
+                A_ub.append([2.0 if t in ['protein', 'neutral'] else -1.0 if t == 'veggie' else 0.0 for t in bulk_tags])
+                b_ub.append(0)
+        elif archetype == "Rice_Dish":
+            if 'neutral' in bulk_tags and 'protein' in bulk_tags:
+                A_ub.append([1.0 if t == 'protein' else -1.0 if t == 'neutral' else 0.0 for t in bulk_tags])
+                b_ub.append(0)
+        elif archetype == "Soup":
+            if 'protein' in bulk_tags and 'base' in bulk_tags:
+                A_ub.append([4.0 if t == 'protein' else -1.0 if t == 'base' else 0.0 for t in bulk_tags])
+                b_ub.append(0)
+        elif archetype == "Dessert":
+            if 'sweet' in bulk_tags:
+                A_ub.append([-0.4 if t in ['neutral', 'protein', 'base'] else 1.0 if t == 'sweet' else 0.0 for t in bulk_tags])
+                b_ub.append(0)
+                
+        res = linprog(c_obj, A_ub=A_ub, b_ub=b_ub, bounds=bulk_bounds, method='highs')
+        
+        if not res.success:
+            A_ub_fb = [bulk_prices]
+            b_ub_fb = [available_bulk_budget / servings_int]
+            res = linprog(c_obj, A_ub=A_ub_fb, b_ub=b_ub_fb, bounds=bulk_bounds, method='highs')
+            
+        if not res.success:
+            em_bounds = [(5.0, max(b[1], 10.0)) for b in bulk_bounds]
+            A_ub_fb = [bulk_prices]
+            b_ub_fb = [total_budget_float / servings_int]
+            res = linprog(c_obj, A_ub=A_ub_fb, b_ub=b_ub_fb, bounds=em_bounds, method='highs')
+            
+        if res.success:
+            grams_per_serving = np.round(res.x, 1)
+            for idx_in_bulk, b_idx in enumerate(bulk_indices):
+                final_quantities_by_idx[b_idx] = grams_per_serving[idx_in_bulk] * servings_int
+        else:
+            for b_idx in bulk_indices:
+                final_quantities_by_idx[b_idx] = 100.0 * servings_int
+    
+    # 5. Fine-Tune Condiment Quantities to fit remaining headroom
+    bulk_cost = sum(final_quantities_by_idx.get(b_idx, 0.0) * prices[b_idx] for b_idx in bulk_indices)
+    remaining_for_condiments = max(0.0, total_budget_float - bulk_cost)
+    
+    cur_condiment_cost = sum(condiment_results.get(c_idx, 0.0) * prices[c_idx] for c_idx in condiment_indices)
+    if cur_condiment_cost > remaining_for_condiments and cur_condiment_cost > 0:
+        scale_down = max(0.4, remaining_for_condiments / cur_condiment_cost)
+        for c_idx in condiment_indices:
+            condiment_results[c_idx] = round(condiment_results[c_idx] * scale_down, 1)
+            
+    for c_idx, q in condiment_results.items():
+        final_quantities_by_idx[c_idx] = q
+
+    # 6. Recombine all ingredients in original order
+    final_ingredients = []
+    for idx, (user_qty, clean_name, raw_ing) in enumerate(parsed_items):
+        final_g = round(final_quantities_by_idx.get(idx, 10.0), 1)
+        final_ingredients.append(f"{final_g}g {clean_name}")
+        
+    optimize_recipe_v2.last_unit_prices = unit_prices
+    
+    if return_prices:
+        return final_ingredients, archetype, unit_prices
+    return final_ingredients, archetype
+
+def calculate_cost_breakdown(calculated_ingredients, user_state="Delhi", servings=1, total_budget=150.0, unit_prices=None, **kwargs):
     """
     Computes an itemized cost breakdown for each calculated ingredient.
-    Returns: {
-        'items': [{'name': ..., 'grams': ..., 'rate_per_100g': ..., 'cost': ...}],
-        'total_cost': ...,
-        'budget': ...,
-        'headroom': ...,
-        'servings': ...
-    }
     """
+    if "budget" in kwargs and kwargs["budget"] is not None:
+        total_budget = kwargs["budget"]
     if not calculated_ingredients:
         return None
+        
+    if unit_prices is None and hasattr(optimize_recipe_v2, "last_unit_prices"):
+        unit_prices = getattr(optimize_recipe_v2, "last_unit_prices", {}) or {}
+        
     items = []
     total_cost = 0.0
     for raw_ing in calculated_ingredients:
         qty, name = parse_ingredient_input(raw_ing)
         clean_name = canonicalize_ingredient(name.lower().strip())
-        unit_price_per_gram = get_dynamic_price(clean_name, user_state, skip_llm=True)
+        
+        if unit_prices and clean_name in unit_prices:
+            unit_price_per_gram = unit_prices[clean_name]
+        else:
+            unit_price_per_gram = get_dynamic_price(clean_name, user_state, skip_llm=True)
+            
         grams = float(qty) if qty is not None else 100.0
         cost = round(grams * unit_price_per_gram, 2)
         total_cost += cost
@@ -842,12 +1118,18 @@ def calculate_cost_breakdown(calculated_ingredients, user_state="Delhi", serving
             "rate_per_100g": round(unit_price_per_gram * 100.0, 2),
             "cost": cost
         })
+        
     total_cost = round(total_cost, 2)
     budget_val = float(total_budget) if total_budget is not None else 0.0
+    
+    if budget_val > 0 and total_cost > budget_val and (total_cost - budget_val) < 1.0:
+        total_cost = budget_val
+        
     headroom = round(max(0.0, budget_val - total_cost), 2)
     return {
         "items": items,
         "total_cost": total_cost,
+        "total_spent": total_cost,
         "budget": budget_val,
         "headroom": headroom,
         "servings": int(servings)
@@ -1381,16 +1663,22 @@ def generate_recipe(request: RecipeRequest):
             except Exception as e:
                 print(f"[WARN] Failed to save generation log: {e}")
 
+        clean_title = ""
+        title_match = re.search(r'### TITLE:\s*(.+)', ai_text)
+        if title_match:
+            clean_title = re.sub(r'[*_#"`]', '', title_match.group(1)).strip()
+
         final_result = {
             "status": "success",
             "archetype": archetype,
             "calculated_ingredients": calculated_ingredients,
             "recipe": ai_text,
-            "image_url": get_random_banner(archetype),
+            "image_url": get_random_banner(archetype, recipe_title=clean_title, is_vegan=request.is_vegan),
             "is_vegan": request.is_vegan,
             "initial_cvs_score": initial_cvs_score,
             "final_cvs_score": final_cvs_score,
-            "self_correction_attempts": attempt, "latency": total_time, "model": request.model_version, "budget": request.budget, "city": request.state
+            "self_correction_attempts": attempt, "latency": total_time, "model": request.model_version, "budget": request.budget, "city": request.state,
+            "cost_breakdown": calculate_cost_breakdown(calculated_ingredients, request.state, request.servings, request.budget)
         }
         yield f"data: {json.dumps({'step': 'complete', 'result': final_result})}\n\n"
 
@@ -1861,12 +2149,17 @@ def generate_fast_qwen(request: RecipeRequest):
             except Exception as e:
                 print(f"[WARN] Failed to save generation log: {e}")
 
+        clean_title = ""
+        title_match = re.search(r'### TITLE:\s*(.+)', ai_text)
+        if title_match:
+            clean_title = re.sub(r'[*_#"`]', '', title_match.group(1)).strip()
+
         final_result = {
             "status": "success",
             "archetype": archetype,
             "calculated_ingredients": calculated_ingredients,
             "recipe": ai_text,
-            "image_url": get_random_banner(archetype),
+            "image_url": get_random_banner(archetype, recipe_title=clean_title, is_vegan=request.is_vegan),
             "is_vegan": request.is_vegan,
             "initial_cvs_score": initial_cvs_score,
             "final_cvs_score": final_cvs_score,
