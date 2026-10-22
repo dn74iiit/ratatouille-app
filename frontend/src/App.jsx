@@ -98,77 +98,80 @@ const CATEGORIZED_INGREDIENTS = {
 const COMMON_INGREDIENTS = Object.values(CATEGORIZED_INGREDIENTS).flat();
 
 const UNSPLASH_CACHE = {
+    "Curry": [
+        "1585937421612-70a008356fbe", // Indian masala curry in handi with rice
+        "1603894584373-5ac82b2ae398", // Rich gravy tikka masala in pan
+        "1565557623262-b51c2513a641", // Dal makhani & curry spread with naan
+        "1588166524941-3bf61a9c41db", // Aromatic tikka masala curry with basmati rice
+        "1631452180519-c014fe946bc7", // Paneer butter masala handi
+        "1596797038530-2c107229654b"  // Pan of vegetable masala curry with coriander
+    ],
     "Chicken": [
-        "1598515214211-89d3c73ae83b", // Golden tandoori / grilled spiced chicken
-        "1604908176997-125f25cc6f3d", // Crispy golden roasted spiced chicken bowl
-        "1626082927389-6cd097cdc6ec", // Rich aromatic butter chicken curry
-        "1562967914-608f82629710"  // Savory spiced chicken dish
+        "1603894584373-5ac82b2ae398", // Butter chicken curry in pan
+        "1588166524941-3bf61a9c41db", // Chicken tikka masala with basmati rice
+        "1541832676-9b763b0239ab",    // Chicken curry with rice & lime
+        "1610057099443-fde8c4d50f91", // Glazed herb roasted chicken
+        "1598515214211-89d3c73ae83b", // Grilled chicken breast with vegetables
+        "1604908176997-125f25cc6f3d"  // Roasted chicken skillet bowl
     ],
     "Egg": [
-        "1525351484163-7529414344d8", // Skillet egg breakfast / sunny side up
-        "1565299585323-38d6b0865b47", // Shakshuka / spicy egg curry pan
-        "1587314168485-3236d6710814"  // Farmhouse egg skillet
+        "1766146431872-a4472ccd3889", // Golden masala omelette with salad & toast
+        "1510693206972-df098062cb71", // Sizzling cast iron shakshuka / egg curry skillet
+        "1590301157890-4810ed352733", // Egg rice bowl with fried eggs, vegetables & rice
+        "1525351484163-7529414344d8"  // Sunny side up egg on whole wheat toast
     ],
     "Biryani": [
-        "1563379091339-03b21ab4a4f8", // Royal saffron dum biryani platter
-        "1541832676-9b763b0239ab", // Hyderabadi chicken biryani bowl
-        "1589302168068-964664d93dc0"  // Fragrant Indian pulao / basmati biryani
-    ],
-    "NonVegan": [
-        "1598515214211-89d3c73ae83b",
-        "1604908176997-125f25cc6f3d",
-        "1626082927389-6cd097cdc6ec",
-        "1565299585323-38d6b0865b47",
-        "1541832676-9b763b0239ab"
-    ],
-    "Curry": [
-        "1585937421612-70a008356fbe", // Indian masala curry in handi
-        "1603894584373-5ac82b2ae398", // Rich gravy curry dish
-        "1565557623262-b51c2513a641", // Dal makhani & curry spread
-        "1618160702438-9b02ab6515c9", // Warm Indian spiced curry
-        "1631452180519-c014fe946bc7"  // Paneer butter masala
+        "1563379091339-03b21ab4a4f8", // Royal saffron dum biryani platter in copper handi
+        "1589302168068-964664d93dc0", // Fragrant Hyderabadi biryani with raita & mint
+        "1541832676-9b763b0239ab"     // Chicken biryani rice bowl with lime
     ],
     "Salad": [
-        "1512621776951-a57141f2eefd",
-        "1490645935967-10de6ba17061",
-        "1540420773420-3366772f4999"
+        "1540420773420-3366772f4999", // Vibrant rainbow raw vegetable salad bowl
+        "1512621776951-a57141f2eefd"  // Fresh vegan buddha bowl with chickpeas & avocado
     ],
     "Dessert": [
-        "1488477181946-6428a0291777",
-        "1550617931-e17a7b70dce2",
-        "1551024601-bec78aea704b",
-        "1563805042-7684c019e1cb"
+        "1488477181946-6428a0291777", // Strawberry panna cotta dessert jars
+        "1550617931-e17a7b70dce2",    // Chocolate frosted cupcakes
+        "1551024601-bec78aea704b",    // Sprinkled glazed donuts
+        "1563805042-7684c019e1cb"     // Oreo chocolate sundae parfait
     ],
     "Bread": [
-        "1509440159596-0249088772ff",
-        "1608198093002-ad4e005484ec"
+        "1509440159596-0249088772ff", // Rustic artisan loaves of bread
+        "1608198093002-ad4e005484ec"  // Freshly baked breads, buns & baguettes
     ],
     "Soup": [
-        "1547592166-23ac45744acd", // Warm vegetable stew / soup pot
-        "1547592180-85f173990554", // Rich vegetable stew pot
-        "1604152135912-04a022e23696", // Savory vegetable soup bowl
-        "1578020190125-f4f7c18bc9cb"  // Hearty stew dish
+        "1604152135912-04a022e23696", // Creamy yellow lentil / vegetable soup bowl
+        "1547592166-23ac45744acd",    // Spiced tomato vegetable soup / shorba with seeds
+        "1578020190125-f4f7c18bc9cb"  // Rich vegetable stew / tomato stew pan with bread
     ],
     "Rice_Dish": [
-        "1596797038530-2c107229654b", // Fresh cilantro lime vegetable rice bowl
-        "1536304929831-ee1ca9d44906", // Aromatic basmati herb rice bowl
-        "1505253716362-afaea1d3d1af"  // Plant-based vegetable grain bowl
+        "1645177628172-a94c1f96e6db", // Indian spiced vegetable pulao / tomato rice platter
+        "1603133872878-684f208fb84b", // Egg / vegetable fried rice mound with peas & carrots
+        "1516684732162-798a0062be99", // Steamed white rice bowl with toasted sesame
+        "1563379091339-03b21ab4a4f8"  // Royal saffron basmati rice
     ],
     "Dry_Sabzi": [
-        "1546833999-b9f581a1996d", // Spiced vegetable roast / dry sabzi
-        "1565557623262-b51c2513a641",
-        "1604152135912-04a022e23696"
+        "1546833999-b9f581a1996d",    // Spiced vegetable roast / dry sabzi thali
+        "1596797038530-2c107229654b", // Spiced vegetable skillet fry
+        "1565557623262-b51c2513a641"  // Spiced vegetable masala with naan
     ],
     "Paneer": [
-        "1631452180519-c014fe946bc7" // Rich aromatic paneer butter masala handi
+        "1631452180519-c014fe946bc7", // Rich paneer butter masala handi
+        "1588166524941-3bf61a9c41db"  // Paneer tikka masala over rice
+    ],
+    "NonVegan": [
+        "1603894584373-5ac82b2ae398",
+        "1588166524941-3bf61a9c41db",
+        "1610057099443-fde8c4d50f91",
+        "1541832676-9b763b0239ab"
     ],
     "Vegan": [
-        "1512621776951-a57141f2eefd",
-        "1490645935967-10de6ba17061",
-        "1547592166-23ac45744acd",
-        "1546833999-b9f581a1996d",
-        "1596797038530-2c107229654b",
-        "1536304929831-ee1ca9d44906"
+        "1585937421612-70a008356fbe", // Indian vegetable curry handi with rice
+        "1540420773420-3366772f4999", // Rainbow plant-based salad bowl
+        "1512621776951-a57141f2eefd", // Fresh vegan buddha bowl with chickpeas
+        "1546833999-b9f581a1996d",    // Indian vegetable thali
+        "1604152135912-04a022e23696", // Creamy yellow lentil / vegetable soup bowl
+        "1645177628172-a94c1f96e6db"  // Indian spiced vegetable pulao
     ]
 };
 
@@ -228,11 +231,23 @@ export const isPlantBased = (ingredients = [], recipeText = "") => {
     return true;
 };
 
+const BANNED_CORRUPTED_PHOTO_IDS = [
+    "1618160702438", // Blueberry birthday cake falsely in Curry
+    "1587314168485", // Strawberry crepes falsely in Egg
+    "1565299585323", // Tacos falsely in Egg
+    "1547592180",    // Salmon bowl falsely in Soup
+    "1490645935",    // Salad with boiled eggs falsely in Vegan
+    "1505253716",    // Shrimp salad falsely in Rice
+    "1562967914",    // Chicken nuggets with tartar sauce
+    "1626082927",    // Deep-fried KFC drumsticks in fryer basket
+    "1578985545062"  // Old chocolate cake
+];
+
 const BANNED_MEAT_PHOTO_IDS = [
     "1563379091339", "1589302168068", "1541832676", "1598515214211", 
     "1604908176997", "1626082927389", "1562967914", "1525351484163", 
     "1565299585323", "1587314168485", "1578985545062",
-    "1574484284002", "1512058564366", "1546069901"
+    "1574484284002", "1512058564366", "1546069901", "1610057099443"
 ];
 
 const SAVORY_WORDS_REGEX = /\b(curry|gravy|masala|korma|dal|dhal|daal|sambar|rasam|sabzi|subzi|roast|fry|stir-fry|sukka|poriyal|bhaji|rice|pulao|pilaf|biryani|khichdi|skillet|bowl|stew|soup|broth|shorba|chowder|kadhi|karhi|pakora|pakoras|kofta|paneer|tofu|mushroom|potato|aloo|gobi|chana|besan|chaap|tikka|kebab|roti|naan|paratha|bread|salad|chaat|omelette|egg|chicken|mutton|fish|prawn|shrimp|salt)\b/i;
@@ -331,21 +346,23 @@ const getRandomBanner = (archetype, isVegan = false, recipeTitle = "", ingredien
 const resolveRecipeImage = (imageUrl, archetype, isVegan, recipeText, ingredients = []) => {
     const isPlant = isVegan || isPlantBased(ingredients, recipeText);
     
-    // If imageUrl contains a banned meat photo or banned cake photo on a plant-based recipe:
     if (imageUrl) {
-        if (imageUrl.includes("1578985545062")) {
+        // 1. Check if imageUrl has any corrupted/poisoned photo
+        if (BANNED_CORRUPTED_PHOTO_IDS.some(id => imageUrl.includes(id))) {
             return getRandomBanner(archetype, isPlant, recipeText, ingredients);
         }
+        
+        // 2. Strict vegan barrier: plant-based recipes cannot have meat photos
         if (isPlant && BANNED_MEAT_PHOTO_IDS.some(id => imageUrl.includes(id))) {
             return getRandomBanner(archetype, true, recipeText, ingredients);
         }
         
-        // If imageUrl is already a dessert image but recipe is savory, override
+        // 3. Strict savory barrier: savory recipes cannot have dessert photos
         const raw = recipeText || "";
         const titleMatch = raw.match(/### TITLE:\s*([^\n\r]+)/i);
         const title = (titleMatch ? titleMatch[1] : raw.split(/\r?\n/)[0]).toLowerCase();
         const isSavory = SAVORY_WORDS_REGEX.test(title);
-        const isDessertImg = UNSPLASH_CACHE["Dessert"]?.some(id => imageUrl.includes(id)) || imageUrl.includes("1578985545062");
+        const isDessertImg = UNSPLASH_CACHE["Dessert"]?.some(id => imageUrl.includes(id)) || imageUrl.includes("1578985545062") || imageUrl.includes("1618160702438") || imageUrl.includes("1587314168485");
         if (isSavory && isDessertImg) {
             return getRandomBanner(isPlant ? 'Vegan' : 'Curry', isPlant, recipeText, ingredients);
         }

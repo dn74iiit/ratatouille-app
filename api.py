@@ -332,76 +332,79 @@ except Exception as e:
 import random
 UNSPLASH_CACHE = {
     "Curry": [
-        "1585937421612-70a008356fbe",  # Indian masala curry in handi
-        "1603894584373-5ac82b2ae398",  # Rich gravy curry dish
-        "1565557623262-b51c2513a641",  # Dal makhani & curry spread
-        "1618160702438-9b02ab6515c9",  # Warm Indian spiced curry
-        "1631452180519-c014fe946bc7"   # Paneer butter masala
+        "1585937421612-70a008356fbe",  # Indian masala curry in handi with rice
+        "1603894584373-5ac82b2ae398",  # Rich gravy tikka masala in pan
+        "1565557623262-b51c2513a641",  # Dal makhani & curry spread with naan
+        "1588166524941-3bf61a9c41db",  # Aromatic tikka masala curry with basmati rice
+        "1631452180519-c014fe946bc7",  # Paneer butter masala handi
+        "1596797038530-2c107229654b"   # Pan of vegetable masala curry with coriander
     ],
     "Chicken": [
-        "1598515214211-89d3c73ae83b",
-        "1604908176997-125f25cc6f3d",
-        "1626082927389-6cd097cdc6ec",
-        "1562967914-608f82629710"
+        "1603894584373-5ac82b2ae398",  # Butter chicken curry in pan
+        "1588166524941-3bf61a9c41db",  # Chicken tikka masala with basmati rice
+        "1541832676-9b763b0239ab",     # Chicken curry with rice & lime
+        "1610057099443-fde8c4d50f91",  # Glazed herb roasted chicken
+        "1598515214211-89d3c73ae83b",  # Grilled chicken breast with vegetables
+        "1604908176997-125f25cc6f3d"   # Roasted chicken skillet bowl
     ],
     "Egg": [
-        "1525351484163-7529414344d8",
-        "1565299585323-38d6b0865b47",
-        "1587314168485-3236d6710814"
+        "1766146431872-a4472ccd3889",  # Golden masala omelette with salad & toast
+        "1510693206972-df098062cb71",  # Sizzling cast iron shakshuka / egg curry skillet
+        "1590301157890-4810ed352733",  # Egg rice bowl with fried eggs, vegetables & rice
+        "1525351484163-7529414344d8"   # Sunny side up egg on whole wheat toast
     ],
     "Biryani": [
-        "1563379091339-03b21ab4a4f8",
-        "1541832676-9b763b0239ab",
-        "1589302168068-964664d93dc0"
+        "1563379091339-03b21ab4a4f8",  # Royal saffron dum biryani platter in copper handi
+        "1589302168068-964664d93dc0",  # Fragrant Hyderabadi biryani with raita & mint
+        "1541832676-9b763b0239ab"      # Chicken biryani rice bowl with lime
     ],
     "Salad": [
-        "1512621776951-a57141f2eefd",  # Fresh green vegetable salad bowl
-        "1490645935967-10de6ba17061",  # Fresh plant-based avocado salad
-        "1540420773420-3366772f4999"   # Vibrant rainbow salad bowl
+        "1540420773420-3366772f4999",  # Vibrant rainbow raw vegetable salad bowl
+        "1512621776951-a57141f2eefd"   # Fresh vegan buddha bowl with chickpeas & avocado
     ],
     "Dessert": [
-        "1488477181946-6428a0291777",
-        "1550617931-e17a7b70dce2",
-        "1551024601-bec78aea704b",
-        "1563805042-7684c019e1cb"
+        "1488477181946-6428a0291777",  # Strawberry panna cotta dessert jars
+        "1550617931-e17a7b70dce2",     # Chocolate frosted cupcakes
+        "1551024601-bec78aea704b",     # Sprinkled glazed donuts
+        "1563805042-7684c019e1cb"      # Oreo chocolate sundae parfait
     ],
     "Bread": [
-        "1509440159596-0249088772ff",
-        "1608198093002-ad4e005484ec"
+        "1509440159596-0249088772ff",  # Rustic artisan loaves of bread
+        "1608198093002-ad4e005484ec"   # Freshly baked breads, buns & baguettes
     ],
     "Soup": [
-        "1547592166-23ac45744acd",  # Warm vegetable stew / soup pot
-        "1547592180-85f173990554",  # Rich vegetable stew pot
-        "1604152135912-04a022e23696",  # Savory vegetable soup bowl
-        "1578020190125-f4f7c18bc9cb"   # Hearty stew dish
+        "1604152135912-04a022e23696",  # Creamy yellow lentil / vegetable soup bowl
+        "1547592166-23ac45744acd",     # Spiced tomato vegetable soup / shorba with seeds
+        "1578020190125-f4f7c18bc9cb"   # Rich vegetable stew / tomato stew pan with bread
     ],
     "Rice_Dish": [
-        "1596797038530-2c107229654b",  # Cilantro lime veggie rice bowl
-        "1536304929831-ee1ca9d44906",  # Aromatic basmati herb rice bowl
-        "1505253716362-afaea1d3d1af"   # Plant-based vegetable grain bowl
+        "1645177628172-a94c1f96e6db",  # Indian spiced vegetable pulao / tomato rice platter
+        "1603133872878-684f208fb84b",  # Egg / vegetable fried rice mound with peas & carrots
+        "1516684732162-798a0062be99",  # Steamed white rice bowl with toasted sesame
+        "1563379091339-03b21ab4a4f8"   # Royal saffron basmati rice
     ],
     "Dry_Sabzi": [
-        "1546833999-b9f581a1996d",  # Spiced vegetable roast / dry sabzi
-        "1565557623262-b51c2513a641",
-        "1604152135912-04a022e23696"
+        "1546833999-b9f581a1996d",     # Spiced vegetable roast / dry sabzi thali
+        "1596797038530-2c107229654b",  # Spiced vegetable skillet fry
+        "1565557623262-b51c2513a641"   # Spiced vegetable masala with naan
     ],
     "Paneer": [
-        "1631452180519-c014fe946bc7"  # Rich aromatic paneer butter masala handi
+        "1631452180519-c014fe946bc7",  # Rich paneer butter masala handi
+        "1588166524941-3bf61a9c41db"   # Paneer tikka masala over rice
     ],
     "NonVegan": [
-        "1598515214211-89d3c73ae83b",
-        "1604908176997-125f25cc6f3d",
-        "1626082927389-6cd097cdc6ec",
-        "1565299585323-38d6b0865b47",
+        "1603894584373-5ac82b2ae398",
+        "1588166524941-3bf61a9c41db",
+        "1610057099443-fde8c4d50f91",
         "1541832676-9b763b0239ab"
     ],
     "Vegan": [
-        "1512621776951-a57141f2eefd",  # Fresh vegetable salad
-        "1490645935967-10de6ba17061",  # Fresh plant-based salad
-        "1547592166-23ac45744acd",  # Warm vegetable stew pot
-        "1546833999-b9f581a1996d",  # Spiced vegetable kadai
-        "1596797038530-2c107229654b",  # Veggie rice bowl
-        "1536304929831-ee1ca9d44906"   # Herb basmati rice bowl
+        "1585937421612-70a008356fbe",  # Indian vegetable curry handi with rice
+        "1540420773420-3366772f4999",  # Rainbow plant-based salad bowl
+        "1512621776951-a57141f2eefd",  # Fresh vegan buddha bowl with chickpeas
+        "1546833999-b9f581a1996d",     # Indian vegetable thali
+        "1604152135912-04a022e23696",  # Creamy yellow lentil / vegetable soup bowl
+        "1645177628172-a94c1f96e6db"   # Indian spiced vegetable pulao
     ]
 }
 
