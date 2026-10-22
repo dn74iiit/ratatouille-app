@@ -159,6 +159,9 @@ const UNSPLASH_CACHE = {
         "1565557623262-b51c2513a641",
         "1604152135912-04a022e23696"
     ],
+    "Paneer": [
+        "1631452180519-c014fe946bc7" // Rich aromatic paneer butter masala handi
+    ],
     "Vegan": [
         "1512621776951-a57141f2eefd",
         "1490645935967-10de6ba17061",
@@ -232,30 +235,60 @@ const BANNED_MEAT_PHOTO_IDS = [
     "1574484284002", "1512058564366", "1546069901"
 ];
 
-const SAVORY_WORDS_REGEX = /\b(curry|gravy|masala|korma|dal|dhal|daal|sambar|rasam|sabzi|subzi|roast|fry|stir-fry|sukka|poriyal|bhaji|rice|pulao|pilaf|biryani|khichdi|skillet|bowl|stew|soup|broth|shorba|chowder|kadhi|karhi|pakora|pakoras|kofta|paneer|tofu|mushroom|potato|aloo|gobi|chana|besan|chaap|tikka|kebab|roti|naan|paratha|bread|salad|chaat)\b/i;
+const SAVORY_WORDS_REGEX = /\b(curry|gravy|masala|korma|dal|dhal|daal|sambar|rasam|sabzi|subzi|roast|fry|stir-fry|sukka|poriyal|bhaji|rice|pulao|pilaf|biryani|khichdi|skillet|bowl|stew|soup|broth|shorba|chowder|kadhi|karhi|pakora|pakoras|kofta|paneer|tofu|mushroom|potato|aloo|gobi|chana|besan|chaap|tikka|kebab|roti|naan|paratha|bread|salad|chaat|omelette|egg|chicken|mutton|fish|prawn|shrimp|salt)\b/i;
 
-const getRandomBanner = (archetype, isVegan = false, recipeTitle = "") => {
+const getRandomBanner = (archetype, isVegan = false, recipeTitle = "", ingredients = []) => {
     let raw = (recipeTitle || "");
     const titleMatch = raw.match(/### TITLE:\s*([^\n\r]+)/i);
     let title = titleMatch ? titleMatch[1] : raw.split(/\r?\n/)[0];
     const t = title.toLowerCase().replace(/[*_#"`]/g, '').trim();
     let arch = archetype;
 
+    const ingsStr = Array.isArray(ingredients) ? ingredients.join(' ').toLowerCase() : String(ingredients || '').toLowerCase();
+    const allContent = `${t} ${ingsStr}`;
+
+    // 1. Animal / Poultry / Seafood / Egg / Paneer detection
+    let hasChicken = /\b(chicken|mutton|meat|lamb)\b/i.test(t) || /\b(chicken|mutton|meat|lamb)\b/i.test(ingsStr);
+    let hasSeafood = /\b(fish|catfish|salmon|prawn|prawns|shrimp|shrimps|seafood|pork|beef|bacon|sausage)\b/i.test(t) || /\b(fish|salmon|prawn|shrimp)\b/i.test(ingsStr);
+    let hasEgg = (/\b(egg|eggs|anda|omelette)\b/i.test(t) || /\b(egg|eggs)\b/i.test(ingsStr)) && !/\b(paneer|tofu)\b/i.test(t);
+    let hasPaneer = /\b(paneer)\b/i.test(t) || /\b(paneer)\b/i.test(ingsStr);
+
+    if (isVegan || (!hasChicken && !hasSeafood && !hasEgg && !hasPaneer)) {
+        hasChicken = false;
+        hasSeafood = false;
+        hasEgg = false;
+        hasPaneer = false;
+    }
+
     const words = t.split(/[\s\-_,]+/).filter(Boolean);
     const last1 = words[words.length - 1] || '';
     const last2 = words.slice(-2).join(' ') || last1;
     const last3 = words.slice(-3).join(' ') || last2;
 
-    // 1. End-Term / Suffix Culinary Classification (last 1-3 words)
-    if (/\b(stew|soup|broth|shorba|chowder|potage|laksa)\b/i.test(last1) || /\b(stew|soup|broth|shorba|chowder|potage|laksa)\b/i.test(last2)) {
-        arch = "Soup";
-    } else if (/\b(rice bowl|rice skillet|fried rice|pulao|pulav|pilaf|biryani|khichdi|rice|skillet)\b/i.test(last2) || /\b(rice bowl|rice skillet|fried rice|pulao|pulav|pilaf|biryani|khichdi|rice|skillet)\b/i.test(last3) || /\b(rice bowl|rice skillet|fried rice|pulao|pulav|pilaf|biryani|khichdi|rice|skillet)\b/i.test(last1)) {
-        if (/biryani/i.test(last2) || /biryani/i.test(last1)) {
-            arch = isVegan ? "Rice_Dish" : "Biryani";
+    const isSavory = SAVORY_WORDS_REGEX.test(allContent);
+
+    // A. Check for Real Dessert: ONLY sweet dishes, strictly zero savory keywords
+    if (!isSavory && (/\b(cookie|cookies|crisps|cake|cakes|pastry|brownie|brownies|halwa|kheer|payasam|pudding|ice cream|barfi|ladoo|dessert)\b/i.test(last1) || /\b(cookie|cookies|crisps|cake|cakes|pastry|brownie|brownies|halwa|kheer|payasam|pudding|ice cream|barfi|ladoo|dessert)\b/i.test(last2) || /\b(cookie|cookies|crisps|cake|cakes|pastry|brownie|brownies|halwa|kheer|payasam|pudding|ice cream|barfi|ladoo|dessert)\b/i.test(t))) {
+        arch = "Dessert";
+    } else if (hasChicken) {
+        if (/\b(biryani|rice)\b/i.test(last1) || /\b(biryani|rice)\b/i.test(last2) || /\b(biryani|rice)\b/i.test(t)) {
+            arch = "Biryani";
         } else {
-            arch = "Rice_Dish";
+            arch = "Chicken";
         }
-    } else if (/\b(gravy|curry|korma|masala|saag|makhani|dal|dhal|daal|sambar|rasam|kofta|kadhi|karhi|salan|jalfrezi|handi)\b/i.test(last1) || /\b(gravy|curry|korma|masala|saag|makhani|dal|dhal|daal|sambar|rasam|kofta|kadhi|karhi|salan|jalfrezi|handi)\b/i.test(last2)) {
+    } else if (hasSeafood) {
+        arch = isVegan ? "Curry" : "NonVegan";
+    } else if (hasEgg) {
+        arch = "Egg";
+    } else if (hasPaneer) {
+        arch = "Paneer";
+    } else if (/\b(stew|soup|broth|shorba|chowder|potage|laksa)\b/i.test(last1) || /\b(stew|soup|broth|shorba|chowder|potage|laksa)\b/i.test(last2)) {
+        arch = "Soup";
+    } else if (/\b(rice bowl|rice skillet|fried rice|pulao|pulav|pilaf|biryani|khichdi|rice|skillet)\b/i.test(last1) || /\b(rice bowl|rice skillet|fried rice|pulao|pulav|pilaf|biryani|khichdi|rice|skillet)\b/i.test(last2) || /\b(rice bowl|rice skillet|fried rice|pulao|pulav|pilaf|biryani|khichdi|rice|skillet)\b/i.test(last3) || /\b(rice bowl|rice skillet|fried rice|pulao|pulav|pilaf|biryani|khichdi|rice|skillet)\b/i.test(t)) {
+        arch = "Rice_Dish";
+    } else if (/\b(dal|dhal|daal|tadka|sambar|rasam)\b/i.test(last1) || /\b(dal|dhal|daal|tadka|sambar|rasam)\b/i.test(last2)) {
+        arch = "Curry";
+    } else if (/\b(gravy|curry|korma|masala|saag|makhani|kofta|kadhi|karhi|salan|jalfrezi|handi)\b/i.test(last1) || /\b(gravy|curry|korma|masala|saag|makhani|kofta|kadhi|karhi|salan|jalfrezi|handi)\b/i.test(last2)) {
         arch = "Curry";
     } else if (/\b(roast|fry|stir-fry|sukka|poriyal|bhaji|thoran|dry|pakora|pakoras|pakoda|pakodas|fritter|fritters|tikka|kebab|tikki|chaap|sabzi|subzi)\b/i.test(last1) || /\b(roast|fry|stir-fry|sukka|poriyal|bhaji|thoran|dry|pakora|pakoras|pakoda|pakodas|fritter|fritters|tikka|kebab|tikki|chaap|sabzi|subzi)\b/i.test(last2)) {
         arch = "Dry_Sabzi";
@@ -264,41 +297,16 @@ const getRandomBanner = (archetype, isVegan = false, recipeTitle = "") => {
     } else if (/\b(salad|slaw|chaat|raita|kachumber)\b/i.test(last1) || /\b(salad|slaw|chaat|raita|kachumber)\b/i.test(last2)) {
         arch = "Salad";
     } else {
-        // 2. Whole Title Search Fallback
-        const isSavory = SAVORY_WORDS_REGEX.test(t);
-        if (!isVegan && /\b(chicken|mutton|meat|lamb)\b/i.test(t) && !/\b(rice|biryani)\b/i.test(t)) {
-            arch = "Chicken";
-        } else if (!isVegan && /\b(egg|omelette|anda)\b/i.test(t) && !/\b(paneer)\b/i.test(t)) {
-            arch = "Egg";
-        } else if (!isVegan && /\b(fish|catfish|prawn|prawns|shrimp|shrimps|seafood|pork|beef|bacon|sausage)\b/i.test(t)) {
-            arch = "NonVegan";
-        } else if (!isVegan && /\b(biryani)\b/i.test(t)) {
-            arch = "Biryani";
-        } else if (/\b(stew|soup|broth|shorba)\b/i.test(t)) {
-            arch = "Soup";
-        } else if (/\b(rice|pulao|khichdi|skillet)\b/i.test(t)) {
-            arch = "Rice_Dish";
-        } else if (/\b(curry|gravy|masala|korma|dal|kadhi|kofta|paneer)\b/i.test(t)) {
-            arch = "Curry";
-        } else if (/\b(roast|sukka|sabzi|pakora|tikka|chaap)\b/i.test(t)) {
-            arch = "Dry_Sabzi";
-        } else if (/\b(bread|roti|naan|paratha)\b/i.test(t)) {
-            arch = "Bread";
-        } else if (/\b(salad|chaat)\b/i.test(t)) {
-            arch = "Salad";
-        } else if (!isSavory && /\b(cake|kheer|halwa|payasam|pudding|cookie|cookies|brownie|brownies|pastry|muffin|ladoo|laddu|barfi|dessert)\b/i.test(t)) {
-            arch = "Dessert";
-        }
+        arch = /\brice\b/i.test(t) ? "Rice_Dish" : (isVegan ? "Vegan" : "Curry");
     }
-    
+
     // Strict Savory vs. Dessert Barrier: A savory dish must NEVER have a dessert banner
-    const isSavoryDish = SAVORY_WORDS_REGEX.test(t);
-    if (arch === "Dessert" && isSavoryDish) {
+    if (arch === "Dessert" && isSavory) {
         arch = isVegan ? "Vegan" : "Curry";
     }
 
     // Strict Vegan Protection: A vegan/plant dish must NEVER have meat/egg/biryani banners
-    if (isVegan && (arch === "Chicken" || arch === "Egg" || arch === "Biryani" || arch === "NonVegan")) {
+    if (isVegan && ["Chicken", "Egg", "Biryani", "NonVegan"].includes(arch)) {
         arch = /\b(rice|biryani|pulao)\b/i.test(t) ? "Rice_Dish" : "Vegan";
     }
 
@@ -326,10 +334,10 @@ const resolveRecipeImage = (imageUrl, archetype, isVegan, recipeText, ingredient
     // If imageUrl contains a banned meat photo or banned cake photo on a plant-based recipe:
     if (imageUrl) {
         if (imageUrl.includes("1578985545062")) {
-            return getRandomBanner(archetype, isPlant, recipeText);
+            return getRandomBanner(archetype, isPlant, recipeText, ingredients);
         }
         if (isPlant && BANNED_MEAT_PHOTO_IDS.some(id => imageUrl.includes(id))) {
-            return getRandomBanner(archetype, true, recipeText);
+            return getRandomBanner(archetype, true, recipeText, ingredients);
         }
         
         // If imageUrl is already a dessert image but recipe is savory, override
@@ -339,11 +347,11 @@ const resolveRecipeImage = (imageUrl, archetype, isVegan, recipeText, ingredient
         const isSavory = SAVORY_WORDS_REGEX.test(title);
         const isDessertImg = UNSPLASH_CACHE["Dessert"]?.some(id => imageUrl.includes(id)) || imageUrl.includes("1578985545062");
         if (isSavory && isDessertImg) {
-            return getRandomBanner(isPlant ? 'Vegan' : 'Curry', isPlant, recipeText);
+            return getRandomBanner(isPlant ? 'Vegan' : 'Curry', isPlant, recipeText, ingredients);
         }
         return imageUrl;
     }
-    return getRandomBanner(archetype, isPlant, recipeText);
+    return getRandomBanner(archetype, isPlant, recipeText, ingredients);
 };
 
 function MultiSelectIngredient({ selected, setSelected }) {
@@ -1073,7 +1081,17 @@ function App() {
       const data = await response.json();
       
       if (data.status === 'success') {
-        setGlobalRecipes((data.recipes || []).filter(isGroqRecipe));
+        const liveGroqs = (data.recipes || []).filter(isGroqRecipe);
+        const seen = new Set();
+        const deduped = [];
+        for (const r of liveGroqs) {
+          const norm = cleanRecipeTitle(r.recipe?.recipe).toLowerCase().trim();
+          if (norm && !seen.has(norm)) {
+            seen.add(norm);
+            deduped.push(r);
+          }
+        }
+        setGlobalRecipes(deduped);
       } else {
         alert(data.message);
       }
@@ -1897,7 +1915,12 @@ function App() {
              </div>
           ) : (
             <div className="recipe-grid">
-              {globalRecipes.filter(isGroqRecipe).filter(doc => {
+              {(() => {
+                const seenCardTitles = new Set();
+                return globalRecipes.filter(isGroqRecipe).filter(doc => {
+                  const cardTitle = cleanRecipeTitle(doc.recipe?.recipe).toLowerCase().trim();
+                  if (cardTitle && seenCardTitles.has(cardTitle)) return false;
+                  if (cardTitle) seenCardTitles.add(cardTitle);
                 const rec = doc.recipe;
                 const isVeg = rec.is_vegan || isPlantBased(rec.calculated_ingredients, rec.recipe);
                 if (communityFilter === 'vegan') return isVeg;
@@ -1984,7 +2007,8 @@ function App() {
                      </div>
                    </div>
                  );
-              })}
+              });
+              })()}
             </div>
           )}
         </div>

@@ -385,6 +385,9 @@ UNSPLASH_CACHE = {
         "1565557623262-b51c2513a641",
         "1604152135912-04a022e23696"
     ],
+    "Paneer": [
+        "1631452180519-c014fe946bc7"  # Rich aromatic paneer butter masala handi
+    ],
     "NonVegan": [
         "1598515214211-89d3c73ae83b",
         "1604908176997-125f25cc6f3d",
@@ -408,69 +411,85 @@ SAVORY_WORDS_LIST = [
     'rice', 'pulao', 'pilaf', 'biryani', 'khichdi', 'skillet', 'bowl',
     'stew', 'soup', 'broth', 'shorba', 'chowder', 'kadhi', 'karhi', 'pakora', 'pakoras',
     'kofta', 'paneer', 'tofu', 'mushroom', 'potato', 'aloo', 'gobi', 'chana', 'besan',
-    'chaap', 'tikka', 'kebab', 'roti', 'naan', 'paratha', 'bread', 'salad', 'chaat'
+    'chaap', 'tikka', 'kebab', 'roti', 'naan', 'paratha', 'bread', 'salad', 'chaat',
+    'omelette', 'egg', 'chicken', 'mutton', 'fish', 'prawn', 'shrimp', 'salt'
 ]
 
-def get_random_banner(archetype, recipe_title=None, is_vegan=False):
+def get_random_banner(archetype, recipe_title=None, is_vegan=False, ingredients=None):
     arch = archetype
-    if recipe_title:
-        t = recipe_title.lower().replace('#', '').replace('*', '').replace('"', '').strip()
-        words = [w for w in re.split(r'[\s\-_,]+', t) if w]
-        last_1 = words[-1] if words else ''
-        last_2 = ' '.join(words[-2:]) if len(words) >= 2 else last_1
-        last_3 = ' '.join(words[-3:]) if len(words) >= 3 else last_2
-        
-        # 1. End-Term / Suffix Culinary Classification (last 1-3 words)
-        if any(re.search(r'\b(stew|soup|broth|shorba|chowder|potage|laksa)\b', x) for x in [last_1, last_2]):
-            arch = "Soup"
-        elif any(re.search(r'\b(rice bowl|rice skillet|fried rice|pulao|pulav|pilaf|biryani|khichdi|rice|skillet)\b', x) for x in [last_2, last_3, last_1]):
-            if ('biryani' in last_2 or 'biryani' in last_1) and not is_vegan:
-                arch = "Biryani"
-            else:
-                arch = "Rice_Dish"
-        elif any(re.search(r'\b(gravy|curry|korma|masala|saag|makhani|dal|dhal|daal|sambar|rasam|kofta|kadhi|karhi|salan|jalfrezi|handi)\b', x) for x in [last_1, last_2]):
-            arch = "Curry"
-        elif any(re.search(r'\b(roast|fry|stir-fry|sukka|poriyal|bhaji|thoran|dry|pakora|pakoras|pakoda|pakodas|fritter|fritters|tikka|kebab|tikki|chaap|sabzi|subzi)\b', x) for x in [last_1, last_2]):
-            arch = "Dry_Sabzi"
-        elif any(re.search(r'\b(roti|naan|paratha|kulcha|puri|poori|bhatura|chapati|phulka|bread|flatbread|wrap|roll)\b', x) for x in [last_1, last_2]):
-            arch = "Bread"
-        elif any(re.search(r'\b(salad|slaw|chaat|raita|kachumber)\b', x) for x in [last_1, last_2]):
-            arch = "Salad"
+    t = (recipe_title or '').lower().replace('#', '').replace('*', '').replace('"', '').strip()
+    ings_str = ' '.join(str(i).lower() for i in (ingredients or []))
+    all_content = f"{t} {ings_str}"
+
+    # 1. Animal / Poultry / Seafood / Egg / Paneer detection
+    has_chicken = bool(re.search(r'\b(chicken|mutton|meat|lamb)\b', t) or re.search(r'\b(chicken|mutton|meat|lamb)\b', ings_str))
+    has_seafood = bool(re.search(r'\b(fish|catfish|salmon|prawn|prawns|shrimp|shrimps|seafood|pork|beef|bacon|sausage)\b', t) or re.search(r'\b(fish|salmon|prawn|shrimp)\b', ings_str))
+    has_egg = bool((re.search(r'\b(egg|eggs|anda|omelette)\b', t) or re.search(r'\b(egg|eggs)\b', ings_str)) and not re.search(r'\b(paneer|tofu)\b', t))
+    has_paneer = bool(re.search(r'\b(paneer)\b', t) or re.search(r'\b(paneer)\b', ings_str))
+
+    # If explicitly vegan or plant-based, forbid all meat/egg/paneer
+    if is_vegan or (not has_chicken and not has_seafood and not has_egg and not has_paneer):
+        has_chicken = False
+        has_seafood = False
+        has_egg = False
+        has_paneer = False
+
+    words = [w for w in re.split(r'[\s\-_,]+', t) if w]
+    last_1 = words[-1] if words else ''
+    last_2 = ' '.join(words[-2:]) if len(words) >= 2 else last_1
+    last_3 = ' '.join(words[-3:]) if len(words) >= 3 else last_2
+
+    is_savory = any(sw in all_content for sw in SAVORY_WORDS_LIST)
+
+    # A. Check for Real Dessert: ONLY sweet dishes, strictly zero savory keywords
+    if not is_savory and any(re.search(r'\b(cookie|cookies|crisps|cake|cakes|pastry|brownie|brownies|halwa|kheer|payasam|pudding|ice cream|barfi|ladoo|dessert)\b', x) for x in [last_1, last_2, t]):
+        arch = "Dessert"
+    # B. Non-Veg Dishes
+    elif has_chicken:
+        if any(re.search(r'\b(biryani|rice)\b', x) for x in [last_1, last_2, t]):
+            arch = "Biryani"
+        elif any(re.search(r'\b(curry|gravy|masala|korma)\b', x) for x in [last_1, last_2, t]):
+            arch = "Chicken"
+        elif any(re.search(r'\b(roast|tikka|tandoori)\b', x) for x in [last_1, last_2, t]):
+            arch = "Chicken"
         else:
-            # 2. Whole Title Search Fallback
-            is_savory = any(sw in t for sw in SAVORY_WORDS_LIST)
-            if not is_vegan and (re.search(r'\b(chicken|mutton|meat|lamb)\b', t) and not re.search(r'\b(rice|biryani)\b', t)):
-                arch = "Chicken"
-            elif not is_vegan and re.search(r'\b(egg|omelette|anda)\b', t) and not re.search(r'\b(paneer)\b', t):
-                arch = "Egg"
-            elif not is_vegan and re.search(r'\b(fish|catfish|prawn|prawns|shrimp|shrimps|seafood|pork|beef|bacon|sausage)\b', t):
-                arch = "NonVegan"
-            elif not is_vegan and re.search(r'\b(biryani)\b', t):
-                arch = "Biryani"
-            elif re.search(r'\b(stew|soup|broth|shorba)\b', t):
-                arch = "Soup"
-            elif re.search(r'\b(rice|pulao|khichdi|skillet)\b', t):
-                arch = "Rice_Dish"
-            elif re.search(r'\b(curry|gravy|masala|korma|dal|kadhi|kofta|paneer)\b', t):
-                arch = "Curry"
-            elif re.search(r'\b(roast|sukka|sabzi|pakora|tikka|chaap)\b', t):
-                arch = "Dry_Sabzi"
-            elif re.search(r'\b(bread|roti|naan|paratha)\b', t):
-                arch = "Bread"
-            elif re.search(r'\b(salad|chaat)\b', t):
-                arch = "Salad"
-            elif not is_savory and any(re.search(r'\b(cake|kheer|halwa|payasam|pudding|cookie|cookies|brownie|brownies|pastry|muffin|ladoo|laddu|barfi|dessert)\b', x) for x in [last_1, last_2, t]):
-                arch = "Dessert"
-            
+            arch = "Chicken"
+    elif has_seafood:
+        arch = "Curry" if is_vegan else "NonVegan"
+    elif has_egg:
+        if any(re.search(r'\b(fried rice|rice bowl|rice)\b', x) for x in [last_1, last_2, t]):
+            arch = "Egg"
+        else:
+            arch = "Egg"
+    # C. Vegetarian Paneer Dishes
+    elif has_paneer:
+        arch = "Paneer"
+    # D. Plant-Based / Vegetarian Suffix Matching
+    elif any(re.search(r'\b(stew|soup|broth|shorba|chowder)\b', x) for x in [last_1, last_2, t]):
+        arch = "Soup"
+    elif any(re.search(r'\b(rice bowl|rice skillet|fried rice|pulao|pulav|biryani|khichdi|rice|skillet)\b', x) for x in [last_1, last_2, last_3, t]):
+        arch = "Rice_Dish"
+    elif any(re.search(r'\b(dal|dhal|daal|tadka|sambar|rasam)\b', x) for x in [last_1, last_2, t]):
+        arch = "Curry"
+    elif any(re.search(r'\b(gravy|curry|korma|masala|saag|makhani|kofta|kadhi|karhi|salan|handi)\b', x) for x in [last_1, last_2, t]):
+        arch = "Curry"
+    elif any(re.search(r'\b(roast|fry|stir-fry|sukka|poriyal|bhaji|thoran|dry|pakora|pakoras|pakoda|tikka|chaap|sabzi|subzi)\b', x) for x in [last_1, last_2, t]):
+        arch = "Dry_Sabzi"
+    elif any(re.search(r'\b(roti|naan|paratha|kulcha|puri|bread|flatbread|wrap)\b', x) for x in [last_1, last_2, t]):
+        arch = "Bread"
+    elif any(re.search(r'\b(salad|slaw|chaat|raita)\b', x) for x in [last_1, last_2, t]):
+        arch = "Salad"
+    else:
+        arch = "Rice_Dish" if "rice" in t else ("Curry" if not is_vegan else "Vegan")
+
     # Strict Savory vs. Dessert Barrier: A savory dish must NEVER have a dessert banner
-    is_savory_dish = any(sw in (recipe_title or '').lower() for sw in SAVORY_WORDS_LIST)
-    if arch == "Dessert" and is_savory_dish:
+    if arch == "Dessert" and is_savory:
         arch = "Curry" if not is_vegan else "Vegan"
-            
+
     # Strict Vegan Protection: A vegan/plant dish must NEVER have meat/egg/biryani banners
     if is_vegan and arch in ["Chicken", "Egg", "Biryani", "NonVegan"]:
-        arch = "Rice_Dish" if ("rice" in (recipe_title or "").lower() or "biryani" in (recipe_title or "").lower() or "pulao" in (recipe_title or "").lower()) else "Vegan"
-        
+        arch = "Rice_Dish" if any(r in t for r in ["rice", "biryani", "pulao"]) else "Vegan"
+
     arch = arch if arch in UNSPLASH_CACHE else ("Vegan" if is_vegan else "Curry")
     photo_id = random.choice(UNSPLASH_CACHE[arch])
     return f"https://images.unsplash.com/photo-{photo_id}?q=80&w=1632&auto=format&fit=crop"
@@ -1751,7 +1770,7 @@ def generate_recipe(request: RecipeRequest):
             "archetype": archetype,
             "calculated_ingredients": calculated_ingredients,
             "recipe": ai_text,
-            "image_url": get_random_banner(archetype, recipe_title=clean_title, is_vegan=request.is_vegan),
+            "image_url": get_random_banner(archetype, recipe_title=clean_title, is_vegan=request.is_vegan, ingredients=calculated_ingredients),
             "is_vegan": request.is_vegan,
             "initial_cvs_score": initial_cvs_score,
             "final_cvs_score": final_cvs_score,
@@ -2237,7 +2256,7 @@ def generate_fast_qwen(request: RecipeRequest):
             "archetype": archetype,
             "calculated_ingredients": calculated_ingredients,
             "recipe": ai_text,
-            "image_url": get_random_banner(archetype, recipe_title=clean_title, is_vegan=request.is_vegan),
+            "image_url": get_random_banner(archetype, recipe_title=clean_title, is_vegan=request.is_vegan, ingredients=calculated_ingredients),
             "is_vegan": request.is_vegan,
             "initial_cvs_score": initial_cvs_score,
             "final_cvs_score": final_cvs_score,
