@@ -13,13 +13,87 @@ const INDIAN_STATES = [
   "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
 ];
 
+export const STATE_DEFAULT_INGREDIENTS = {
+  "Andaman and Nicobar Islands": ["Rice", "Coconut oil", "Fish", "Tomato", "Curry leaves"],
+  "Andhra Pradesh": ["Rice", "Toor Dal(Arhar)", "Tomato", "Chili powder", "Garlic", "Cumin seeds(Jeera)"],
+  "Arunachal Pradesh": ["Rice", "Ginger", "Garlic", "Spinach", "Mustard oil", "Green Chilli"],
+  "Assam": ["Rice", "Mustard oil", "Ginger", "Garlic", "Potato", "Spinach"],
+  "Bihar": ["Wheat flour(Atta)", "Rice", "Mustard oil", "Potato", "Tomato", "Green Chilli"],
+  "Chandigarh": ["Wheat flour(Atta)", "Paneer", "Tomato", "Onion", "Ghee", "Green Peas"],
+  "Chhattisgarh": ["Rice", "Yellow Moong Dal", "Mustard oil", "Tomato", "Spinach", "Garlic"],
+  "Dadra and Nagar Haveli and Daman and Diu": ["Rice", "Coconut", "Fish", "Tomato", "Vegetable oil"],
+  "Delhi": ["Wheat flour(Atta)", "Paneer", "Tomato", "Onion", "Garlic", "Ghee"],
+  "Goa": ["Rice", "Coconut milk", "Tomato", "Onion", "Garlic", "Black pepper"],
+  "Gujarat": ["Besan(Gram Flour)", "Rice", "Toor Dal(Arhar)", "Peanuts(Groundnut)", "Mustard seeds(Rai)", "Cumin seeds(Jeera)"],
+  "Haryana": ["Wheat flour(Atta)", "Milk", "Ghee", "Potato", "Onion", "Green Peas"],
+  "Himachal Pradesh": ["Wheat flour(Atta)", "Rice", "Mustard oil", "Curd(Yogurt)", "Garlic", "Cumin seeds(Jeera)"],
+  "Jammu and Kashmir": ["Rice", "Mustard oil", "Cardamom", "Cinnamon", "Fennel seeds(Saunf)", "Ginger"],
+  "Jharkhand": ["Rice", "Chana Dal(Bengal Gram)", "Mustard oil", "Potato", "Tomato", "Garlic"],
+  "Karnataka": ["Rice", "Toor Dal(Arhar)", "Coconut", "Mustard seeds(Rai)", "Curry leaves", "Tomato"],
+  "Kerala": ["Rice", "Coconut oil", "Coconut milk", "Curry leaves", "Mustard seeds(Rai)", "Green Chilli"],
+  "Ladakh": ["Barley(Jau)", "Wheat flour(Atta)", "Potato", "Butter", "Garlic"],
+  "Lakshadweep": ["Rice", "Coconut oil", "Fish", "Curry leaves", "Coconut"],
+  "Madhya Pradesh": ["Wheat flour(Atta)", "Poha(Beaten Rice)", "Potato", "Onion", "Garlic", "Cumin seeds(Jeera)"],
+  "Maharashtra": ["Rice", "Jowar(Sorghum)", "Peanuts(Groundnut)", "Onion", "Tomato", "Mustard seeds(Rai)"],
+  "Manipur": ["Rice", "Mustard oil", "Ginger", "Garlic", "Green Chilli", "Spinach"],
+  "Meghalaya": ["Rice", "Ginger", "Garlic", "Mustard oil", "Black pepper", "Potato"],
+  "Mizoram": ["Rice", "Mustard oil", "Ginger", "Garlic", "Green Chilli", "Spinach"],
+  "Nagaland": ["Rice", "Ginger", "Garlic", "Mustard oil", "Green Chilli", "Spinach"],
+  "Odisha": ["Rice", "Yellow Moong Dal", "Mustard oil", "Potato", "Tomato", "Eggplant"],
+  "Puducherry": ["Rice", "Toor Dal(Arhar)", "Coconut oil", "Curry leaves", "Tomato"],
+  "Punjab": ["Wheat flour(Atta)", "Paneer", "Tomato", "Onion", "Garlic", "Ghee"],
+  "Rajasthan": ["Besan(Gram Flour)", "Wheat flour(Atta)", "Ghee", "Cumin seeds(Jeera)", "Onion", "Garlic"],
+  "Sikkim": ["Rice", "Ginger", "Garlic", "Cardamom", "Spinach", "Mustard oil"],
+  "Tamil Nadu": ["Rice", "Toor Dal(Arhar)", "Tomato", "Curry leaves", "Mustard seeds(Rai)", "Tamarind"],
+  "Telangana": ["Rice", "Toor Dal(Arhar)", "Tomato", "Chili powder", "Garlic", "Onion"],
+  "Tripura": ["Rice", "Mustard oil", "Ginger", "Garlic", "Potato", "Green Chilli"],
+  "Uttar Pradesh": ["Wheat flour(Atta)", "Rice", "Potato", "Mustard oil", "Tomato", "Garlic"],
+  "Uttarakhand": ["Rice", "Ragi(Finger Millet)", "Mustard oil", "Potato", "Garlic", "Ginger"],
+  "West Bengal": ["Rice", "Mustard oil", "Potato", "Tomato", "Turmeric powder", "Cumin seeds(Jeera)"]
+};
+
 const CATEGORIZED_INGREDIENTS = {
-  "Vegetables": ["Tomato", "Onion", "Garlic", "Carrot", "Bell pepper", "Potato", "Spinach", "Mushroom", "Zucchini", "Cucumber", "Cabbage", "Asparagus", "Broccoli", "Cauliflower", "Eggplant", "Sweet potato", "Radish"],
-  "Meat & Seafood": ["Chicken breast", "Chicken", "Ground beef", "Beef", "Pork", "Bacon", "Sausage", "Shrimp", "Salmon", "Anchovy", "Prosciutto"],
-  "Dairy & Eggs": ["Egg", "Milk", "Butter", "Parmesan cheese", "Cheddar cheese", "Heavy cream", "Mozzarella cheese", "Sour cream", "Cream cheese", "Yogurt", "Feta cheese", "Ghee"],
-  "Oils & Liquids": ["Olive oil", "Vegetable oil", "Soy sauce", "Water", "Lemon juice", "Balsamic vinegar", "White wine", "Chicken broth", "Vinegar", "Sesame oil", "Apple cider vinegar", "Red wine vinegar", "Lime juice", "Beef broth", "Canola oil", "Coconut oil", "Avocado oil"],
-  "Spices & Herbs": ["Salt", "Black pepper", "Parsley", "Cumin", "Paprika", "Oregano", "Cilantro", "Cinnamon", "Red pepper flakes", "Chili powder", "Basil", "Garlic powder", "Ginger", "Thyme", "Cayenne pepper", "Nutmeg", "Coriander", "Rosemary", "Mint", "Clove", "White pepper", "Allspice", "Turmeric", "Dill", "Fennel", "Cardamom", "Saffron", "Garam masala", "Curry powder"],
-  "Pantry & Others": ["Sugar", "Flour", "Brown sugar", "Vanilla extract", "Mayonnaise", "Baking powder", "Honey", "Baking soda", "Cornstarch", "Mustard", "Almonds", "Peanut butter", "Maple syrup", "Tomato paste", "Bread crumbs", "Walnut", "Chocolate chips", "Peanuts", "Cocoa powder", "Oats", "Coconut milk", "Sesame seeds", "Ketchup", "Rice", "Pasta", "Chickpeas", "Bread"]
+  "Vegetables": [
+    "Tomato", "Onion", "Garlic", "Ginger", "Potato", "Spinach", "Green Chilli",
+    "Carrot", "Bell pepper", "Cauliflower", "Cabbage", "Green Peas", "Eggplant",
+    "Bhindi(Ladies Finger)", "Bottle gourd(Lauki)", "Bitter gourd(Karela)",
+    "Ridgeguard(Tori)", "Pointed gourd(Parval)", "Pumpkin", "Cucumber", "Radish",
+    "Mushroom", "Sweet potato", "Beetroot", "Drumstick", "Elephant Yam(Suran)",
+    "Colocasia(Arbi)", "Fenugreek leaves(Methi)", "Mint leaves(Pudina)", "Coriander leaves"
+  ],
+  "Pulses & Lentils": [
+    "Toor Dal(Arhar)", "Yellow Moong Dal", "Moong Dal(Whole)", "Chana Dal(Bengal Gram)",
+    "Urad Dal(Black Gram)", "Masur Dal(Lentil)", "Chickpeas(Kabuli Chana)", "Rajma(Kidney Beans)",
+    "Cowpea(Lobia)", "Green Peas(Dry)", "Soyabean", "Horse Gram(Kulthi)"
+  ],
+  "Grains & Millets": [
+    "Rice", "Basmati Rice", "Wheat flour(Atta)", "Maida Atta", "Poha(Beaten Rice)",
+    "Besan(Gram Flour)", "Bajra(Pearl Millet)", "Jowar(Sorghum)", "Ragi(Finger Millet)",
+    "Barley(Jau)", "Maize(Corn)", "Sabu Dana(Tapioca)", "Oats", "Bread", "Pasta"
+  ],
+  "Dairy & Plant Proteins": [
+    "Paneer", "Tofu", "Soya chunks", "Milk", "Curd(Yogurt)", "Butter", "Ghee",
+    "Heavy cream", "Cheese", "Cottage cheese"
+  ],
+  "Spices & Seasonings": [
+    "Salt", "Turmeric powder", "Cumin seeds(Jeera)", "Mustard seeds(Rai)",
+    "Coriander powder", "Garam masala", "Chili powder", "Black pepper",
+    "Fenugreek seeds(Methi)", "Fennel seeds(Saunf)", "Ajwain(Carom)",
+    "Cardamom", "Cinnamon", "Cloves", "Bay leaf(Tejpatta)", "Kasuri Methi",
+    "Curry leaves", "Chaat Masala", "Amchur(Dry Mango)", "Tamarind",
+    "Hing(Asafoetida)", "Saffron", "Star anise", "Nutmeg", "Paprika", "Oregano", "Basil"
+  ],
+  "Oils & Liquids": [
+    "Mustard oil", "Coconut oil", "Groundnut oil", "Sesame oil", "Sunflower oil",
+    "Vegetable oil", "Olive oil", "Lemon juice", "Soy sauce", "Vinegar", "Coconut milk"
+  ],
+  "Nuts & Dry Fruits": [
+    "Almond(Badam)", "Cashewnuts(Kaju)", "Peanuts(Groundnut)", "Coconut",
+    "Dry Grapes(Raisins)", "Walnut", "Dates", "Foxnut(Makhana)", "Sesame seeds(Til)"
+  ],
+  "Meat & Seafood": [
+    "Egg", "Chicken", "Chicken breast", "Mutton", "Fish", "Shrimp", "Salmon", "Pork"
+  ]
 };
 const COMMON_INGREDIENTS = Object.values(CATEGORIZED_INGREDIENTS).flat();
 
@@ -614,6 +688,14 @@ const CURATED_FEATURED_RECIPES = [
 const isGroqRecipe = (doc) => {
   if (!doc || !doc.recipe) return false;
   const rec = doc.recipe;
+  // Guard: Reject recipes where cost breakdown overstepped the target budget
+  if (rec.cost_breakdown && rec.budget) {
+    const spent = Number(rec.cost_breakdown.total_spent || rec.cost_breakdown.total_cost || 0);
+    const budget = Number(rec.budget || 0);
+    if (spent > 0 && budget > 0 && spent > budget + 0.5) {
+      return false; // Skip overstepped budget recipe
+    }
+  }
   // Accept all community recipes with valid instructions or calculated ingredients
   if (typeof rec.recipe === 'string' && rec.recipe.trim().length > 15) return true;
   if (Array.isArray(rec.calculated_ingredients) && rec.calculated_ingredients.length > 0) return true;
@@ -710,7 +792,14 @@ function App() {
   const [username, setUsername] = useState('');
   
   // Form State
-  const [ingredients, setIngredients] = useState(['Rice', 'Egg', 'Potato', 'Tomato', 'Onion']);
+  const [ingredients, setIngredients] = useState(STATE_DEFAULT_INGREDIENTS['Delhi'] || ['Wheat flour(Atta)', 'Paneer', 'Tomato', 'Onion', 'Garlic', 'Ghee']);
+  
+  const handleStateChange = (newState) => {
+    setStateName(newState);
+    if (STATE_DEFAULT_INGREDIENTS[newState]) {
+      setIngredients(STATE_DEFAULT_INGREDIENTS[newState]);
+    }
+  };
   const [budget, setBudget] = useState(150);
   const [servings, setServings] = useState(1);
   const [stateName, setStateName] = useState('Delhi');
@@ -1111,6 +1200,28 @@ function App() {
           <div className="search-container">
             <div className="search-bar-wrapper">
               <MultiSelectIngredient selected={ingredients} setSelected={setIngredients} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.4rem', padding: '0 0.25rem', fontSize: '0.85rem' }}>
+                <span style={{ color: '#6b7280' }}>
+                  📍 Regional Staples: <strong style={{ color: 'var(--text-main)' }}>{stateName}</strong>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIngredients(STATE_DEFAULT_INGREDIENTS[stateName] || ['Rice', 'Potato', 'Tomato', 'Onion'])}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#ea580c',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    fontSize: '0.82rem',
+                    padding: '2px 6px',
+                    textDecoration: 'underline'
+                  }}
+                  title={`Load authentic staple ingredients for ${stateName}`}
+                >
+                  ↺ Load {stateName} Staples
+                </button>
+              </div>
             </div>
 
             <div className="controls-row">
@@ -1136,7 +1247,7 @@ function App() {
                 <label>Region</label>
                 <select 
                   value={stateName} 
-                  onChange={(e) => setStateName(e.target.value)}
+                  onChange={(e) => handleStateChange(e.target.value)}
                   style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: '1rem', color: 'var(--text-main)', cursor: 'pointer' }}
                 >
                   {INDIAN_STATES.map(state => (

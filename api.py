@@ -820,15 +820,26 @@ def get_dynamic_price(clean_ingredient, user_state, skip_llm=False):
 # ============================================================
 CONDIMENT_CLASSES = {
     "intense_spice": {
-        "items": ["salt", "black pepper", "white pepper", "chili powder", "cayenne pepper",
-                  "red pepper flakes", "clove", "cinnamon", "cardamom", "nutmeg", "saffron"],
+        "items": [
+            "salt", "black pepper", "white pepper", "chili powder", "cayenne pepper",
+            "red pepper flakes", "clove", "cloves", "cinnamon", "cardamom", "cardamoms",
+            "nutmeg", "saffron", "saffron strands", "black peppercorns", "peppercorns",
+            "red chilli powder", "red chili powder", "chilli powder", "hing", "asafoetida", "star anise"
+        ],
         "base_lower": 0.5,
         "base_upper": 2.5
     },
     "aromatic_spice": {
-        "items": ["garlic powder", "onion powder", "ginger powder", "cumin", "turmeric",
-                  "coriander", "coriander powder", "paprika", "garam masala", "curry powder",
-                  "oregano", "basil", "thyme", "rosemary", "dill", "fennel", "allspice", "mint"],
+        "items": [
+            "garlic powder", "onion powder", "ginger powder", "cumin", "cumin seeds", "jeera",
+            "turmeric", "turmeric powder", "haldi", "coriander", "coriander powder", "coriander seeds",
+            "paprika", "garam masala", "curry powder", "oregano", "basil", "thyme", "rosemary",
+            "dill", "fennel", "fennel seeds", "saunf", "allspice", "mint", "mint leaves", "fresh mint",
+            "fenugreek seeds", "methi seeds", "kasuri methi", "curry leaves", "fresh curry leaves",
+            "chaat masala", "chana masala", "biryani masala", "kitchen king", "amchur", "dried mango powder",
+            "mustard seeds", "rai", "ajwain", "carom seeds", "bay leaf", "bay leaves", "tejpatta",
+            "cilantro", "fresh cilantro", "coriander leaves"
+        ],
         "base_lower": 1.0,
         "base_upper": 4.0
     },
@@ -838,8 +849,10 @@ CONDIMENT_CLASSES = {
         "base_upper": 5.0
     },
     "wet_condiment": {
-        "items": ["mustard", "ketchup", "soy sauce", "vinegar", "balsamic vinegar",
-                  "apple cider vinegar", "red wine vinegar", "lemon juice", "lime juice"],
+        "items": [
+            "mustard", "ketchup", "soy sauce", "vinegar", "balsamic vinegar",
+            "apple cider vinegar", "red wine vinegar", "lemon juice", "lime juice"
+        ],
         "base_lower": 3.0,
         "base_upper": 10.0
     }
@@ -888,7 +901,7 @@ def get_condiment_category(clean_name: str):
     clean = clean_name.lower().strip()
     for cat, data in CONDIMENT_CLASSES.items():
         for item in data["items"]:
-            if item == clean or clean.endswith(" " + item):
+            if item == clean or clean.startswith(item + " ") or clean.endswith(" " + item) or f" {item} " in f" {clean} ":
                 return cat
     return None
 
@@ -1266,10 +1279,23 @@ async def get_my_recipes(username: str):
     recipes = await cursor.to_list(length=50)
     
     # Convert MongoDB ObjectId to string for JSON serialization
+    valid_recipes = []
     for r in recipes:
         r["_id"] = str(r["_id"])
+        rec_data = r.get("recipe", {})
+        if isinstance(rec_data, dict):
+            cost_info = rec_data.get("cost_breakdown", {})
+            spent = cost_info.get("total_spent") or cost_info.get("total_cost")
+            budget = rec_data.get("budget")
+            if spent is not None and budget is not None:
+                try:
+                    if float(spent) > float(budget) + 0.5:
+                        continue
+                except Exception:
+                    pass
+        valid_recipes.append(r)
         
-    return {"status": "success", "recipes": recipes}
+    return {"status": "success", "recipes": valid_recipes}
 
 @app.get("/all-recipes")
 async def get_all_recipes():
@@ -1280,10 +1306,24 @@ async def get_all_recipes():
     cursor = recipes_collection.find({}).sort("created_at", -1)
     recipes = await cursor.to_list(length=200)
     
+    valid_recipes = []
     for r in recipes:
         r["_id"] = str(r["_id"])
+        # Guard: Filter out recipes where cost exceeded target budget
+        rec_data = r.get("recipe", {})
+        if isinstance(rec_data, dict):
+            cost_info = rec_data.get("cost_breakdown", {})
+            spent = cost_info.get("total_spent") or cost_info.get("total_cost")
+            budget = rec_data.get("budget")
+            if spent is not None and budget is not None:
+                try:
+                    if float(spent) > float(budget) + 0.5:
+                        continue
+                except Exception:
+                    pass
+        valid_recipes.append(r)
         
-    return {"status": "success", "recipes": recipes}
+    return {"status": "success", "recipes": valid_recipes}
 
 
 # ============================================================
