@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
-import { Search, X, ShoppingBasket, QrCode, Link as LinkIcon, Share2, Globe, Check } from 'lucide-react';
+import { Search, X, ShoppingBasket, QrCode, Link as LinkIcon, Share2, Globe, Check, ClipboardList } from 'lucide-react';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8000' : 'https://ratatouille-backend.onrender.com');
 
@@ -812,6 +812,42 @@ export const cleanRecipeInstructions = (recipeText) => {
   return steps;
 };
 
+export const buildFullRecipeText = (rec, shareUrl = 'https://cosylab.iiitd.edu.in/ratatouille') => {
+  if (!rec) return '';
+  const title = cleanRecipeTitle(rec.recipe || rec.title);
+  const isVeg = rec.is_vegan || isPlantBased(rec.calculated_ingredients, rec.recipe);
+  const budget = rec.budget || (rec.cost_breakdown && rec.cost_breakdown.budget);
+  const spent = rec.cost_breakdown && rec.cost_breakdown.total_cost;
+  const servings = rec.servings || 1;
+  const ingredients = Array.isArray(rec.calculated_ingredients) ? rec.calculated_ingredients : [];
+  const steps = cleanRecipeInstructions(rec.recipe);
+
+  let text = `🍲 *${title}*\n`;
+  text += `${isVeg ? '🌱 Vegan' : (rec.archetype || 'Delicious Recipe')} | 🍽️ Servings: ${servings}\n`;
+  if (budget || spent) {
+    text += `💰 Budget: ₹${budget || 'N/A'}${spent ? ` | Est. Cost: ₹${spent}` : ''}\n`;
+  }
+  
+  text += `\n🛒 *INGREDIENTS:*\n`;
+  if (ingredients.length > 0) {
+    ingredients.forEach(ing => {
+      text += `• ${ing}\n`;
+    });
+  } else {
+    text += `• See recipe details online\n`;
+  }
+
+  if (steps.length > 0) {
+    text += `\n👩‍🍳 *DIRECTIONS:*\n`;
+    steps.forEach((step, idx) => {
+      text += `${step.num || (idx + 1)}. ${step.text}\n`;
+    });
+  }
+
+  text += `\n🤖 Generated with Ratatouille AI (CoSyLaB, IIIT Delhi)\n🔗 Recreate this dish: ${shareUrl}`;
+  return text;
+};
+
 function App() {
   const [viewMode, setViewMode] = useState('generate'); // 'generate' | 'community' | 'history'
   const [username, setUsername] = useState('');
@@ -867,11 +903,21 @@ function App() {
     setTimeout(() => setShareCopiedToast(''), 2500);
   };
 
-  const handleCopyInstagramCaption = (rec) => {
-    const title = cleanRecipeTitle(rec.recipe || rec.title);
-    const ingredients = (rec.calculated_ingredients || []).slice(0, 5).map(i => typeof i === 'string' ? i.replace(/^\d+(\.\d+)?g\s+/i, '') : i).join(', ');
+  const handleCopyCompleteRecipe = (rec) => {
     const shareUrl = typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://cosylab.iiitd.edu.in/ratatouille';
-    const caption = `🍽️ Made this recipe: ${title}!\n\n✨ Key Ingredients: ${ingredients}\n\n🤖 Powered by Ratatouille AI - Computational Gastronomy at CoSyLaB, IIIT Delhi.\n🔗 Try it out: ${shareUrl}\n\n#RatatouilleAI #ComputationalGastronomy #IIITDelhi #FoodAI #Recipe`;
+    const text = buildFullRecipeText(rec, shareUrl);
+    navigator.clipboard.writeText(text);
+    setShareCopiedToast('full');
+    setTimeout(() => setShareCopiedToast(''), 2500);
+  };
+
+  const handleCopyInstagramCaption = (rec) => {
+    const shareUrl = typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://cosylab.iiitd.edu.in/ratatouille';
+    const title = cleanRecipeTitle(rec.recipe || rec.title);
+    const budget = rec.budget || (rec.cost_breakdown && rec.cost_breakdown.budget);
+    const spent = rec.cost_breakdown && rec.cost_breakdown.total_cost;
+    const ingredients = (rec.calculated_ingredients || []).map(i => typeof i === 'string' ? i : String(i)).join('\n• ');
+    const caption = `🍽️ Made this dish: ${title}!\n💰 Budget: ₹${budget || 'N/A'}${spent ? ` | Est. Cost: ₹${spent}` : ''}\n\n🛒 Ingredients:\n• ${ingredients}\n\n🤖 Powered by Ratatouille AI - Computational Gastronomy at CoSyLaB, IIIT Delhi.\n🔗 Try it out: ${shareUrl}\n\n#RatatouilleAI #ComputationalGastronomy #IIITDelhi #FoodAI #Recipe`;
     navigator.clipboard.writeText(caption);
     setShareCopiedToast('insta');
     setTimeout(() => setShareCopiedToast(''), 2500);
@@ -2205,6 +2251,58 @@ function App() {
               </div>
             </div>
 
+            {/* Complete Budget & Cost Breakdown Row */}
+            <div className="share-budget-bar">
+              {(shareModalRecipe.budget || (shareModalRecipe.cost_breakdown && shareModalRecipe.cost_breakdown.budget)) ? (
+                <span className="share-stat-pill share-stat-budget">
+                  💰 Budget: ₹{shareModalRecipe.budget || shareModalRecipe.cost_breakdown.budget}
+                </span>
+              ) : null}
+              {shareModalRecipe.cost_breakdown && shareModalRecipe.cost_breakdown.total_cost ? (
+                <span className="share-stat-pill share-stat-cost">
+                  🏷️ Est. Cost: ₹{shareModalRecipe.cost_breakdown.total_cost}
+                </span>
+              ) : null}
+              <span className="share-stat-pill share-stat-servings">
+                🍽️ {shareModalRecipe.servings || 1} Serving{(shareModalRecipe.servings || 1) > 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {/* Complete Ingredients List Preview */}
+            {Array.isArray(shareModalRecipe.calculated_ingredients) && shareModalRecipe.calculated_ingredients.length > 0 && (
+              <div className="share-ingredients-section">
+                <div className="share-section-title">
+                  <span>Complete Ingredients ({shareModalRecipe.calculated_ingredients.length})</span>
+                </div>
+                <div className="share-ingredients-preview">
+                  {shareModalRecipe.calculated_ingredients.map((ing, i) => (
+                    <span key={i} className="share-ing-chip">
+                      {typeof ing === 'string' ? ing : String(ing)}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Primary Copy Complete Recipe Button */}
+            <button 
+              type="button"
+              className={`share-full-copy-btn ${shareCopiedToast === 'full' ? 'copied' : ''}`}
+              onClick={() => handleCopyCompleteRecipe(shareModalRecipe)}
+            >
+              {shareCopiedToast === 'full' ? (
+                <>
+                  <Check size={18} />
+                  <span>Complete Recipe & Budget Copied! ✓</span>
+                </>
+              ) : (
+                <>
+                  <ClipboardList size={18} />
+                  <span>Copy Complete Recipe & Budget 📋</span>
+                </>
+              )}
+            </button>
+
             <div className="share-platform-grid">
               {/* X / Twitter */}
               <a 
@@ -2241,10 +2339,11 @@ function App() {
 
               {/* WhatsApp */}
               <a 
-                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out this recipe: *${shareModalRecipe.title || cleanRecipeTitle(shareModalRecipe.recipe)}* generated with Ratatouille AI!\n${typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://cosylab.iiitd.edu.in/ratatouille'}`)}`}
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(buildFullRecipeText(shareModalRecipe, typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'https://cosylab.iiitd.edu.in/ratatouille'))}`}
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="share-platform-btn share-btn-whatsapp"
+                title="Share full recipe, budget and ingredients on WhatsApp"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#ffffff"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
                 <span>WhatsApp</span>
@@ -2290,10 +2389,16 @@ function App() {
               </div>
             </div>
 
+            {shareCopiedToast === 'full' && (
+              <div className="share-toast">
+                <Check size={16} style={{ color: '#10b981' }} />
+                <span>Complete Recipe & Budget copied to clipboard!</span>
+              </div>
+            )}
             {shareCopiedToast === 'insta' && (
               <div className="share-toast">
                 <Check size={16} style={{ color: '#10b981' }} />
-                <span>Instagram caption copied to clipboard!</span>
+                <span>Instagram caption with budget & ingredients copied!</span>
               </div>
             )}
             {shareCopiedToast === 'link' && (
