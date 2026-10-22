@@ -376,9 +376,10 @@ UNSPLASH_CACHE = {
         "1578020190125-f4f7c18bc9cb"   # Hearty stew dish
     ],
     "Rice_Dish": [
-        "1596797038530-2c107229654b",
-        "1563379091339-03b21ab4a4f8",
-        "1589302168068-964664d93dc0"
+        "1596797038530-2c107229654b",  # Cilantro lime veggie rice bowl
+        "1512058564366-18510be2db19",  # Colorful Asian vegetable fried rice bowl
+        "1536304929831-ee1ca9d44906",  # Aromatic basmati herb rice bowl
+        "1574484284002-952d92456975"   # Golden turmeric vegetable pulao bowl
     ],
     "Dry_Sabzi": [
         "1546833999-b9f581a1996d",
@@ -407,25 +408,33 @@ def get_random_banner(archetype, recipe_title=None, is_vegan=False):
         t = recipe_title.lower()
         if re.search(r'\b(stew|soup|broth|shorba|chowder|potage|laksa)\b', t):
             arch = "Soup"
-        elif re.search(r'\b(biryani|pulao|pilaf)\b', t):
+        elif not is_vegan and (re.search(r'\b(biryani)\b', t) or ('rice' in t and re.search(r'\b(chicken|mutton|meat)\b', t))):
             arch = "Biryani"
-        elif re.search(r'\b(fried rice|khichdi|rice bowl|rice)\b', t):
+        elif not is_vegan and re.search(r'\b(chicken|mutton|meat|lamb|kebab)\b', t):
+            arch = "Chicken"
+        elif not is_vegan and re.search(r'\b(egg|omelette|anda|bhurji)\b', t):
+            arch = "Egg"
+        elif not is_vegan and re.search(r'\b(fish|catfish|prawn|shrimp|seafood|pork|beef|bacon|sausage)\b', t):
+            arch = "NonVegan"
+        elif re.search(r'\b(salad|chaat|slaw)\b', t):
+            arch = "Salad"
+        elif re.search(r'\b(biryani|pulao)\b', t):
+            arch = "Rice_Dish" if is_vegan else "Biryani"
+        elif re.search(r'\b(fried rice|khichdi|rice bowl|pilaf|rice)\b', t):
             arch = "Rice_Dish"
+        elif re.search(r'\b(naan|roti|paratha|puri|bread|chapati)\b', t):
+            arch = "Bread"
+        elif not re.search(r'\b(stew|soup|curry|masala|dal|rice|sabzi|veggie|vegetable)\b', t) and re.search(r'\b(cake|kheer|halwa|pudding|cookie|brownie|dessert|sweet)\b', t):
+            arch = "Dessert"
         elif re.search(r'\b(curry|gravy|masala|korma|tikka|dal|sambar|rasam|paneer)\b', t):
             arch = "Curry"
         elif re.search(r'\b(sabzi|stir-fry|roast|fry|bhaji|dry|poriyal|sukka)\b', t):
             arch = "Dry_Sabzi"
-        elif re.search(r'\b(naan|roti|paratha|puri|bread|chapati)\b', t):
-            arch = "Bread"
-        elif re.search(r'\b(salad|chaat|slaw)\b', t):
-            arch = "Salad"
-        elif re.search(r'\b(cake|kheer|halwa|pudding|cookie|brownie|dessert|sweet)\b', t):
-            arch = "Dessert"
             
-    if is_vegan and arch in ["Chicken", "Egg", "NonVegan"]:
-        arch = "Vegan"
+    if is_vegan and arch in ["Chicken", "Egg", "Biryani", "NonVegan"]:
+        arch = "Rice_Dish" if ("rice" in (recipe_title or "").lower() or "biryani" in (recipe_title or "").lower() or "pulao" in (recipe_title or "").lower()) else "Vegan"
         
-    arch = arch if arch in UNSPLASH_CACHE else "Curry"
+    arch = arch if arch in UNSPLASH_CACHE else ("Vegan" if is_vegan else "Curry")
     photo_id = random.choice(UNSPLASH_CACHE[arch])
     return f"https://images.unsplash.com/photo-{photo_id}?q=80&w=1632&auto=format&fit=crop"
 
@@ -1230,17 +1239,9 @@ async def get_all_recipes():
     if recipes_collection is None:
         return {"status": "error", "message": "Database not connected on the server."}
     
-    # Fetch recent high-quality Groq model generated recipes only (excluding old legacy V8/V10 runs)
-    query = {
-        "$or": [
-            {"recipe.archetype": {"$in": ["Agentic Vegan", "Budget Qwen", "Fast Qwen", "Groq Guardrails", "Groq Budget"]}},
-            {"recipe.agentic_attempts": {"$exists": True, "$ne": None}},
-            {"username": {"$regex": "groq", "$options": "i"}},
-            {"recipe.model": {"$regex": "qwen|groq|mixtral|llama", "$options": "i"}}
-        ]
-    }
-    cursor = recipes_collection.find(query).sort("created_at", -1)
-    recipes = await cursor.to_list(length=100)
+    # Fetch all community recipes sorted by newest first
+    cursor = recipes_collection.find({}).sort("created_at", -1)
+    recipes = await cursor.to_list(length=200)
     
     for r in recipes:
         r["_id"] = str(r["_id"])

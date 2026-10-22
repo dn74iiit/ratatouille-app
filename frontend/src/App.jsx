@@ -76,9 +76,10 @@ const UNSPLASH_CACHE = {
         "1578020190125-f4f7c18bc9cb"  // Hearty stew dish
     ],
     "Rice_Dish": [
-        "1596797038530-2c107229654b",
-        "1563379091339-03b21ab4a4f8",
-        "1589302168068-964664d93dc0"
+        "1596797038530-2c107229654b", // Fresh cilantro lime vegetable rice bowl
+        "1512058564366-18510be2db19", // Colorful Asian vegetable fried rice bowl
+        "1536304929831-ee1ca9d44906", // Aromatic basmati herb rice bowl
+        "1574484284002-952d92456975"  // Golden turmeric vegetable pulao bowl
     ],
     "Dry_Sabzi": [
         "1546833999-b9f581a1996d",
@@ -93,6 +94,68 @@ const UNSPLASH_CACHE = {
         "1546833999-b9f581a1996d"
     ]
 };
+
+const NON_VEG_WORDS = [
+    "chicken", "mutton", "meat", "lamb", "beef", "pork", "bacon", "sausage", 
+    "fish", "catfish", "salmon", "tuna", "cod", "prawn", "prawns", "shrimp", "shrimps",
+    "seafood", "crab", "lobster", "anchovy", "egg", "eggs", "anda", "bhurji", "omelette",
+    "milk", "cheese", "paneer", "butter", "ghee", "curd", "yogurt", "cream", 
+    "malai", "mayo", "mayonnaise", "honey", "gelatin"
+];
+
+export const isPlantBased = (ingredients = [], recipeText = "") => {
+    const raw = typeof recipeText === 'string' ? recipeText : String(recipeText || '');
+    const titleMatch = raw.match(/### TITLE:\s*([^\n\r]+)/i);
+    const title = (titleMatch ? titleMatch[1] : raw.split(/\r?\n/)[0]).toLowerCase();
+
+    for (const kw of NON_VEG_WORDS) {
+        const regex = new RegExp(`\\b${kw}\\b`, 'i');
+        if (regex.test(title)) {
+            if (kw === "milk" && /coconut milk|soy milk|almond milk|oat milk/i.test(title)) continue;
+            if (kw === "cheese" && /vegan cheese/i.test(title)) continue;
+            if (kw === "butter" && /peanut butter|vegan butter|almond butter/i.test(title)) continue;
+            if (kw === "cream" && /coconut cream|cashew cream|vegan cream/i.test(title)) continue;
+            return false;
+        }
+    }
+
+    const ingList = Array.isArray(ingredients) ? ingredients : [];
+    if (ingList.length > 0) {
+        for (const ing of ingList) {
+            const ingStr = String(ing).toLowerCase();
+            for (const kw of NON_VEG_WORDS) {
+                const regex = new RegExp(`\\b${kw}\\b`, 'i');
+                if (regex.test(ingStr)) {
+                    if (kw === "milk" && /coconut milk|soy milk|almond milk|oat milk/i.test(ingStr)) continue;
+                    if (kw === "cheese" && /vegan cheese/i.test(ingStr)) continue;
+                    if (kw === "butter" && /peanut butter|vegan butter|almond butter/i.test(ingStr)) continue;
+                    if (kw === "cream" && /coconut cream|cashew cream|vegan cream/i.test(ingStr)) continue;
+                    return false;
+                }
+            }
+        }
+    } else if (raw) {
+        const lowerRaw = raw.toLowerCase();
+        for (const kw of NON_VEG_WORDS) {
+            const regex = new RegExp(`\\b${kw}\\b`, 'i');
+            if (regex.test(lowerRaw)) {
+                if (kw === "milk" && /coconut milk|soy milk|almond milk|oat milk/i.test(lowerRaw)) continue;
+                if (kw === "cheese" && /vegan cheese/i.test(lowerRaw)) continue;
+                if (kw === "butter" && /peanut butter|vegan butter|almond butter/i.test(lowerRaw)) continue;
+                if (kw === "cream" && /coconut cream|cashew cream|vegan cream/i.test(lowerRaw)) continue;
+                if (kw === "meat" && /meat texture|meat substitute|plant meat|like meat/i.test(lowerRaw)) continue;
+                return false;
+            }
+        }
+    }
+    return true;
+};
+
+const BANNED_MEAT_PHOTO_IDS = [
+    "1563379091339", "1589302168068", "1541832676", "1598515214211", 
+    "1604908176997", "1626082927389", "1562967914", "1525351484163", 
+    "1565299585323", "1587314168485", "1578985545062"
+];
 
 const getRandomBanner = (archetype, isVegan = false, recipeTitle = "") => {
     let raw = (recipeTitle || "");
@@ -117,7 +180,7 @@ const getRandomBanner = (archetype, isVegan = false, recipeTitle = "") => {
     } else if (/\b(salad|chaat|slaw)\b/.test(t)) {
         arch = "Salad";
     } else if (/\b(biryani|pulao)\b/.test(t)) {
-        arch = isVegan ? "Vegan" : "Biryani";
+        arch = isVegan ? "Rice_Dish" : "Biryani";
     } else if (/\b(fried rice|khichdi|rice bowl|pilaf|rice)\b/.test(t)) {
         arch = "Rice_Dish";
     } else if (/\b(bread|roti|naan|paratha|puri|chapati)\b/.test(t)) {
@@ -140,7 +203,7 @@ const getRandomBanner = (archetype, isVegan = false, recipeTitle = "") => {
         arch = isVegan ? "Vegan" : "Curry";
     }
 
-    // Vegan safety guard
+    // Vegan safety guard: never allow meat photos for vegan/plant dishes
     if (isVegan && (arch === "Chicken" || arch === "Egg" || arch === "Biryani" || arch === "NonVegan")) {
         arch = "Vegan";
     }
@@ -158,24 +221,30 @@ const getRandomBanner = (archetype, isVegan = false, recipeTitle = "") => {
     return `https://images.unsplash.com/photo-${photoId}?q=80&w=1632&auto=format&fit=crop`;
 };
 
-const resolveRecipeImage = (imageUrl, archetype, isVegan, recipeText) => {
-    // If imageUrl contains the banned toy birthday cake photo ID, reject it
-    if (imageUrl && imageUrl.includes("1578985545062")) {
-        return getRandomBanner(archetype, isVegan, recipeText);
-    }
-    // If imageUrl is already a dessert image but recipe is savory, override
+const resolveRecipeImage = (imageUrl, archetype, isVegan, recipeText, ingredients = []) => {
+    const isPlant = isVegan || isPlantBased(ingredients, recipeText);
+    
+    // If imageUrl contains a banned meat photo or banned cake photo on a plant-based recipe:
     if (imageUrl) {
+        if (imageUrl.includes("1578985545062")) {
+            return getRandomBanner(archetype, isPlant, recipeText);
+        }
+        if (isPlant && BANNED_MEAT_PHOTO_IDS.some(id => imageUrl.includes(id))) {
+            return getRandomBanner(archetype, true, recipeText);
+        }
+        
+        // If imageUrl is already a dessert image but recipe is savory, override
         const raw = recipeText || "";
         const titleMatch = raw.match(/### TITLE:\s*([^\n\r]+)/i);
         const title = (titleMatch ? titleMatch[1] : raw.split(/\r?\n/)[0]).toLowerCase();
         const isSavory = /\b(stew|soup|broth|curry|gravy|masala|sabzi|dal|sambar|rasam|rice|khichdi|biryani|pulao|vegetable|veggie|potato|pepper|onion|garlic)\b/.test(title);
         const isDessertImg = UNSPLASH_CACHE["Dessert"]?.some(id => imageUrl.includes(id));
         if (isSavory && isDessertImg) {
-            return getRandomBanner(archetype, isVegan, recipeText);
+            return getRandomBanner(archetype, isPlant, recipeText);
         }
         return imageUrl;
     }
-    return getRandomBanner(archetype, isVegan, recipeText);
+    return getRandomBanner(archetype, isPlant, recipeText);
 };
 
 function MultiSelectIngredient({ selected, setSelected }) {
@@ -486,7 +555,7 @@ const CURATED_FEATURED_RECIPES = [
       is_vegan: true,
       budget: 55,
       model: "qwen-2.5-32b",
-      image_url: "https://images.unsplash.com/photo-1589302168068-964664d93dc0?q=80&w=1632&auto=format&fit=crop"
+      image_url: "https://images.unsplash.com/photo-1574484284002-952d92456975?q=80&w=1632&auto=format&fit=crop"
     }
   },
   {
@@ -520,17 +589,10 @@ const CURATED_FEATURED_RECIPES = [
 const isGroqRecipe = (doc) => {
   if (!doc || !doc.recipe) return false;
   const rec = doc.recipe;
-  const arch = rec.archetype || '';
-  const model = rec.model || '';
-  const user = doc.username || '';
-  const allowed = ['Agentic Vegan', 'Budget Qwen', 'Fast Qwen', 'Groq Guardrails', 'Groq Budget'];
-  return allowed.includes(arch) ||
-         arch.toLowerCase().includes('qwen') ||
-         arch.toLowerCase().includes('groq') ||
-         model.toLowerCase().includes('qwen') ||
-         model.toLowerCase().includes('groq') ||
-         user.toLowerCase().includes('groq') ||
-         rec.agentic_attempts !== undefined;
+  // Accept all community recipes with valid instructions or calculated ingredients
+  if (typeof rec.recipe === 'string' && rec.recipe.trim().length > 15) return true;
+  if (Array.isArray(rec.calculated_ingredients) && rec.calculated_ingredients.length > 0) return true;
+  return false;
 };
 
 export const cleanRecipeTitle = (recipeText) => {
@@ -945,10 +1007,12 @@ function App() {
     const candidates = pool.length > 0 ? pool : CURATED_FEATURED_RECIPES;
     const randomDoc = candidates[Math.floor(Math.random() * candidates.length)];
     const rec = randomDoc.recipe;
-    const imgUrl = resolveRecipeImage(rec.image_url, rec.archetype, rec.is_vegan, rec.recipe);
+    const isVeg = rec.is_vegan || isPlantBased(rec.calculated_ingredients, rec.recipe);
+    const imgUrl = resolveRecipeImage(rec.image_url, rec.archetype, isVeg, rec.recipe, rec.calculated_ingredients);
     setResult({
       ...rec,
       image_url: imgUrl,
+      is_vegan: isVeg,
       isSurprise: true
     });
   };
@@ -1153,10 +1217,11 @@ function App() {
                 <div className="chips-container marquee-content">
                   {globalRecipes.filter(isGroqRecipe).slice(0, 20).map((doc, idx) => {
                      const title = cleanRecipeTitle(doc.recipe?.recipe);
+                     const isVeg = doc.recipe?.is_vegan || isPlantBased(doc.recipe?.calculated_ingredients, doc.recipe?.recipe);
                      return (
                        <div key={`a-${idx}`} className="chip" onClick={() => {
-                         const imgUrl = resolveRecipeImage(doc.recipe.image_url, doc.recipe.archetype, doc.recipe.is_vegan, doc.recipe.recipe);
-                         setResult({...doc.recipe, image_url: imgUrl, isSurprise: true});
+                         const imgUrl = resolveRecipeImage(doc.recipe.image_url, doc.recipe.archetype, isVeg, doc.recipe.recipe, doc.recipe.calculated_ingredients);
+                         setResult({...doc.recipe, image_url: imgUrl, is_vegan: isVeg, isSurprise: true});
                        }} style={{ flexShrink: 0 }}>
                          {title}
                        </div>
@@ -1165,10 +1230,11 @@ function App() {
                   {/* Duplicated for infinite scrolling effect */}
                   {globalRecipes.filter(isGroqRecipe).slice(0, 20).map((doc, idx) => {
                      const title = cleanRecipeTitle(doc.recipe?.recipe);
+                     const isVeg = doc.recipe?.is_vegan || isPlantBased(doc.recipe?.calculated_ingredients, doc.recipe?.recipe);
                      return (
                        <div key={`b-${idx}`} className="chip" onClick={() => {
-                         const imgUrl = resolveRecipeImage(doc.recipe.image_url, doc.recipe.archetype, doc.recipe.is_vegan, doc.recipe.recipe);
-                         setResult({...doc.recipe, image_url: imgUrl, isSurprise: true});
+                         const imgUrl = resolveRecipeImage(doc.recipe.image_url, doc.recipe.archetype, isVeg, doc.recipe.recipe, doc.recipe.calculated_ingredients);
+                         setResult({...doc.recipe, image_url: imgUrl, is_vegan: isVeg, isSurprise: true});
                        }} style={{ flexShrink: 0 }}>
                          {title}
                        </div>
@@ -1604,7 +1670,7 @@ function App() {
                      <summary className="history-summary">
                        <div style={{display: 'flex', gap: '1.25rem', alignItems: 'center'}}>
                          <img 
-                           src={resolveRecipeImage(rec.image_url, rec.archetype, rec.is_vegan, rec.recipe)}
+                           src={resolveRecipeImage(rec.image_url, rec.archetype, rec.is_vegan || isPlantBased(rec.calculated_ingredients, rec.recipe), rec.recipe, rec.calculated_ingredients)}
                            alt="Thumbnail" 
                            style={{width: '70px', height: '70px', objectFit: 'cover', borderRadius: '12px'}} 
                            loading="lazy"
@@ -1671,19 +1737,19 @@ function App() {
               className={`community-filter-btn ${communityFilter === 'vegan' ? 'active' : ''}`}
               onClick={() => setCommunityFilter('vegan')}
             >
-              🌱 Vegan ({globalRecipes.filter(isGroqRecipe).filter(d => d.recipe?.is_vegan).length})
+              🌱 Vegan ({globalRecipes.filter(isGroqRecipe).filter(d => d.recipe?.is_vegan || isPlantBased(d.recipe?.calculated_ingredients, d.recipe?.recipe)).length})
             </button>
             <button 
               className={`community-filter-btn ${communityFilter === 'guardrails' ? 'active' : ''}`}
               onClick={() => setCommunityFilter('guardrails')}
             >
-              ⚡ Guardrails ({globalRecipes.filter(isGroqRecipe).filter(d => d.recipe?.archetype === 'Fast Qwen' || d.recipe?.final_cvs_score !== undefined).length})
+              ⚡ Guardrails ({globalRecipes.filter(isGroqRecipe).filter(d => d.recipe?.archetype === 'Fast Qwen' || d.recipe?.archetype === 'Groq Guardrails' || d.recipe?.final_cvs_score !== undefined || d.recipe?.agentic_attempts !== undefined).length})
             </button>
             <button 
               className={`community-filter-btn ${communityFilter === 'budget' ? 'active' : ''}`}
               onClick={() => setCommunityFilter('budget')}
             >
-              💰 Budget ({globalRecipes.filter(isGroqRecipe).filter(d => d.recipe?.archetype === 'Budget Qwen').length})
+              💰 Budget ({globalRecipes.filter(isGroqRecipe).filter(d => d.recipe?.archetype === 'Budget Qwen' || d.recipe?.archetype === 'Groq Budget' || (d.recipe?.budget !== undefined && d.recipe?.budget > 0)).length})
             </button>
           </div>
           
@@ -1697,14 +1763,16 @@ function App() {
             <div className="recipe-grid">
               {globalRecipes.filter(isGroqRecipe).filter(doc => {
                 const rec = doc.recipe;
-                if (communityFilter === 'vegan') return rec.is_vegan;
-                if (communityFilter === 'guardrails') return rec.archetype === 'Fast Qwen' || rec.final_cvs_score !== undefined;
-                if (communityFilter === 'budget') return rec.archetype === 'Budget Qwen';
+                const isVeg = rec.is_vegan || isPlantBased(rec.calculated_ingredients, rec.recipe);
+                if (communityFilter === 'vegan') return isVeg;
+                if (communityFilter === 'guardrails') return rec.archetype === 'Fast Qwen' || rec.archetype === 'Groq Guardrails' || rec.final_cvs_score !== undefined || rec.agentic_attempts !== undefined;
+                if (communityFilter === 'budget') return rec.archetype === 'Budget Qwen' || rec.archetype === 'Groq Budget' || (rec.budget !== undefined && rec.budget > 0);
                 return true;
               }).map((doc, idx) => {
                  const rec = doc.recipe;
                  const title = cleanRecipeTitle(rec.recipe);
-                 const bannerImg = resolveRecipeImage(rec.image_url, rec.archetype, rec.is_vegan, rec.recipe);
+                 const isVeg = rec.is_vegan || isPlantBased(rec.calculated_ingredients, rec.recipe);
+                 const bannerImg = resolveRecipeImage(rec.image_url, rec.archetype, isVeg, rec.recipe, rec.calculated_ingredients);
                  const dateStr = doc.created_at ? new Date(doc.created_at * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
                  
                  return (
@@ -1722,13 +1790,13 @@ function App() {
                          }}
                        />
                        <div className="badge-float-left">
-                         {rec.is_vegan && (
+                         {isVeg && (
                            <span className="badge-cute badge-vegan">🌱 VEGAN</span>
                          )}
-                         {rec.archetype === 'Fast Qwen' && (
+                         {(rec.archetype === 'Fast Qwen' || rec.archetype === 'Groq Guardrails' || rec.final_cvs_score !== undefined) && (
                            <span className="badge-cute badge-guardrails">⚡ Guardrails</span>
                          )}
-                         {rec.archetype === 'Budget Qwen' && (
+                         {(rec.archetype === 'Budget Qwen' || rec.archetype === 'Groq Budget') && (
                            <span className="badge-cute badge-budget">💰 Budget</span>
                          )}
                        </div>
