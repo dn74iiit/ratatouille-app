@@ -57,7 +57,7 @@ const UNSPLASH_CACHE = {
     "Salad": [
         "1512621776951-a57141f2eefd",
         "1490645935967-10de6ba17061",
-        "1546069901-ba9599a7e63c"
+        "1540420773420-3366772f4999"
     ],
     "Dessert": [
         "1488477181946-6428a0291777",
@@ -77,21 +77,21 @@ const UNSPLASH_CACHE = {
     ],
     "Rice_Dish": [
         "1596797038530-2c107229654b", // Fresh cilantro lime vegetable rice bowl
-        "1512058564366-18510be2db19", // Colorful Asian vegetable fried rice bowl
         "1536304929831-ee1ca9d44906", // Aromatic basmati herb rice bowl
-        "1574484284002-952d92456975"  // Golden turmeric vegetable pulao bowl
+        "1505253716362-afaea1d3d1af"  // Plant-based vegetable grain bowl
     ],
     "Dry_Sabzi": [
-        "1546833999-b9f581a1996d",
+        "1546833999-b9f581a1996d", // Spiced vegetable roast / dry sabzi
         "1565557623262-b51c2513a641",
         "1604152135912-04a022e23696"
     ],
     "Vegan": [
         "1512621776951-a57141f2eefd",
         "1490645935967-10de6ba17061",
-        "1546069901-ba9599a7e63c",
         "1547592166-23ac45744acd",
-        "1546833999-b9f581a1996d"
+        "1546833999-b9f581a1996d",
+        "1596797038530-2c107229654b",
+        "1536304929831-ee1ca9d44906"
     ]
 };
 
@@ -154,8 +154,11 @@ export const isPlantBased = (ingredients = [], recipeText = "") => {
 const BANNED_MEAT_PHOTO_IDS = [
     "1563379091339", "1589302168068", "1541832676", "1598515214211", 
     "1604908176997", "1626082927389", "1562967914", "1525351484163", 
-    "1565299585323", "1587314168485", "1578985545062"
+    "1565299585323", "1587314168485", "1578985545062",
+    "1574484284002", "1512058564366", "1546069901"
 ];
+
+const SAVORY_WORDS_REGEX = /\b(curry|gravy|masala|korma|dal|dhal|daal|sambar|rasam|sabzi|subzi|roast|fry|stir-fry|sukka|poriyal|bhaji|rice|pulao|pilaf|biryani|khichdi|skillet|bowl|stew|soup|broth|shorba|chowder|kadhi|karhi|pakora|pakoras|kofta|paneer|tofu|mushroom|potato|aloo|gobi|chana|besan|chaap|tikka|kebab|roti|naan|paratha|bread|salad|chaat)\b/i;
 
 const getRandomBanner = (archetype, isVegan = false, recipeTitle = "") => {
     let raw = (recipeTitle || "");
@@ -163,49 +166,71 @@ const getRandomBanner = (archetype, isVegan = false, recipeTitle = "") => {
     let title = titleMatch ? titleMatch[1] : raw.split(/\r?\n/)[0];
     const t = title.toLowerCase().replace(/[*_#"`]/g, '').trim();
     let arch = archetype;
-    
-    // Title-based culinary categorization with savory protection
-    const isSavoryTitle = /\b(stew|soup|broth|shorba|chowder|potage|laksa|curry|gravy|masala|korma|tikka|dal|sambar|rasam|sabzi|stir-fry|roast|fry|bhaji|dry|poriyal|sukka|aloo|gobi|paneer|tofu|rice|khichdi|biryani|pulao|pilaf|bowl|bread|roti|naan|paratha|salad|chaat|vegetable|veggie|chana|besan|chickpea|mushroom|tomato|onion|garlic|pepper)\b/.test(t);
 
-    if (/\b(stew|soup|broth|shorba|chowder|potage|laksa)\b/.test(t)) {
+    const words = t.split(/[\s\-_,]+/).filter(Boolean);
+    const last1 = words[words.length - 1] || '';
+    const last2 = words.slice(-2).join(' ') || last1;
+    const last3 = words.slice(-3).join(' ') || last2;
+
+    // 1. End-Term / Suffix Culinary Classification (last 1-3 words)
+    if (/\b(stew|soup|broth|shorba|chowder|potage|laksa)\b/i.test(last1) || /\b(stew|soup|broth|shorba|chowder|potage|laksa)\b/i.test(last2)) {
         arch = "Soup";
-    } else if (!isVegan && (/\b(biryani)\b/.test(t) || (t.includes("rice") && /\b(chicken|meat|mutton)\b/.test(t)))) {
-        arch = "Biryani";
-    } else if (!isVegan && /\b(chicken|mutton|meat|lamb|tikka|kebab)\b/.test(t)) {
-        arch = "Chicken";
-    } else if (!isVegan && /\b(egg|omelette|anda|bhurji)\b/.test(t)) {
-        arch = "Egg";
-    } else if (!isVegan && /\b(fish|pork|beef|sausage|bacon|prawn|shrimp)\b/.test(t)) {
-        arch = "NonVegan";
-    } else if (/\b(salad|chaat|slaw)\b/.test(t)) {
-        arch = "Salad";
-    } else if (/\b(biryani|pulao)\b/.test(t)) {
-        arch = isVegan ? "Rice_Dish" : "Biryani";
-    } else if (/\b(fried rice|khichdi|rice bowl|pilaf|rice)\b/.test(t)) {
-        arch = "Rice_Dish";
-    } else if (/\b(bread|roti|naan|paratha|puri|chapati)\b/.test(t)) {
-        arch = "Bread";
-    } else if (!isSavoryTitle && /\b(cake|kheer|halwa|pudding|cookie|brownie|dessert|pastry|muffin)\b/.test(t)) {
-        arch = "Dessert";
-    } else if (/\b(curry|gravy|masala|korma|dal|sambar|rasam)\b/.test(t)) {
+    } else if (/\b(rice bowl|rice skillet|fried rice|pulao|pulav|pilaf|biryani|khichdi|rice|skillet)\b/i.test(last2) || /\b(rice bowl|rice skillet|fried rice|pulao|pulav|pilaf|biryani|khichdi|rice|skillet)\b/i.test(last3) || /\b(rice bowl|rice skillet|fried rice|pulao|pulav|pilaf|biryani|khichdi|rice|skillet)\b/i.test(last1)) {
+        if (/biryani/i.test(last2) || /biryani/i.test(last1)) {
+            arch = isVegan ? "Rice_Dish" : "Biryani";
+        } else {
+            arch = "Rice_Dish";
+        }
+    } else if (/\b(gravy|curry|korma|masala|saag|makhani|dal|dhal|daal|sambar|rasam|kofta|kadhi|karhi|salan|jalfrezi|handi)\b/i.test(last1) || /\b(gravy|curry|korma|masala|saag|makhani|dal|dhal|daal|sambar|rasam|kofta|kadhi|karhi|salan|jalfrezi|handi)\b/i.test(last2)) {
         arch = "Curry";
-    } else if (/\b(sabzi|stir-fry|roast|fry|dry|poriyal|sukka)\b/.test(t)) {
+    } else if (/\b(roast|fry|stir-fry|sukka|poriyal|bhaji|thoran|dry|pakora|pakoras|pakoda|pakodas|fritter|fritters|tikka|kebab|tikki|chaap|sabzi|subzi)\b/i.test(last1) || /\b(roast|fry|stir-fry|sukka|poriyal|bhaji|thoran|dry|pakora|pakoras|pakoda|pakodas|fritter|fritters|tikka|kebab|tikki|chaap|sabzi|subzi)\b/i.test(last2)) {
         arch = "Dry_Sabzi";
+    } else if (/\b(roti|naan|paratha|kulcha|puri|poori|bhatura|chapati|phulka|bread|flatbread|wrap|roll)\b/i.test(last1) || /\b(roti|naan|paratha|kulcha|puri|poori|bhatura|chapati|phulka|bread|flatbread|wrap|roll)\b/i.test(last2)) {
+        arch = "Bread";
+    } else if (/\b(salad|slaw|chaat|raita|kachumber)\b/i.test(last1) || /\b(salad|slaw|chaat|raita|kachumber)\b/i.test(last2)) {
+        arch = "Salad";
+    } else {
+        // 2. Whole Title Search Fallback
+        const isSavory = SAVORY_WORDS_REGEX.test(t);
+        if (!isVegan && /\b(chicken|mutton|meat|lamb)\b/i.test(t) && !/\b(rice|biryani)\b/i.test(t)) {
+            arch = "Chicken";
+        } else if (!isVegan && /\b(egg|omelette|anda)\b/i.test(t) && !/\b(paneer)\b/i.test(t)) {
+            arch = "Egg";
+        } else if (!isVegan && /\b(fish|catfish|prawn|prawns|shrimp|shrimps|seafood|pork|beef|bacon|sausage)\b/i.test(t)) {
+            arch = "NonVegan";
+        } else if (!isVegan && /\b(biryani)\b/i.test(t)) {
+            arch = "Biryani";
+        } else if (/\b(stew|soup|broth|shorba)\b/i.test(t)) {
+            arch = "Soup";
+        } else if (/\b(rice|pulao|khichdi|skillet)\b/i.test(t)) {
+            arch = "Rice_Dish";
+        } else if (/\b(curry|gravy|masala|korma|dal|kadhi|kofta|paneer)\b/i.test(t)) {
+            arch = "Curry";
+        } else if (/\b(roast|sukka|sabzi|pakora|tikka|chaap)\b/i.test(t)) {
+            arch = "Dry_Sabzi";
+        } else if (/\b(bread|roti|naan|paratha)\b/i.test(t)) {
+            arch = "Bread";
+        } else if (/\b(salad|chaat)\b/i.test(t)) {
+            arch = "Salad";
+        } else if (!isSavory && /\b(cake|kheer|halwa|payasam|pudding|cookie|cookies|brownie|brownies|pastry|muffin|ladoo|laddu|barfi|dessert)\b/i.test(t)) {
+            arch = "Dessert";
+        }
     }
     
-    // Savory override against accidental Dessert classification
-    if (arch === "Dessert" && isSavoryTitle) {
-        arch = /\b(stew|soup|broth)\b/.test(t) ? "Soup" : (isVegan ? "Vegan" : "Curry");
+    // Strict Savory vs. Dessert Barrier: A savory dish must NEVER have a dessert banner
+    const isSavoryDish = SAVORY_WORDS_REGEX.test(t);
+    if (arch === "Dessert" && isSavoryDish) {
+        arch = isVegan ? "Vegan" : "Curry";
+    }
+
+    // Strict Vegan Protection: A vegan/plant dish must NEVER have meat/egg/biryani banners
+    if (isVegan && (arch === "Chicken" || arch === "Egg" || arch === "Biryani" || arch === "NonVegan")) {
+        arch = /\b(rice|biryani|pulao)\b/i.test(t) ? "Rice_Dish" : "Vegan";
     }
 
     // Fallback if archetype not found
     if (!UNSPLASH_CACHE[arch]) {
         arch = isVegan ? "Vegan" : "Curry";
-    }
-
-    // Vegan safety guard: never allow meat photos for vegan/plant dishes
-    if (isVegan && (arch === "Chicken" || arch === "Egg" || arch === "Biryani" || arch === "NonVegan")) {
-        arch = "Vegan";
     }
 
     const photos = UNSPLASH_CACHE[arch] || UNSPLASH_CACHE["Curry"];
@@ -237,10 +262,10 @@ const resolveRecipeImage = (imageUrl, archetype, isVegan, recipeText, ingredient
         const raw = recipeText || "";
         const titleMatch = raw.match(/### TITLE:\s*([^\n\r]+)/i);
         const title = (titleMatch ? titleMatch[1] : raw.split(/\r?\n/)[0]).toLowerCase();
-        const isSavory = /\b(stew|soup|broth|curry|gravy|masala|sabzi|dal|sambar|rasam|rice|khichdi|biryani|pulao|vegetable|veggie|potato|pepper|onion|garlic)\b/.test(title);
-        const isDessertImg = UNSPLASH_CACHE["Dessert"]?.some(id => imageUrl.includes(id));
+        const isSavory = SAVORY_WORDS_REGEX.test(title);
+        const isDessertImg = UNSPLASH_CACHE["Dessert"]?.some(id => imageUrl.includes(id)) || imageUrl.includes("1578985545062");
         if (isSavory && isDessertImg) {
-            return getRandomBanner(archetype, isPlant, recipeText);
+            return getRandomBanner(isPlant ? 'Vegan' : 'Curry', isPlant, recipeText);
         }
         return imageUrl;
     }
@@ -1286,7 +1311,7 @@ function App() {
                   <div className="ingredients-col">
                     <h3>Ingredients</h3>
                     <ul className="ingredients-list">
-                      {result.calculated_ingredients.map((ing, idx) => (
+                      {Array.isArray(result.calculated_ingredients) && result.calculated_ingredients.map((ing, idx) => (
                         <li key={idx} className="ingredient-item">
                           <ShoppingBasket className="basket-icon" size={20} />
                           <span>{ing}</span>
@@ -1294,8 +1319,8 @@ function App() {
                       ))}
                     </ul>
 
-                    {/* Collapsible Budget Breakdown (Hidden by default, shown when cost-constrained) */}
-                    {(result.cost_breakdown || (result.budget && result.calculated_ingredients)) && (
+                    {/* Collapsible Budget Breakdown (Strictly hidden when cost breakdown data is not available) */}
+                    {Boolean(result.cost_breakdown && Array.isArray(result.cost_breakdown.items) && result.cost_breakdown.items.length > 0) && (
                       <div className="budget-breakdown-wrapper" style={{ marginTop: '1.25rem' }}>
                         <button
                           type="button"
@@ -1815,9 +1840,8 @@ function App() {
                      <div className="card-content">
                        <div>
                          <div className="card-meta">
-                           <span>🧑‍🍳 <strong>@{doc.username || 'chef'}</strong></span>
-                           <span>{dateStr}</span>
-                         </div>
+                            <span className="card-date">{dateStr}</span>
+                          </div>
                          <h3 className="card-title" title={title}>{title}</h3>
                          
                          <div className="card-ingredients-row">
