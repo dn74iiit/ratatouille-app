@@ -327,7 +327,7 @@ body {
   justify-content: flex-start;
   gap: 1rem;
   width: max-content;
-  animation: marquee-scroll 25s linear infinite;
+  animation: marquee-scroll 65s linear infinite;
   margin-top: 0;
   padding: 0.25rem 0;
 }

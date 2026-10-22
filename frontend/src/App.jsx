@@ -502,6 +502,91 @@ const isGroqRecipe = (doc) => {
          rec.agentic_attempts !== undefined;
 };
 
+export const cleanRecipeTitle = (recipeText) => {
+  if (!recipeText) return 'Delicious Dish';
+  const text = typeof recipeText === 'string' ? recipeText : String(recipeText);
+  const firstLine = text.split('\n')[0] || '';
+  return firstLine
+    .replace(/^###\s*(TITLE:)?\s*/i, '')
+    .replace(/^TITLE:\s*/i, '')
+    .replace(/^#+\s*/, '')
+    .replace(/^\*+|\*+$/g, '')
+    .replace(/^["']+|["']+$/g, '')
+    .replace(/^\*+|\*+$/g, '')
+    .trim() || 'Delicious Dish';
+};
+
+export const cleanRecipeInstructions = (recipeText) => {
+  if (!recipeText) return [];
+  const text = typeof recipeText === 'string' ? recipeText : String(recipeText);
+
+  let rawInstructions = text;
+
+  // 1. If explicit DIRECTIONS / INSTRUCTIONS header exists, slice after it
+  const dirHeaderMatch = text.match(/(?:###\s*(?:DIRECTIONS|INSTRUCTIONS):?|\*\*(?:DIRECTIONS|INSTRUCTIONS)\*\*|DIRECTIONS:|INSTRUCTIONS:)/i);
+  if (dirHeaderMatch) {
+    rawInstructions = text.slice(dirHeaderMatch.index + dirHeaderMatch[0].length);
+  } else {
+    // Drop the first line (title)
+    const lines = text.split('\n');
+    rawInstructions = lines.slice(1).join('\n');
+  }
+
+  // 2. Parse lines and filter out ingredients lists, headings, and non-step junk
+  const steps = [];
+  const lines = rawInstructions.split('\n');
+  
+  let skipUntilDirections = false;
+  for (let line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    // Check if line is an ingredients header
+    if (/^(\*\*|###\s*)?(ingredients|ingredients to use):?/i.test(trimmed)) {
+      skipUntilDirections = true;
+      continue;
+    }
+
+    // Check if line is a directions header
+    if (/^(\*\*|###\s*)?(directions|instructions|steps|method):?/i.test(trimmed)) {
+      skipUntilDirections = false;
+      continue;
+    }
+
+    // If we're inside an ingredients block, skip bullet points or ingredient lines
+    if (skipUntilDirections) {
+      if (/^[-*•]\s+/i.test(trimmed) || /^\d+(\.\d+)?\s*(g|kg|ml|tsp|tbsp|cup)/i.test(trimmed)) {
+        continue;
+      }
+      if (/^\d+\.\s+/i.test(trimmed)) {
+        skipUntilDirections = false;
+      } else {
+        continue;
+      }
+    }
+
+    // Skip bullet points of ingredients (e.g. "- 250.0g rice")
+    if (/^[-*•]\s+\d+(\.\d+)?\s*(g|kg|ml|tsp|tbsp|cup|piece)/i.test(trimmed)) {
+      continue;
+    }
+
+    // Skip markdown asterisks headings like "**Directions**"
+    if (/^\*\*(directions|instructions|method|ingredients)\*\*$/i.test(trimmed)) {
+      continue;
+    }
+
+    // Check if it's a numbered step
+    const match = trimmed.match(/^(\d+)\.\s*(.*)/);
+    if (match) {
+      steps.push({ num: match[1], text: match[2].replace(/^\*+|\*+$/g, '').trim() });
+    } else {
+      steps.push({ num: null, text: trimmed.replace(/^\*+|\*+$/g, '').trim() });
+    }
+  }
+
+  return steps;
+};
+
 function App() {
   const [viewMode, setViewMode] = useState('generate'); // 'generate' | 'community' | 'history'
   const [username, setUsername] = useState('');
@@ -1036,7 +1121,7 @@ function App() {
               <div className="marquee-wrapper" style={{ marginTop: 0, flex: 1 }}>
                 <div className="chips-container marquee-content">
                   {globalRecipes.filter(isGroqRecipe).slice(0, 20).map((doc, idx) => {
-                     const title = doc.recipe?.recipe ? doc.recipe.recipe.split('\n')[0].replace(/^###\s*(TITLE:)?\s*/i, '').trim() : 'Delicious Dish';
+                     const title = cleanRecipeTitle(doc.recipe?.recipe);
                      return (
                        <div key={`a-${idx}`} className="chip" onClick={() => {
                          const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype, doc.recipe.is_vegan, doc.recipe.recipe);
@@ -1048,7 +1133,7 @@ function App() {
                   })}
                   {/* Duplicated for infinite scrolling effect */}
                   {globalRecipes.filter(isGroqRecipe).slice(0, 20).map((doc, idx) => {
-                     const title = doc.recipe?.recipe ? doc.recipe.recipe.split('\n')[0].replace(/^###\s*(TITLE:)?\s*/i, '').trim() : 'Delicious Dish';
+                     const title = cleanRecipeTitle(doc.recipe?.recipe);
                      return (
                        <div key={`b-${idx}`} className="chip" onClick={() => {
                          const imgUrl = doc.recipe.image_url || getRandomBanner(doc.recipe.archetype, doc.recipe.is_vegan, doc.recipe.recipe);
@@ -1072,7 +1157,7 @@ function App() {
               <div className="modal-content fade-in">
                 <div className="modal-header">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <h2 className="modal-title" style={{ margin: 0 }}>{result.recipe.split('\n')[0].replace(/^###\s*(TITLE:)?\s*/i, '').trim()}</h2>
+                    <h2 className="modal-title" style={{ margin: 0 }}>{cleanRecipeTitle(result.recipe)}</h2>
                     {result.is_vegan && (
                       <span style={{background: '#4ade80', color: '#064e3b', padding: '4px 12px', borderRadius: '16px', fontSize: '0.85rem', fontWeight: 'bold', display: 'inline-block'}}>
                         🌱 VEGAN {result.judge_score ? `(Judge: ${(result.judge_score * 100).toFixed(0)}%)` : (result.agentic_attempts !== undefined ? `(Agentic Checks: ${result.agentic_attempts})` : '')}
@@ -1163,28 +1248,28 @@ function App() {
                             style={{
                               marginTop: '0.6rem',
                               padding: '0.85rem',
-                              background: 'rgba(17, 24, 39, 0.75)',
-                              backdropFilter: 'blur(8px)',
-                              border: '1px solid rgba(255, 255, 255, 0.1)',
+                              background: 'rgba(17, 24, 39, 0.85)',
+                              backdropFilter: 'blur(10px)',
+                              border: '1px solid rgba(255, 255, 255, 0.15)',
                               borderRadius: '10px'
                             }}
                           >
-                            <table style={{ width: '100%', fontSize: '0.83rem', borderCollapse: 'collapse', color: '#d1d5db' }}>
+                            <table style={{ width: '100%', fontSize: '0.83rem', borderCollapse: 'collapse', color: '#e5e7eb' }}>
                               <thead>
-                                <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'left', color: '#9ca3af' }}>
-                                  <th style={{ padding: '6px 4px' }}>Ingredient</th>
-                                  <th style={{ padding: '6px 4px' }}>Qty (g)</th>
-                                  <th style={{ padding: '6px 4px' }}>Rate/100g</th>
-                                  <th style={{ padding: '6px 4px', textAlign: 'right' }}>Cost (₹)</th>
+                                <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.2)', textAlign: 'left', color: '#f3f4f6', background: 'rgba(255, 255, 255, 0.05)' }}>
+                                  <th style={{ padding: '6px 6px', fontWeight: '600' }}>Ingredient</th>
+                                  <th style={{ padding: '6px 6px', fontWeight: '600' }}>Qty (g)</th>
+                                  <th style={{ padding: '6px 6px', fontWeight: '600' }}>Rate/100g</th>
+                                  <th style={{ padding: '6px 6px', textAlign: 'right', fontWeight: '600' }}>Cost (₹)</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {result.cost_breakdown.items && result.cost_breakdown.items.map((item, idx) => (
-                                  <tr key={idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                                    <td style={{ padding: '6px 4px', textTransform: 'capitalize', color: '#f3f4f6' }}>{item.name}</td>
-                                    <td style={{ padding: '6px 4px' }}>{item.grams}g</td>
-                                    <td style={{ padding: '6px 4px', color: '#9ca3af' }}>₹{item.rate_per_100g}</td>
-                                    <td style={{ padding: '6px 4px', textAlign: 'right', fontWeight: 'bold', color: '#34d399' }}>₹{item.cost}</td>
+                                  <tr key={idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                                    <td style={{ padding: '6px 6px', textTransform: 'capitalize', color: '#f9fafb', fontWeight: '500' }}>{item.name}</td>
+                                    <td style={{ padding: '6px 6px', color: '#e2e8f0' }}>{item.grams}g</td>
+                                    <td style={{ padding: '6px 6px', color: '#93c5fd' }}>₹{item.rate_per_100g}</td>
+                                    <td style={{ padding: '6px 6px', textAlign: 'right', fontWeight: 'bold', color: '#34d399' }}>₹{item.cost}</td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -1193,13 +1278,13 @@ function App() {
                               display: 'flex',
                               justifyContent: 'space-between',
                               alignItems: 'center',
-                              marginTop: '0.75rem',
-                              paddingTop: '0.6rem',
-                              borderTop: '1px solid rgba(255, 255, 255, 0.15)',
-                              fontSize: '0.82rem'
+                              marginTop: '0.85rem',
+                              paddingTop: '0.75rem',
+                              borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+                              fontSize: '0.88rem'
                             }}>
-                              <span>Total Spent: <strong style={{ color: '#34d399' }}>₹{result.cost_breakdown.total_cost}</strong></span>
-                              <span>Headroom: <strong style={{ color: '#60a5fa' }}>₹{result.cost_breakdown.headroom}</strong></span>
+                              <span style={{ color: '#e2e8f0', fontWeight: '500' }}>Total Spent: <strong style={{ color: '#34d399', fontSize: '0.95rem', fontWeight: '700' }}>₹{result.cost_breakdown.total_cost}</strong></span>
+                              <span style={{ color: '#e2e8f0', fontWeight: '500' }}>Headroom: <strong style={{ color: '#60a5fa', fontSize: '0.95rem', fontWeight: '700' }}>₹{result.cost_breakdown.headroom}</strong></span>
                             </div>
                           </div>
                         )}
@@ -1210,24 +1295,12 @@ function App() {
                   <div className="instructions-col">
                     <h3>Instructions</h3>
                     <ul className="instructions-list">
-                      {(() => {
-                        let instructionsText = "";
-                        if (result.recipe.includes('### DIRECTIONS:')) {
-                          instructionsText = result.recipe.split('### DIRECTIONS:')[1];
-                        } else {
-                          // For new pipelines (Groq Fast/Agentic Vegan), title is first line, rest is directions
-                          const lines = result.recipe.split('\n');
-                          instructionsText = lines.slice(1).join('\n');
-                        }
-                        
-                        return instructionsText.trim().split('\n').map((step, idx) => {
-                          const match = step.match(/^(\d+)\.\s+(.*)/);
-                          if (match) {
-                            return <li key={idx}><strong>{match[1]}.</strong> <span>{match[2]}</span></li>;
-                          }
-                          return step.trim() ? <li key={idx}><span>{step}</span></li> : null;
-                        });
-                      })()}
+                      {cleanRecipeInstructions(result.recipe).map((step, idx) => (
+                        <li key={idx}>
+                          {step.num ? <strong>{step.num}.</strong> : null}{' '}
+                          <span>{step.text}</span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
@@ -1511,7 +1584,7 @@ function App() {
                            }}
                          />
                          <div>
-                           <h4>{rec.recipe.split('\n')[0].replace('### TITLE:', '').trim()}</h4>
+                           <h4>{cleanRecipeTitle(rec.recipe)}</h4>
                            <span className="badge">{rec.archetype}</span>
                            <p className="date-text">Saved: {new Date(doc.created_at * 1000).toLocaleString()}</p>
                          </div>
@@ -1532,11 +1605,12 @@ function App() {
                         <div className="directions-box" style={{marginTop: '1rem'}}>
                           <h4>Directions</h4>
                           <div className="recipe-text" style={{fontSize: '0.95rem'}}>
-                            {rec.recipe.includes('### DIRECTIONS:') 
-                              ? rec.recipe.split('### DIRECTIONS:')[1].trim().split('\n').map((step, i) => (
-                                  <p key={i} className="step-text" style={{padding: '0.8rem', marginBottom: '0.5rem'}}>{step}</p>
-                                ))
-                              : <p className="step-text">{rec.recipe}</p>}
+                            {cleanRecipeInstructions(rec.recipe).map((step, i) => (
+                              <p key={i} className="step-text" style={{padding: '0.8rem', marginBottom: '0.5rem'}}>
+                                {step.num ? <strong>{step.num}. </strong> : null}
+                                {step.text}
+                              </p>
+                            ))}
                           </div>
                         </div>
                      </div>
@@ -1598,7 +1672,7 @@ function App() {
                 return true;
               }).map((doc, idx) => {
                  const rec = doc.recipe;
-                 const title = rec.recipe.split('\n')[0].replace(/^###\s*(TITLE:)?\s*/i, '').trim();
+                 const title = cleanRecipeTitle(rec.recipe);
                  const bannerImg = rec.image_url || getRandomBanner(rec.archetype, rec.is_vegan, rec.recipe);
                  const dateStr = doc.created_at ? new Date(doc.created_at * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
                  

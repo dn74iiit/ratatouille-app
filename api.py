@@ -387,6 +387,94 @@ def get_random_banner(archetype):
     photo_id = random.choice(UNSPLASH_CACHE[arch])
     return f"https://images.unsplash.com/photo-{photo_id}?q=80&w=1632&auto=format&fit=crop"
 
+def normalize_recipe_text(ai_text: str) -> str:
+    """
+    Cleans raw model recipe output across all endpoints:
+    1. Removes LLM stop tokens & markdown artifacts
+    2. Strips leading/trailing asterisks, quotes, and hashes from title
+    3. Strips duplicated ingredients block / ingredients headings from directions
+    4. Formats as '### TITLE: Dish Name\\n### DIRECTIONS:\\n1. ...'
+    """
+    if not ai_text:
+        return ""
+    import re
+    text = ai_text.strip()
+    
+    stop_tokens = ['<|eot_id|>', '<|end_of_text|>', '<|begin_of_text|>', '\n### INGREDIENTS:']
+    for t in stop_tokens:
+        if t in text:
+            text = text.split(t)[0].strip()
+            
+    if "### TITLE:\n" in text:
+        text = text.split("### TITLE:\n")[1].strip()
+    elif text.startswith("### TITLE:"):
+        text = text[len("### TITLE:"):].strip()
+
+    # Cut off standard looping signatures and Notes
+    text = re.split(r'\n\d+\.\s*(?:Variation|Note|To serve|Serve|Enjoy)', text, flags=re.IGNORECASE)[0]
+    cut_phrases = [
+        "\nEnjoy!", "\nServe hot", "\nBon Apetit", "\nChef's Note:", 
+        "\nVariations:", "\nServing suggestion:", "\nNote:",
+        "\nVariation #", "\nTo serve"
+    ]
+    for phrase in cut_phrases:
+        if phrase.lower() in text.lower():
+            text = re.split(re.escape(phrase), text, flags=re.IGNORECASE)[0].strip()
+
+    # Separate title and directions
+    raw_lines = text.split("\n")
+    first_line = raw_lines[0].strip() if raw_lines else ""
+    clean_title = re.sub(r'^(###\s*(TITLE:)?|TITLE:|\*+|#+|["\'])+', '', first_line)
+    clean_title = re.sub(r'(\*+|["\'])+$', '', clean_title).strip()
+    if not clean_title:
+        clean_title = "Delicious Dish"
+
+    # Directions extraction
+    if "### DIRECTIONS:\n" in text or "### DIRECTIONS:" in text:
+        dir_part = text.split("### DIRECTIONS:")[1]
+    elif "**Directions**" in text:
+        dir_part = text.split("**Directions**")[1]
+    elif "**Instructions**" in text:
+        dir_part = text.split("**Instructions**")[1]
+    elif "### INSTRUCTIONS:" in text:
+        dir_part = text.split("### INSTRUCTIONS:")[1]
+    else:
+        dir_part = "\n".join(raw_lines[1:])
+
+    # Clean lines in dir_part: discard ingredients headings and bulleted ingredient items
+    cleaned_steps = []
+    in_ing_block = False
+    for line in dir_part.split("\n"):
+        s = line.strip()
+        if not s:
+            continue
+        # Check if line is ingredients heading
+        if re.match(r'^(\*\*|###\s*)?(ingredients|ingredients to use):?', s, re.IGNORECASE):
+            in_ing_block = True
+            continue
+        if re.match(r'^(\*\*|###\s*)?(directions|instructions|steps|method):?', s, re.IGNORECASE):
+            in_ing_block = False
+            continue
+        if in_ing_block:
+            if re.match(r'^[-*•]\s+', s) or re.match(r'^\d+(\.\d+)?\s*(g|kg|ml|tsp|tbsp|cup)', s, re.IGNORECASE):
+                continue
+            if re.match(r'^\d+\.\s+', s):
+                in_ing_block = False
+            else:
+                continue
+        # Skip bullet points of ingredients
+        if re.match(r'^[-*•]\s+\d+(\.\d+)?\s*(g|kg|ml|tsp|tbsp|cup|piece)', s, re.IGNORECASE):
+            continue
+        # Skip markdown asterisks headings like "**Directions**"
+        if re.match(r'^\*\*(directions|instructions|method|ingredients)\*\*$', s, re.IGNORECASE):
+            continue
+        # If there's another "### " in the directions, cut it
+        if s.startswith("### "):
+            break
+        cleaned_steps.append(s)
+
+    return f"### TITLE: {clean_title}\n### DIRECTIONS:\n" + "\n".join(cleaned_steps)
+
 # ============================================================
 # CANONICAL INGREDIENT NORMALIZATION MAP  (Priority 1)
 # Maps variant names → canonical base so "chicken breast",
@@ -1266,44 +1354,7 @@ def generate_recipe(request: RecipeRequest):
 
         print(f"DEBUG RAW AI_TEXT: {repr(ai_text)}")
 
-        # Post-process to remove Llama 3 hallucinations/rambling
-        stop_tokens = ['<|eot_id|>', '<|end_of_text|>', '<|begin_of_text|>', '\n### INGREDIENTS:']
-        for t in stop_tokens:
-            if t in ai_text:
-                ai_text = ai_text.split(t)[0].strip()
-
-        # Sometimes it doesn't emit eot_id and just loops back to Step 1 or adds another Title block
-        if "### TITLE:\n" in ai_text:
-            ai_text = ai_text.split("### TITLE:\n")[1].strip()
-            
-        # Cut off standard looping signatures and Notes
-        import re
-        
-        # Aggressively chop off any numbered step that starts with "Variation", "Note", or "To serve"
-        ai_text = re.split(r'\n\d+\.\s*(?:Variation|Note|To serve|Serve|Enjoy)', ai_text, flags=re.IGNORECASE)[0]
-        
-        cut_phrases = [
-            "\nEnjoy!", "\nServe hot", "\nBon Apetit", "\nChef's Note:", 
-            "\nVariations:", "\nServing suggestion:", "\nNote:",
-            "\nVariation #", "\nTo serve"
-        ]
-        for phrase in cut_phrases:
-            if phrase.lower() in ai_text.lower():
-                # case insensitive split
-                ai_text = re.split(re.escape(phrase), ai_text, flags=re.IGNORECASE)[0].strip()
-
-        # If the AI tries to start a new section with "###" (like "### Serving suggestion:" or "### Note:"), cut it off.
-        # The only valid "###" in the AI output is "### DIRECTIONS:"
-        if "### DIRECTIONS:\n" in ai_text:
-            parts = ai_text.split("### DIRECTIONS:\n")
-            title_part = parts[0]
-            directions_part = parts[1]
-            
-            # If there's another "### " in the directions, cut it
-            if "\n### " in directions_part:
-                directions_part = directions_part.split("\n### ")[0]
-                
-            ai_text = f"{title_part}### DIRECTIONS:\n{directions_part}".strip()
+        ai_text = normalize_recipe_text(ai_text)
             
         total_time = time.time() - start_time
         
@@ -1544,8 +1595,9 @@ async def generate_agentic_vegan(request: RecipeRequest):
         f"System: You are an expert Indian vegan chef. The user wants to cook a dish using the ingredients below.\n"
         f"YOUR MISSION: You MUST ensure 100% plant-based compliance and replace any animal products using the exact RAG rules below. DO NOT use animal products (dairy, ghee, meat, eggs) in the final recipe.\n"
         f"CRITICAL RULES:\n"
-        f"1. DO NOT output variations or personal notes.\n"
-        f"2. Output ONLY the TITLE, an 'Ingredients' list (with exact quantities from the provided list), and numbered DIRECTIONS.\n\n"
+        f"1. DO NOT output variations, reviews, or personal notes.\n"
+        f"2. Output ONLY the TITLE on the first line (e.g. '### TITLE: Dish Name') and the numbered DIRECTIONS under '### DIRECTIONS:'.\n"
+        f"3. DO NOT repeat or print the ingredients list in your directions output. Jump straight into the numbered cooking directions.\n\n"
         f"{vegan_context}\n\n"
         f"### INGREDIENTS TO USE:\n{ingr_text}\n\n### TITLE:\n"
     )
@@ -1569,16 +1621,18 @@ async def generate_agentic_vegan(request: RecipeRequest):
         )
         recipe_text = res.choices[0].message.content.strip()
         
-        judge_result = vegan_judge.evaluate_recipe(recipe_text)
+        # Format and normalize recipe output
+        clean_text = normalize_recipe_text(recipe_text)
+            
+        judge_result = vegan_judge.evaluate_recipe(clean_text)
         final_judge_result = judge_result
         attempts = attempt
+        final_recipe = clean_text
         
         if judge_result.get('score', 0) >= 0.85:
-            final_recipe = recipe_text
             break
         else:
             current_prompt = base_prompt + f"\n\n[JUDGE CRITIQUE TO FIX]: {judge_result.get('critique')}\nRewrite the recipe to fix this error immediately."
-            final_recipe = recipe_text
             
     latency = time.time() - start_time
     
@@ -1781,33 +1835,7 @@ def generate_fast_qwen(request: RecipeRequest):
 
         print(f"DEBUG RAW AI_TEXT: {repr(ai_text)}")
 
-        stop_tokens = ['<|eot_id|>', '<|end_of_text|>', '<|begin_of_text|>', '\n### INGREDIENTS:']
-        for t in stop_tokens:
-            if t in ai_text:
-                ai_text = ai_text.split(t)[0].strip()
-
-        if "### TITLE:\n" in ai_text:
-            ai_text = ai_text.split("### TITLE:\n")[1].strip()
-            
-        import re
-        ai_text = re.split(r'\n\d+\.\s*(?:Variation|Note|To serve|Serve|Enjoy)', ai_text, flags=re.IGNORECASE)[0]
-        
-        cut_phrases = [
-            "\nEnjoy!", "\nServe hot", "\nBon Apetit", "\nChef's Note:", 
-            "\nVariations:", "\nServing suggestion:", "\nNote:",
-            "\nVariation #", "\nTo serve"
-        ]
-        for phrase in cut_phrases:
-            if phrase.lower() in ai_text.lower():
-                ai_text = re.split(re.escape(phrase), ai_text, flags=re.IGNORECASE)[0].strip()
-
-        if "### DIRECTIONS:\n" in ai_text:
-            parts = ai_text.split("### DIRECTIONS:\n")
-            title_part = parts[0]
-            directions_part = parts[1]
-            if "\n### " in directions_part:
-                directions_part = directions_part.split("\n### ")[0]
-            ai_text = f"{title_part}### DIRECTIONS:\n{directions_part}".strip()
+        ai_text = normalize_recipe_text(ai_text)
             
         total_time = time.time() - start_time
         
