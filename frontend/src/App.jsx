@@ -1142,8 +1142,7 @@ function App() {
   };
 
   const fetchHistory = async () => {
-    if (!username) {
-      alert("Please enter a username first!");
+    if (!username || !username.trim()) {
       return;
     }
     
@@ -1151,16 +1150,16 @@ function App() {
     setViewMode('history');
     
     try {
-      const response = await fetch(`${BACKEND_URL}/my-recipes/${username}`);
+      const response = await fetch(`${BACKEND_URL}/my-recipes/${encodeURIComponent(username.trim())}`);
       const data = await response.json();
       
       if (data.status === 'success') {
-        setHistory(data.recipes);
+        setHistory(data.recipes || []);
       } else {
-        alert(data.message);
+        console.warn(data.message);
       }
     } catch (err) {
-      alert("Failed to fetch history.");
+      console.warn("Failed to fetch history:", err);
     } finally {
       setLoading(false);
     }
@@ -1264,7 +1263,9 @@ function App() {
                 className={`nav-tab ${viewMode === 'history' ? 'active' : ''}`}
                 onClick={() => {
                   setViewMode('history');
-                  fetchHistory();
+                  if (username && username.trim()) {
+                    fetchHistory();
+                  }
                 }}
               >
                 My Recipes
@@ -1953,8 +1954,8 @@ function App() {
              <div className="loader" style={{ margin: '3rem auto', display: 'block' }}></div>
           ) : history.length === 0 ? (
              <div style={{ textAlign: 'center', padding: '3.5rem', color: '#64748b' }}>
-               <p style={{ fontSize: '1.2rem', fontWeight: 600 }}>No recipes saved yet for "{username || 'this user'}"!</p>
-               <p style={{ fontSize: '0.95rem', marginTop: '0.5rem' }}>Generate a dish in the Create tab and click "Save Recipe" to build your collection.</p>
+               <p style={{ fontSize: '1.2rem', fontWeight: 600 }}>{username ? `No recipes saved yet for "${username}"!` : "Enter your username above and click 'Load History' to view your saved recipes."}</p>
+               <p style={{ fontSize: '0.95rem', marginTop: '0.5rem' }}>Generate a dish in the Cook tab and click "Save Recipe" to build your collection.</p>
              </div>
           ) : (
             <div className="recipe-grid">
