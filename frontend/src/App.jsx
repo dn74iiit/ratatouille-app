@@ -865,8 +865,27 @@ function App() {
   const [servings, setServings] = useState(1);
   const [stateName, setStateName] = useState('Delhi');
   const [modelVersion, setModelVersion] = useState('qwen');  // 'qwen' (Guardrails) | 'qwen_budget' (Budget Only)
+  const [activeModelName, setActiveModelName] = useState('Qwen 2.5');
   const [agenticVegan, setAgenticVegan] = useState(false);
   const [communityFilter, setCommunityFilter] = useState('all'); // 'all' | 'vegan' | 'guardrails' | 'budget'
+
+  // Fetch active model info from backend /health
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/health`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.model_display) {
+          setActiveModelName(data.model_display);
+        } else if (data.model) {
+          const m = String(data.model).toLowerCase();
+          if (m.includes('qwen2.5') || m.includes('14b')) setActiveModelName('Qwen 2.5');
+          else if (m.includes('qwen3.8') || m.includes('27b')) setActiveModelName('Qwen 3.8');
+          else if (m.includes('qwen')) setActiveModelName('Qwen');
+          else setActiveModelName(data.model);
+        }
+      })
+      .catch(() => {});
+  }, []);
   
   // Response State
   const [loading, setLoading] = useState(false);
@@ -1434,10 +1453,11 @@ function App() {
                     background: modelVersion === 'qwen' ? '#3b82f6' : 'transparent',
                     color: modelVersion === 'qwen' ? '#ffffff' : '#4b5563',
                     cursor: 'pointer',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    whiteSpace: 'nowrap'
                   }}
                 >
-                  ⚡ Groq with Guardrails
+                  ⚡ {activeModelName} with Guardrails
                 </button>
                 <button 
                   type="button" 
@@ -1450,10 +1470,11 @@ function App() {
                     background: modelVersion === 'qwen_budget' ? '#10b981' : 'transparent',
                     color: modelVersion === 'qwen_budget' ? '#ffffff' : '#4b5563',
                     cursor: 'pointer',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    whiteSpace: 'nowrap'
                   }}
                 >
-                  💰 Groq (Budget Only)
+                  💰 {activeModelName} (Budget Only)
                 </button>
               </div>
             </div>
@@ -2090,7 +2111,7 @@ function App() {
         <div className="community-section fade-in">
           <div className="community-header">
             <h1 className="title" style={{ fontSize: '2.2rem', marginBottom: '0.4rem' }}>Community Kitchen 🍲</h1>
-            <p className="subtitle" style={{ fontSize: '1rem' }}>Recent High-Quality Groq AI Recipes with Live Mandi Pricing</p>
+            <p className="subtitle" style={{ fontSize: '1rem' }}>Recent High-Quality AI Recipes with Live Mandi Pricing</p>
           </div>
 
           <div className="community-filter-bar">
