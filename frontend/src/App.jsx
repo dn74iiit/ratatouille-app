@@ -1667,6 +1667,36 @@ function App() {
                   </div>
 
                   <div className="instructions-col">
+                    {result.geval_scores && (
+                      <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '10px', padding: '10px 14px', marginBottom: '1.2rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#38bdf8', letterSpacing: '0.5px' }}>
+                            ⚖️ G-EVAL 4-DIMENSION AUDIT
+                          </span>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#10b981' }}>
+                            Score: {(result.geval_scores.overall_score * 100).toFixed(0)}%
+                          </span>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', fontSize: '0.72rem' }}>
+                          <div style={{ background: '#0f172a', padding: '6px 4px', borderRadius: '6px', textAlign: 'center' }}>
+                            <div style={{ color: '#94a3b8' }}>Consistency</div>
+                            <div style={{ fontWeight: 'bold', color: '#38bdf8' }}>{(result.geval_scores.consistency * 100).toFixed(0)}%</div>
+                          </div>
+                          <div style={{ background: '#0f172a', padding: '6px 4px', borderRadius: '6px', textAlign: 'center' }}>
+                            <div style={{ color: '#94a3b8' }}>Constraints</div>
+                            <div style={{ fontWeight: 'bold', color: '#a855f7' }}>{(result.geval_scores.constraints * 100).toFixed(0)}%</div>
+                          </div>
+                          <div style={{ background: '#0f172a', padding: '6px 4px', borderRadius: '6px', textAlign: 'center' }}>
+                            <div style={{ color: '#94a3b8' }}>Coherence</div>
+                            <div style={{ fontWeight: 'bold', color: '#10b981' }}>{(result.geval_scores.coherence * 100).toFixed(0)}%</div>
+                          </div>
+                          <div style={{ background: '#0f172a', padding: '6px 4px', borderRadius: '6px', textAlign: 'center' }}>
+                            <div style={{ color: '#94a3b8' }}>Fluency</div>
+                            <div style={{ fontWeight: 'bold', color: '#f59e0b' }}>{(result.geval_scores.fluency * 100).toFixed(0)}%</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     <h3>Instructions</h3>
                     <ul className="instructions-list">
                       {cleanRecipeInstructions(result.recipe).map((step, idx) => (
