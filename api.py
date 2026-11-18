@@ -1284,8 +1284,20 @@ class VeganRequest(BaseModel):
 # ============================================================
 @app.get("/health")
 def health_check():
+    model_name = GEN_MODEL if 'GEN_MODEL' in globals() else "qwen2.5:14b"
+    if "qwen2.5" in model_name.lower():
+        display = "Qwen 2.5"
+    elif "qwen3.8" in model_name.lower():
+        display = "Qwen 3.8"
+    else:
+        display = model_name.split(":")[0].capitalize()
+
     return {
         "status": "ok",
+        "model": model_name,
+        "model_display": display,
+        "judge_model": "Gemma 4 12B IT",
+        "ollama_active": is_ollama_alive() if 'is_ollama_alive' in globals() else False,
         "spaces": {"v8": HF_SPACE_V8, "v9": HF_SPACE_V10},
         "db_connected": recipes_collection is not None,
     }
