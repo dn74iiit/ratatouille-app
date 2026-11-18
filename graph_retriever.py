@@ -202,51 +202,71 @@ class GraphRetriever:
                     examples.append(ex_str)
             return examples
         
-        # Search FAISS
-        distances, indices = self.faiss_index.search(query_vector, k)
+        # Stage 1: Retrieve top candidates from FAISS
+        candidates_k = min(15, len(self.vector_metadata))
+        distances, indices = self.faiss_index.search(query_vector, candidates_k)
+        
+        # Stage 2: RAG Re-ranking based on semantic distance, ingredient overlap, and archetype alignment
+        input_set = set([i.lower().strip() for i in ingredients])
+        candidates = []
+        
+        for i in range(candidates_k):
+            idx = indices[0][i]
+            if idx == -1 or idx >= len(self.vector_metadata):
+                continue
+            meta = self.vector_metadata[idx]
+            
+            # Parse ingredients
+            ing_list = meta.get('ingredients', [])
+            if isinstance(ing_list, str):
+                try:
+                    import ast
+                    ing_list = ast.literal_eval(ing_list)
+                except:
+                    ing_list = [ing_list]
+                    
+            rec_text = " ".join([str(ri).lower() for ri in ing_list])
+            rec_title = meta.get('title', '').lower()
+            
+            # Factors
+            dist = float(distances[0][i])
+            faiss_sim = 1.0 / (1.0 + max(0.0, dist))
+            overlap_count = sum(1 for inp in input_set if inp in rec_text)
+            overlap_score = overlap_count / max(1, len(input_set))
+            arch_match = 1.0 if archetype.lower() in rec_title or archetype.lower() in rec_text else 0.5
+            
+            rerank_score = (0.4 * faiss_sim) + (0.4 * overlap_score) + (0.2 * arch_match)
+            candidates.append((rerank_score, meta, ing_list))
+            
+        # Sort descending by re-ranked score
+        candidates.sort(key=lambda x: x[0], reverse=True)
         
         examples = []
-        for i in range(k):
-            idx = indices[0][i]
-            if idx != -1 and idx < len(self.vector_metadata):
-                meta = self.vector_metadata[idx]
-                
-                # Parse and clean ingredients
-                ing_list = meta.get('ingredients', [])
-                if isinstance(ing_list, str):
-                    try:
-                        import ast
-                        ing_list = ast.literal_eval(ing_list)
-                    except:
-                        ing_list = [ing_list]
-                        
-                # Parse and clean directions to prevent LLM formatting hallucinations
-                dir_list = meta.get('directions', [])
-                if isinstance(dir_list, str):
-                    try:
-                        import ast
-                        dir_list = ast.literal_eval(dir_list)
-                    except:
-                        dir_list = [dir_list]
-                
-                # Clean directions: stop at variations/notes, format as strict numbered list
-                clean_dirs = ""
-                step_num = 1
-                for step in dir_list:
-                    step = str(step).strip()
-                    # Stop including steps if we hit messy internet reviews or variations
-                    if step.lower().startswith(('note', 'variation', 'optional', 'to serve', 'serve')):
-                        break
-                    # Strip existing leading numbers (like "1. ") to prevent double numbering "1. 1."
-                    import re
-                    step = re.sub(r'^\d+[\.\)]\s*', '', step)
-                    if step:
-                        clean_dirs += f"{step_num}. {step}\n"
-                        step_num += 1
-                
-                ex_str = f"TITLE: {meta['title']}\nINGREDIENTS: {', '.join(ing_list)}\nDIRECTIONS:\n{clean_dirs.strip()}"
-                examples.append(ex_str)
-                
+        for score, meta, ing_list in candidates[:k]:
+            # Parse and clean directions to prevent LLM formatting hallucinations
+            dir_list = meta.get('directions', [])
+            if isinstance(dir_list, str):
+                try:
+                    import ast
+                    dir_list = ast.literal_eval(dir_list)
+                except:
+                    dir_list = [dir_list]
+            
+            clean_dirs = ""
+            step_num = 1
+            for step in dir_list:
+                step = str(step).strip()
+                if step.lower().startswith(('note', 'variation', 'optional', 'to serve', 'serve')):
+                    break
+                import re
+                step = re.sub(r'^\d+[\.\)]\s*', '', step)
+                if step:
+                    clean_dirs += f"{step_num}. {step}\n"
+                    step_num += 1
+            
+            ex_str = f"TITLE: {meta['title']}\nINGREDIENTS: {', '.join(ing_list)}\nDIRECTIONS:\n{clean_dirs.strip()}"
+            examples.append(ex_str)
+            
         return examples
 
 if __name__ == "__main__":

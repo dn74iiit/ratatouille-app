@@ -18,13 +18,25 @@ from gradio_client import Client
 from groq import Groq
 from motor.motor_asyncio import AsyncIOMotorClient
 
-# Agentic Modules
+# Agentic Modules & Self-Hosted Models
 try:
     from graph_retriever import GraphRetriever
     from llm_judge import RecipeJudge
 except ImportError:
     GraphRetriever = None
     RecipeJudge = None
+
+try:
+    from ollama_client import is_ollama_alive, generate_recipe_ollama, GEN_MODEL, is_gemma_alive
+    from geval_judge import GEvalRecipeJudge
+    geval_judge = GEvalRecipeJudge()
+    print("[OK] G-Eval 4-Dimension Judge Ready.")
+except Exception as _e:
+    print(f"[WARN] Failed to load G-Eval Judge or Ollama client: {_e}")
+    geval_judge = None
+    is_ollama_alive = lambda: False
+    generate_recipe_ollama = None
+    GEN_MODEL = "qwen2.5:14b"
 
 import os
 nltk_dir = os.path.join(os.getcwd(), "nltk_data")
@@ -276,16 +288,19 @@ df_mandi = pd.read_csv(
     header=None,
     names=['State', 'District', 'Market', 'Commodity', 'Variety', 'Grade',
            'Arrival_Date', 'Min_Price', 'Max_Price', 'Modal_Price'],
-    usecols=['State', 'Commodity', 'Arrival_Date', 'Modal_Price']
+    usecols=['State', 'Commodity', 'Arrival_Date', 'Min_Price', 'Max_Price', 'Modal_Price']
 )
 latest_date = df_mandi['Arrival_Date'].max()
 current_mandi = df_mandi[df_mandi['Arrival_Date'] == latest_date].copy()
 current_mandi['Processed_Ingredient'] = current_mandi['Commodity'].apply(
     lambda x: " ".join([lemmatizer.lemmatize(word.lower()) for word in str(x).split()])
 )
+current_mandi['Min_Price'] = pd.to_numeric(current_mandi['Min_Price'], errors='coerce')
+current_mandi['Max_Price'] = pd.to_numeric(current_mandi['Max_Price'], errors='coerce')
 current_mandi['Modal_Price'] = pd.to_numeric(current_mandi['Modal_Price'], errors='coerce')
 current_mandi = current_mandi.dropna(subset=['Modal_Price'])
-current_mandi['Price_per_Gram'] = current_mandi['Modal_Price'] / 100000
+current_mandi['Median_Price'] = current_mandi[['Min_Price', 'Max_Price', 'Modal_Price']].median(axis=1)
+current_mandi['Price_per_Gram'] = current_mandi['Median_Price'] / 100000
 
 # Free df_mandi memory
 del df_mandi
@@ -652,6 +667,13 @@ CANONICAL_MAP: dict[str, str] = {
     # ── Cheese ────────────────────────────────────────────
     "mozzarella": "cheese",  "cheddar": "cheese",
     "parmesan": "cheese",    "processed cheese": "cheese",
+    # ── Hot Spices / Chillies ─────────────────────────────
+    "green chillies": "green chilli", "green chili": "green chilli",
+    "green chilies": "green chilli",  "green chillis": "green chilli",
+    "hari mirch": "green chilli",     "bird's eye chili": "green chilli",
+    "thai chili": "green chilli",     "jalapeno": "green chilli",
+    "jalapeño": "green chilli",       "serrano pepper": "green chilli",
+    "red chillies": "red chilli",     "red chili": "red chilli",
 }
 
 def canonicalize_ingredient(name_lower: str) -> str:
@@ -846,7 +868,11 @@ CONDIMENT_CLASSES = {
             "salt", "black pepper", "white pepper", "chili powder", "cayenne pepper",
             "red pepper flakes", "clove", "cloves", "cinnamon", "cardamom", "cardamoms",
             "nutmeg", "saffron", "saffron strands", "black peppercorns", "peppercorns",
-            "red chilli powder", "red chili powder", "chilli powder", "hing", "asafoetida", "star anise"
+            "red chilli powder", "red chili powder", "chilli powder", "hing", "asafoetida", "star anise",
+            # Hot spice vegetables (dosed strictly as condiments, not bulk vegetables)
+            "green chilli", "green chillies", "green chili", "green chilies", "hari mirch",
+            "bird's eye chili", "thai chili", "jalapeno", "jalapeño", "serrano pepper",
+            "dried red chilli", "dried red chili", "red chilli", "kashmiri chilli", "kashmiri chili"
         ],
         "base_lower": 0.5,
         "base_upper": 2.5
@@ -927,7 +953,7 @@ def get_condiment_category(clean_name: str):
                 return cat
     return None
 
-def get_condiment_bounds(clean_name: str, archetype: str = "Curry", servings: int = 1):
+def get_condiment_bounds(clean_name: str, archetype: str = "Curry", servings: int = 1, total_bulk_grams: float = None):
     category = get_condiment_category(clean_name)
     if not category:
         return None
@@ -936,8 +962,16 @@ def get_condiment_bounds(clean_name: str, archetype: str = "Curry", servings: in
     
     # Sub-linear serving scaling: seasonings scale with batch size, not pure linear
     serving_scale = float(servings) ** 0.82
-    lower = round(cfg["base_lower"] * (float(servings) ** 0.75), 1)
-    upper = round(cfg["base_upper"] * serving_scale * arch_mod, 1)
+    
+    # Scale proportionally with total bulk ingredient mass in addition to servings
+    if total_bulk_grams and total_bulk_grams > 0:
+        reference_bulk = 300.0 * float(servings)  # Baseline 300g bulk per serving
+        bulk_scale = max(0.5, min(2.0, (total_bulk_grams / reference_bulk) ** 0.6))
+    else:
+        bulk_scale = 1.0
+
+    lower = round(cfg["base_lower"] * (float(servings) ** 0.75) * bulk_scale, 1)
+    upper = round(cfg["base_upper"] * serving_scale * arch_mod * bulk_scale, 1)
     if lower > upper:
         lower = upper
     return (max(0.5, lower), max(1.0, upper))
@@ -1142,7 +1176,15 @@ def optimize_recipe_v2(raw_user_ingredients, total_budget, servings, user_state,
             for b_idx in bulk_indices:
                 final_quantities_by_idx[b_idx] = 100.0 * servings_int
     
-    # 5. Fine-Tune Condiment Quantities to fit remaining headroom
+    # 5. Fine-Tune Condiment Quantities to fit remaining headroom & bulk weight
+    total_bulk_grams = sum(final_quantities_by_idx.get(b_idx, 0.0) for b_idx in bulk_indices)
+    for c_idx in condiment_indices:
+        user_qty, clean_name, _ = parsed_items[c_idx]
+        if user_qty is None:
+            cond_b = get_condiment_bounds(clean_name, archetype=archetype, servings=servings_int, total_bulk_grams=total_bulk_grams)
+            if cond_b is not None:
+                condiment_results[c_idx] = round((cond_b[0] + cond_b[1]) / 2.0, 1)
+
     bulk_cost = sum(final_quantities_by_idx.get(b_idx, 0.0) * prices[b_idx] for b_idx in bulk_indices)
     remaining_for_condiments = max(0.0, total_budget_float - bulk_cost)
     
@@ -2171,6 +2213,7 @@ def generate_fast_qwen(request: RecipeRequest):
         initial_cvs_score = None
         final_cvs_score = None
         all_critiques = []
+        geval_scores_dict = None
         
         client = get_inference_client()
         qwen_model = get_groq_recipe_model(client)
@@ -2180,24 +2223,53 @@ def generate_fast_qwen(request: RecipeRequest):
             yield f"data: {json.dumps({'step': 'generating', 'message': f'Generating AI Recipe (Attempt {attempt}/{max_retries})...'})}\n\n"
             step_start = time.time()
             
-            res, actual_model = call_groq_with_fallback(
-                client=client,
-                messages=[{"role": "user", "content": current_prompt}],
-                preferred_model=qwen_model,
-                max_tokens=500,
-                temperature=0.6
-            )
-            
-            ai_text = res.choices[0].message.content.strip()
+            # 1. Attempt Self-Hosted Ollama on College GPU First
+            used_ollama = False
+            if is_ollama_alive():
+                try:
+                    print(f"[*] Calling self-hosted Ollama ({GEN_MODEL}) on 192.168.4.3...")
+                    ai_text = generate_recipe_ollama(
+                        messages=[{"role": "user", "content": current_prompt}],
+                        max_tokens=500,
+                        temperature=0.6
+                    )
+                    if ai_text and len(ai_text) > 30:
+                        actual_model = f"college-gpu/ollama/{GEN_MODEL}"
+                        used_ollama = True
+                except Exception as _oe:
+                    print(f"[WARN] College Ollama failed: {_oe}. Falling back to Groq Cloud...")
+
+            # 2. Seamless Fallback to Groq if Ollama is not ready / offline
+            if not used_ollama:
+                res, actual_model = call_groq_with_fallback(
+                    client=client,
+                    messages=[{"role": "user", "content": current_prompt}],
+                    preferred_model=qwen_model,
+                    max_tokens=500,
+                    temperature=0.6
+                )
+                ai_text = res.choices[0].message.content.strip()
                 
             times[f'generation_sec_attempt_{attempt}'] = time.time() - step_start
             
-            if recipe_judge is None:
+            yield f"data: {json.dumps({'step': 'judging', 'message': f'Micro-Validation: G-Eval 4-Dimension Audit...'})}\n\n"
+            judge_start = time.time()
+            
+            # G-Eval 4-Dimension Judge Evaluation
+            if geval_judge is not None:
+                g_eval_res = geval_judge.evaluate(ai_text, graph_context, budget=request.budget, is_vegan=request.is_vegan)
+                judge_result = {
+                    "is_valid": g_eval_res.is_valid,
+                    "score": g_eval_res.overall_score,
+                    "critique": g_eval_res.reasoning.get("consistency") or g_eval_res.reasoning.get("coherence") or "Passed.",
+                    "geval": g_eval_res.to_dict()
+                }
+                geval_scores_dict = g_eval_res.to_dict()
+            elif recipe_judge is not None:
+                judge_result = recipe_judge.evaluate_recipe(ai_text, graph_context)
+            else:
                 break
                 
-            yield f"data: {json.dumps({'step': 'judging', 'message': f'Micro-Validation: Judging Recipe...'})}\n\n"
-            judge_start = time.time()
-            judge_result = recipe_judge.evaluate_recipe(ai_text, graph_context)
             times[f'judge_sec_attempt_{attempt}'] = time.time() - judge_start
             
             all_critiques.append(f"Attempt {attempt}: {judge_result.get('critique')}")
@@ -2269,6 +2341,7 @@ def generate_fast_qwen(request: RecipeRequest):
             "budget": request.budget,
             "city": request.state,
             "judge_critiques": all_critiques,
+            "geval_scores": geval_scores_dict,
             "cost_breakdown": calculate_cost_breakdown(calculated_ingredients, request.state, request.servings, request.budget),
             "graph_context": graph_context if 'graph_context' in locals() else {},
             "few_shot_examples": few_shot_examples if 'few_shot_examples' in locals() else [],
